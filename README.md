@@ -19,13 +19,20 @@
 pip install ko-hand-ocr
 ```
 
-무게(가중치)는 따로다. 하나에 120MB 라 저장소에 안 넣는다.
-[Releases](https://github.com/jysvai/ko-hand-ocr/releases) 에서 받아 풀면 된다.
+무게(가중치)는 따로다. 크기가 커서 저장소에 안 넣고
+[Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.1.0) 에 붙였다.
 
 | 받는 것 | 크기 | 무엇 |
 |---|---|---|
-| `ko-hand-ocr-v18.zip` | 120MB | 판 하나. 이것만으로 읽힌다. |
-| `ko-hand-ocr-ensemble.zip` | 444MB | 판 넷. 더 정확하고 11배 느리다. |
+| `ko-hand-ocr-v18.zip` | 116MB | **판 하나.** 대부분 이것으로 충분하다. 칸당 0.2초 |
+| `ko-hand-ocr-ensemble.zip` | 465MB | 판 넷. 더 정확하고 11배 느리다 |
+
+```bash
+curl -LO https://github.com/jysvai/ko-hand-ocr/releases/download/v0.1.0/ko-hand-ocr-v18.zip
+```
+
+푼 폴더를 그대로 `Reader()` 에 넘긴다. 안에 `config.json`, `vocab.json`,
+`model.safetensors` 가 함께 있어야 한다.
 
 ## 돌아가는 곳
 
@@ -47,7 +54,7 @@ pip install ko-hand-ocr
 ```python
 from kohandocr.reader import Reader
 
-reader = Reader("ko-hand-ocr-v18", device="cpu")
+reader = Reader("ko-hand-ocr-v18", device="cpu")   # 푼 폴더
 
 # 사진 한 장을 통째로. 줄 자르기까지 해 준다.
 reader.read_photo(open("scan.jpg", "rb").read())
