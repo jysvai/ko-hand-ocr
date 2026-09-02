@@ -1,0 +1,4 @@
+torch>=2.5
+transformers>=4.45
+numpy>=1.26
+Pillow>=10.0

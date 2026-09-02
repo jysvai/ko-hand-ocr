@@ -1,0 +1,34 @@
+# 이 저장소를 **따로 떼어도** 새지 않게 한다. 지금은 부모 폴더의 .gitignore 에
+# 기대고 있는데, 여기만 떼어 올리면 그것이 안 따라온다.
+
+# 학습 산출물. 판 하나가 120MB 라 저장소에 안 넣는다.
+# 내보낼 판은 릴리스 자산으로 붙인다(README 의 '판 받기' 를 보라).
+runs/
+*.log
+*.err
+*.launch
+
+# 사람 자료. 절대 안 나간다.
+data/
+*.jpg
+*.jpeg
+*.png
+real-names.txt
+
+# 글꼴. 나눔손글씨도 구글 OFL 글꼴도 재배포하지 않는다.
+# 학습 그림을 그리는 데만 쓰고, 쓸 사람은 tools/fetch_fonts.py 로 제 PC 에 받는다.
+*.ttf
+*.otf
+*.ttc
+*.woff
+*.woff2
+fonts/
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/

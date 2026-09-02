@@ -1,0 +1,20 @@
+ko-hand-ocr
+Copyright 2026 ko-hand-ocr contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+이 저작물에는 아래 것이 들어 있습니다.
+
+- 인코더 가중치는 `facebook/deit-small-patch16-224` (Apache-2.0, Meta Platforms, Inc.)
+  에서 시작해 미세조정한 것입니다.
+- 디코더 가중치는 이 저장소에서 처음부터 학습했습니다.
+- 학습 이미지는 아래 글꼴로 그려 만들었습니다.
+    · 나눔손글씨 109벌 (NAVER Corporation / CLOVA AI OCR Team)
+    · 한글 손글씨 글꼴 14벌 (google/fonts, SIL Open Font License 1.1)
+  **글꼴 파일은 이 저장소에 들어 있지 않으며 재배포하지 않습니다.**
+  가중치는 글자 모양의 저작물이 아니라 그림에서 배운 값입니다.
+  자세한 내용은 PROVENANCE.md 를 보십시오.
