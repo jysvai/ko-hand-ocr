@@ -94,6 +94,20 @@ $args = @("-u", "-m", "kohandocr.train",
           "--keep", $Keep)
 if ($Resume) { $args += @("--resume", $Resume) }
 
+# **되띄우기로 못 고치는 것은 먼저 걸러 낸다.** torch 가 없는 파이썬을 잡으면
+# 다섯 번을 다시 띄워도 똑같이 죽는데, 로그에는 '첫 걸음을 못 지났다'로만 보여서
+# GPU 문제로 잘못 찾게 된다. 실제로 그랬다 — $Python 기본값을 계정 경로에서
+# 떼면서 시스템 파이썬(torch 없음)을 잡았다.
+# Start-Process 로 부른다. 그냥 `& $Python ...` 을 쓰면 $ErrorActionPreference
+# = "Stop" 이 네이티브 명령의 stderr 를 오류로 바꿔서 **검사 자체가 터진다.**
+$probe = Start-Process -FilePath $Python -ArgumentList @("-c", "import torch, transformers") `
+  -NoNewWindow -Wait -PassThru -RedirectStandardError ([System.IO.Path]::GetTempFileName())
+if ($probe.ExitCode -ne 0) {
+  Write-Output "이 파이썬에는 torch/transformers 가 없다: $Python"
+  Write-Output "  `$env:KOHAND_PYTHON 을 정하거나 -Python 으로 넘겨라."
+  exit 1
+}
+
 for ($try = 1; $try -le $Tries; $try++) {
   Wait-ForQuietGpu
   Remove-Item $log, $err -Force -ErrorAction SilentlyContinue
