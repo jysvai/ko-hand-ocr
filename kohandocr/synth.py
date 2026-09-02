@@ -276,11 +276,15 @@ class Fonts:
 
     `part` 는 "train"(시험용을 뺀 것) / "test"(시험용만) / "all" 이다.
     학습은 "train", `tools/holdout.py` 는 "test" 를 쓴다.
+
+    `only` 를 주면 이름에 그 글자가 든 글꼴만 남긴다. **한 글씨체씩 따로 재는
+    데 쓴다** — 합계만 보면 어떤 글씨체가 무너지는지 안 보인다. 실측으로 시험용
+    여섯 벌 사이에 20%p 넘게 벌어졌다.
     """
 
     def __init__(self, folder,
                  sizes: tuple[int, ...] = (96, 116, 136, 160, 184),
-                 part: str = "all") -> None:
+                 part: str = "all", only: str = "") -> None:
         # 크게 그리는 이유가 둘이다.
         #
         # 하나. 획을 깎는 바닥이 1 픽셀이라 작은 글꼴에서는 그보다 가늘게 못
@@ -351,7 +355,12 @@ class Fonts:
         if part != "all":
             want = part == "test"
             pairs = [(f, t) for f, t in pairs if _for_test(f.name) == want]
+        if only:
+            pairs = [(f, t) for f, t in pairs if only in f.name]
+            if not pairs:
+                raise RuntimeError(f"'{only}' 가 든 글꼴이 없다: {folder}")
         self.part = part
+        self.only = only
         self.files = [p for p, _ in pairs]
         self.weights = [t for _, t in pairs]
         self._cache: dict = {}
