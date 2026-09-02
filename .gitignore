@@ -15,6 +15,12 @@ data/
 *.png
 real-names.txt
 
+# 우리가 그린 그림 하나는 내보낸다. 손글씨 글꼴로 **그린 것**이지 글꼴 파일도
+# 사람 사진도 아니다. 위 규칙은 실제 사진이 새는 것을 막으려는 것이라, 여기서
+# 딱 하나만 되돌린다 — 규칙을 느슨하게 하는 대신 이름을 적는다.
+!tools/public/holdout-sample.png
+!holdout-sample.png
+
 # 글꼴. 나눔손글씨도 구글 OFL 글꼴도 재배포하지 않는다.
 # 학습 그림을 그리는 데만 쓰고, 쓸 사람은 tools/fetch_fonts.py 로 제 PC 에 받는다.
 *.ttf
