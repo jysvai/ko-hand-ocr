@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ko-hand-ocr"
-version = "0.1.0"
+version = "0.2.0"
 description = "한글·영문 손글씨 한 줄을 읽는 작은 OCR 모델"
 readme = "README.md"
 license = "Apache-2.0"
