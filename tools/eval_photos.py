@@ -28,14 +28,17 @@ import torch
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-APP = ROOT.parent
+# 시험 자료(data/eval)가 저장소 안에 있으면 그쪽이다. 예전에는 이 저장소가
+# 앱 폴더 **안에** 있어서 늘 부모를 봤는데, 따로 떼어 낸 뒤로는 부모가
+# 바탕화면이라 아무것도 없다. 두 자리를 다 받아 준다.
+APP = ROOT if (ROOT / "data" / "eval").exists() else ROOT.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(APP))
 
 from kohandocr import page as photo                    # noqa: E402  앱과 같은 줄 자르기
 from transformers import logging as _hf_logging        # noqa: E402
 from kohandocr import data, model as builder, synth     # noqa: E402
-from kohandocr.reader import letters_only                # noqa: E402
+from kohandocr.reader import letters_gate                # noqa: E402
 from kohandocr.vocab import Vocab                       # noqa: E402
 
 # generate() 를 부를 때마다 max_new_tokens/max_length 안내가 줄마다 찍혀
@@ -43,7 +46,7 @@ from kohandocr.vocab import Vocab                       # noqa: E402
 _hf_logging.set_verbosity_error()
 
 
-GOAL = 85          # 사진 한 장이 넘어야 하는 값(%). 평균이 아니라 **모든 장**이 넘어야 한다.
+GOAL = 90          # 사진 한 장이 넘어야 하는 값(%). 평균이 아니라 **모든 장**이 넘어야 한다.
 
 
 def jamo(text: str) -> str:
@@ -86,7 +89,7 @@ def read(model, vocab, cells, device, beams: int) -> list[str]:
         # 여기서 잰 점수가 앱의 점수가 아니게 된다.
         ids = model.generate(pixels, num_beams=beams, max_new_tokens=128,
                              early_stopping=beams > 1,
-                             prefix_allowed_tokens_fn=letters_only(vocab))
+                             logits_processor=letters_gate(vocab))
     return [vocab.decode(row.tolist()) for row in ids]
 
 

@@ -25,7 +25,10 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-APP = ROOT.parent
+# 시험 자료(data/eval)가 저장소 안에 있으면 그쪽이다. 예전에는 이 저장소가
+# 앱 폴더 **안에** 있어서 늘 부모를 봤는데, 따로 떼어 낸 뒤로는 부모가
+# 바탕화면이라 아무것도 없다. 두 자리를 다 받아 준다.
+APP = ROOT if (ROOT / "data" / "eval").exists() else ROOT.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(APP))
 

@@ -33,9 +33,19 @@ param(
   [int]$Workers = 3,
   # 일꾼 수를 5 -> 3 으로 내렸다. 5 로 두면 첫 backward 에서 'CUDA error: out of
   # memory' 가 나는데 **GPU 문제가 아니다** — nvidia-smi 로 7,043 MiB 가 비어
-  # 있고 작은 backward 는 멀쩡히 된다. 고정(pinned) 메모리는 호스트 RAM 이고,
-  # 합성이 무거워지면서(획 굵기 상향, _loosen) 일꾼 다섯이 호스트를 밀어냈다.
-  # 3 이면 확실히 돈다. 되띄우기 5번으로도 못 넘긴 것이 이것이었다.
+  # 있고 작은 backward 는 멀쩡히 된다. 모자란 것은 호스트 쪽이다.
+  #
+  # **다시 5 로 올려 보고 또 되돌렸다.** 이번엔 이유를 정확히 잡았다:
+  # 실제 메모리가 아니라 **커밋(commit charge)** 이다. 일꾼 하나가 실제로
+  # 만지는 것은 1GB 인데 **커밋은 7.9GB** 를 잡는다. 이 PC 는 RAM 23.3GB,
+  # 커밋 한도 62GB 라 일꾼 5(39.5GB) + 본체(7GB) 면 한도의 99% 에 붙는다.
+  # 그러면 학습이 1걸음에서 몇 분씩 멈춘다. 게다가 속도 이득도 없었다 —
+  # 3일꾼 72장/초, 5일꾼 73장/초다(단독으로 재도 그렇다).
+  # **이 PC 에서 3 이 상한이다.** 더 빠르게 하려면 RAM 을 꽂아야 한다.
+  [int]$Seed = 0,
+  # 씨앗. **여태 안 넘기고 있었다** — train.py 에 --seed 가 있는데 여기서
+  # 안 주니 모든 판이 씨앗 0 이었다. 앙상블은 식구가 서로 다를수록 이득인데,
+  # 그 가장 싼 축(첫 무게와 자료 순서)을 안 쓰고 있었다.
   [int]$Letters = 128,
   # 경로를 코드에 박지 않는다. 만든 사람의 PC 경로가 박혀 있으면 공개했을 때
   # 남의 PC 에서 안 돌고 계정 이름도 같이 나간다.
@@ -69,12 +79,25 @@ function Wait-ForQuietGpu {
   #
   # 그러니 (1) 죽일 것은 **학습 프로세스**이고 (2) 기다릴 것은 **GPU 메모리**다.
   # 못 죽는 껍데기는 GPU 를 안 쥐고 있으니 세지 않는다.
-  Get-CimInstance Win32_Process -Filter "Name='python.exe'" |
-    Where-Object { $_.CommandLine -and $_.CommandLine -match "kohandocr" } |
+  # 죽일 것은 **딱 둘**이다: 학습 본체(kohandocr.train)와, 부모가 사라진 일꾼
+  # (spawn_main). 그 밖에는 건드리지 않는다.
+  #
+  # **크기로 고르면 안 된다.** 한 번 그렇게 짰다가 크게 데었다 —
+  # `PageFileUsage -gt 500MB` 로 걸렀더니, 이 스크립트를 부른 `tools/loop.py`
+  # 가 torch 를 올려 500MB 를 넘는 바람에 **고리가 제 손에 죽었다.** v24 는
+  # 20,000걸음을 다 돌았는데 그것을 채점할 놈이 없어서 하루가 헛돌았다.
+  # `-ne $PID` 로는 못 막는다. 여기서 $PID 는 PowerShell 자신이지 고리가 아니다.
+  #
+  # `kohandocr` 로만 거르는 것도 모자란다. 일꾼(spawn_main)의 명령줄에는 그
+  # 글자가 없어서, 부모가 죽으면 아무 조건에도 안 걸리고 커밋만 문 채 남는다.
+  $all = @(Get-CimInstance Win32_Process -Filter "Name='python.exe'")
+  $ids = @($all | Select-Object -ExpandProperty ProcessId)
+  $all | Where-Object {
+      ($_.CommandLine -and $_.CommandLine -match "kohandocr\.train") -or
+      ($_.CommandLine -and $_.CommandLine -match "spawn_main" -and
+       $ids -notcontains $_.ParentProcessId)
+    } |
     ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
-  Get-Process python -ErrorAction SilentlyContinue |
-    Where-Object { $_.Id -ne $PID -and $_.WorkingSet64 -gt 200MB } |
-    ForEach-Object { Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue }
   for ($i = 0; $i -lt 60; $i++) {
     $busy = @(Get-CimInstance Win32_Process -Filter "Name='python.exe'" |
               Where-Object { $_.CommandLine -and $_.CommandLine -match "kohandocr" }).Count
@@ -88,11 +111,14 @@ function Wait-ForQuietGpu {
 $args = @("-u", "-m", "kohandocr.train",
           "--fonts", $Fonts, "--out", $Out,
           "--steps", $Steps, "--batch", $Batch, "--workers", $Workers,
-          "--letters", $Letters,
+          "--letters", $Letters, "--seed", $Seed,
           "--lr", $Lr, "--encoder-lr", $EncoderLr, "--warmup", $Warmup,
           "--log-every", "500", "--check-every", "2500", "--save-every", "2500",
           "--keep", $Keep)
 if ($Resume) { $args += @("--resume", $Resume) }
+# 값에 공백이 있으면 감싼다. 위 프로브와 같은 함정이다 — 글꼴 폴더 이름에
+# 빈칸이 하나만 있어도 Start-Process 가 두 인자로 쪼개서 엉뚱한 곳을 뒤진다.
+$args = $args | ForEach-Object { if ("$_" -match '\s') { '"' + $_ + '"' } else { $_ } }
 
 # **되띄우기로 못 고치는 것은 먼저 걸러 낸다.** torch 가 없는 파이썬을 잡으면
 # 다섯 번을 다시 띄워도 똑같이 죽는데, 로그에는 '첫 걸음을 못 지났다'로만 보여서
@@ -100,7 +126,11 @@ if ($Resume) { $args += @("--resume", $Resume) }
 # 떼면서 시스템 파이썬(torch 없음)을 잡았다.
 # Start-Process 로 부른다. 그냥 `& $Python ...` 을 쓰면 $ErrorActionPreference
 # = "Stop" 이 네이티브 명령의 stderr 를 오류로 바꿔서 **검사 자체가 터진다.**
-$probe = Start-Process -FilePath $Python -ArgumentList @("-c", "import torch, transformers") `
+# 인용부호를 **직접** 넣는다. `-ArgumentList @("-c", "import torch, transformers")`
+# 로 적으면 PowerShell 이 배열을 따옴표 없이 공백으로 이어 붙여서, 파이썬은
+# `-c import` 만 받고 SyntaxError 로 죽는다. 그러면 이 검사가 **멀쩡한 파이썬을
+# 'torch 가 없다'고 몰아세운다** — 실제로 그래서 v24 를 못 띄웠다.
+$probe = Start-Process -FilePath $Python -ArgumentList @("-c", '"import torch, transformers"') `
   -NoNewWindow -Wait -PassThru -RedirectStandardError ([System.IO.Path]::GetTempFileName())
 if ($probe.ExitCode -ne 0) {
   Write-Output "이 파이썬에는 torch/transformers 가 없다: $Python"

@@ -371,7 +371,12 @@ class Fonts:
                      if all(self.has(i, c) for c in "힣뷁쫑햏똠")]
         if not self.files:
             raise RuntimeError(f"쓸 수 있는 글꼴이 없다: {self.folder} ({part})")
-        self._cache: dict = {}
+        # 여기서 `self._cache = {}` 를 한 번 더 하고 있었다. **바로 위에서 채운 것을
+        # 통째로 버리는 줄이었다** — `self.full` 을 세느라 글꼴 121개를 열어 놨는데
+        # 그것을 지우고, 일꾼마다 처음 몇백 장을 그리는 동안 같은 파일을 다시 읽었다.
+        # 합성 시간의 5%가 여기였다(실측: 170장에 파일 읽기 77번, 0.43초).
+        # 지우려던 뜻은 알겠으나(훑기용 40px 글꼴이 남는 것) 그건 121개뿐이고,
+        # 어차피 그릴 때도 `has()` 가 40px 을 다시 쓴다.
 
     def __len__(self) -> int:
         return len(self.files)

@@ -33,7 +33,63 @@ MAX_JAMO = 128
 
 # 곁들이는 판이 들어가는 자리, 그리고 흔드는 방법.
 ALSO = "also"
+# 한 칸을 이 가짓수로 흔들어 읽고 가운데 답을 고른다. `decode.WAYS` 여덟 가지
+# 중에서 고른 것이고, 재는 쪽(`tools/pair.py` 의 FEW)이 여기를 그대로 따라온다.
+#
+# 많이 흔들수록 좋은 것이 아니다. 2026-09-04 에 여덟 가지를 다 걸어 보니 평균이
+# 93.3%에서 92.1% 로 내려갔다 — 연하게·진하게·획 굵게는 틀린 답을 더 얹는다.
+#
+# 기울기 둘을 더한 자리(다섯 가지)는 한 조합에서 사진이 8/11 에서 9/11 로
+# 올라 보여서 넣었다가 **되돌렸다.** 조합을 셋으로 바꿔 다시 재니 하나만 좋아지고
+# 둘은 나빠졌다. 사진이 열한 장뿐이라 이 크기의 차이는 **조합이 바뀌는 폭에
+# 묻힌다**(같은 값으로도 조합에 따라 7~10장을 오간다). 글씨체는 400줄로 재서
+# 5/6, 최저 87.8% 로 어느 쪽이든 같았다. 그러면 남는 것은 1.2배 느려지는 것뿐이다.
+#
+# 다시 건드리려면 **조합 여럿에서 같은 방향이 나오는지**부터 볼 것.
 SHAKE = ("원본", "가로 -7%", "가로 +7%")
+
+# 이 아래면 **읽었다고 하지 않는다.**
+#
+# 판을 바꿔 읽고 흔들어 읽었을 때 답들이 서로 얼마나 닮았나가 `decode.middle`
+# 이 같이 돌려주는 값이다. 이 값이 낮다는 것은 읽을 때마다 딴소리를 했다는
+# 뜻이다. 그런데 지금까지는 그 값을 받아서 **버리고** 답만 내보냈다. 그래서
+# 못 읽은 칸도 그럴듯한 글월로 나갔다 — 실측으로 '816883539' 를
+# '2025-05-18' 로, '사번' 을 '신청인:' 으로 지어냈다. 서식에서 이것은 빈칸보다
+# 나쁘다. 사람이 검토할 자리를 못 찾기 때문이다.
+#
+# 처음 0.80 을 고른 근거는 이랬다(한 조합, 실측):
+#
+#     손으로 쓴 서명 두 점                0.34, 0.35
+#     깨진 저해상도 인쇄 이름              0.39, 0.67
+#     동해독도 손글씨 60줄 **가운데값**      0.96
+#     싱글데이 손글씨 60줄 **가운데값**      1.00
+#
+# 서명 0.35 와 손글씨 0.96 사이가 비어 보였다. **그 셈이 틀렸다.** 서명 쪽은
+# 낱값인데 손글씨 쪽은 가운데값이라, 잘 읽은 줄이 어디까지 낮게 내려가는지를
+# 아예 안 본 것이다. 가운데값은 꼬리에 대해 아무 말도 해 주지 않는다.
+#
+# 2026-09-06 에 `tools/trustsweep.py` 로 조합 넷을 재 보니 꼬리가 이렇다.
+#
+#     **글자 하나까지 맞게 읽은** 줄의 가장 낮은 믿음값
+#         글씨체 시험지 (조합당 145~154줄)     0.75  0.75  0.79  0.81
+#         사진        (조합당  18~ 21줄)     0.74  0.73  0.89  0.76
+#     지어낸 줄(닮음 0.60 미만)의 믿음값
+#         조합 1·2 에는 아예 없음
+#         조합 3      0.76(닮음 0.50), 0.78(닮음 0.00)
+#         조합 4      0.57(닮음 0.55), 0.76(닮음 0.50)
+#
+# 두 무리가 **0.73~0.79 에서 겹친다.** 지어낸 줄 0.78 과 완벽한 줄 0.74 사이에
+# 그을 자리가 없다. 그래서 어떤 값을 골라도 한쪽을 잃는다.
+#
+#     0.80 이면  완벽하게 읽은 사진 줄을 조합 넷 중 셋에서 2~4줄 지운다
+#     0.70 이면  지우는 것은 없어지는데, 조합 3 의 닮음 0.00 짜리가 그냥 나간다
+#
+# 그래서 **값을 옮기지 않는다.** 옮겨서 나아지는 것이 아니라 손해를 맞바꾸는
+# 것뿐이고, 어느 쪽이 큰지는 조합마다 다르다(고리가 몇 시간마다 조합을 바꾼다).
+# 고칠 것은 숫자가 아니라 믿음값 자체다 — 지금 값은 '흔들어도 살아남았나'라서
+# **어려운 글씨**와 **틀린 글씨**를 못 가른다. 건드리기 전에 반드시
+# `tools/trustsweep.py` 로 조합 셋 이상에서 같은 방향인지 볼 것.
+TRUST_EDGE = 0.80
 
 # 홀로 쓴 자모(ㄱ, ㅏ)를 답에서 뺀다.
 #
@@ -99,7 +155,7 @@ class Reader:
     def _letters(self):
         """홀자모를 뺀 토큰만 허용하는 판. 한 번 만들어 두고 계속 쓴다."""
         if getattr(self, "_letters_fn", None) is None:
-            self._letters_fn = letters_only(self.vocab)
+            self._letters_fn = letters_gate(self.vocab)
         return self._letters_fn
 
     @torch.no_grad()
@@ -115,12 +171,32 @@ class Reader:
             return []
         if letters is None:
             letters = LETTERS_ONLY
+        return [text for text, _ in self.read_trust(images, max_chars, beams, letters)]
+
+    @torch.no_grad()
+    def read_trust(self, images, max_chars: int = MAX_JAMO, beams: int = BEAMS,
+                   letters: bool | None = None) -> list[tuple[str, float]]:
+        """읽은 값과 **얼마나 믿을 만한지**를 같이 준다.
+
+            for text, trust in reader.read_trust(cells):
+                if trust < reader.TRUST_EDGE:
+                    text = ""          # 못 읽었다. 지어내지 않는다.
+
+        믿음값은 판을 바꿔 읽고 흔들어 읽었을 때 답들이 서로 얼마나 닮았나이다.
+        판이 하나뿐이면 견줄 것이 없어서 **잴 수 없다.** 그때는 1.0 을 주는
+        대신 -1.0 을 준다 — 모르는 것을 안다고 하면 문턱이 조용히 무력해진다.
+        곁들이는 판을 넣어 쓰라는 뜻이다(`ALSO`).
+        """
+        if not images:
+            return []
+        if letters is None:
+            letters = LETTERS_ONLY
         if self.also:
             return self._together(images, max_chars, beams, letters)
         ids = self.model.generate(self._pixels(images), max_new_tokens=max_chars,
                                   num_beams=beams, early_stopping=beams > 1,
-                                  prefix_allowed_tokens_fn=self._letters() if letters else None)
-        return self._decode(ids)
+                                  logits_processor=self._letters() if letters else None)
+        return [(text, -1.0) for text in self._decode(ids)]
 
     def read_photo(self, data: bytes, max_lines: int = 16, **rest) -> list[str]:
         """**사진 한 장을 통째로 읽는다.** 줄 자르기까지 여기서 한다.
@@ -145,8 +221,9 @@ class Reader:
         return self.read(cells, **rest)
 
     @torch.no_grad()
-    def _together(self, images, max_chars: int, beams: int, letters: bool) -> list[str]:
-        """판 여럿 x 흔들기 여럿으로 읽고 **서로 가장 닮은 답**을 고른다.
+    def _together(self, images, max_chars: int, beams: int,
+                  letters: bool) -> list[tuple[str, float]]:
+        """판 여럿 x 흔들기 여럿으로 읽고 **서로 가장 닮은 답**과 그 닮음을 준다.
 
         왜. 판마다 잘 읽는 사진이 엇갈린다. 한 판이 무너지는 칸에서 다른 판이
         멀쩡한 일이 잦다. 실측(사진 11장):
@@ -175,13 +252,13 @@ class Reader:
         pixels = self._pixels(flat)
         said: list[list[str]] = [[] for _ in flat]
         for vocab, model in [(self.vocab, self.model)] + self.also:
-            allowed = letters_only(vocab) if letters else None
+            allowed = letters_gate(vocab) if letters else None
             ids = model.generate(pixels, max_new_tokens=max_chars, num_beams=beams,
                                  early_stopping=beams > 1,
-                                 prefix_allowed_tokens_fn=allowed)
+                                 logits_processor=allowed)
             for at, row in enumerate(ids):
                 said[at].append(unicodedata.normalize("NFC", vocab.decode(row.tolist())).strip())
-        return [decode.middle([one for at in range(a, b) for one in said[at]])[0]
+        return [decode.middle([one for at in range(a, b) for one in said[at]])
                 for a, b in span]
 
     @torch.no_grad()
@@ -208,9 +285,15 @@ class Reader:
         그냥 읽은 값이 이미 명단에 그대로 있으면 가두는 판독을 건너뛴다.
         비싼 쪽을 안 해도 되는 칸이 대부분이다.
         """
-        free = self.read(images)
+        pairs = self.read_trust(images)
+        free = [text for text, _ in pairs]
+        # `unsure` 는 **믿음값을 잰 끝에** 문턱 아래인 칸이다. 잴 수 없었던
+        # 칸(-1.0)은 참이라고 하지 않는다. 못 쟀다와 못 읽었다는 다르다.
+        unsure = [0.0 <= trust < TRUST_EDGE for _, trust in pairs]
         if not options:
-            return [{"text": t, "constrained": "", "agrees": False} for t in free]
+            return [{"text": free[i], "constrained": "", "agrees": False,
+                     "trust": pairs[i][1], "unsure": unsure[i]}
+                    for i in range(len(free))]
 
         known = {unicodedata.normalize("NFC", o).strip() for o in options}
         need = [index for index, text in enumerate(free) if text not in known]
@@ -223,7 +306,8 @@ class Reader:
             for index, text in zip(need, got):
                 tight[index] = text
         return [{"text": free[i], "constrained": tight[i],
-                 "agrees": bool(tight[i]) and _close(free[i], tight[i])}
+                 "agrees": bool(tight[i]) and _close(free[i], tight[i]),
+                 "trust": pairs[i][1], "unsure": unsure[i]}
                 for i in range(len(free))]
 
     # ── 명단 가두기 ──────────────────────────────────────────────
@@ -276,6 +360,62 @@ def letters_only(vocab: Vocab):
         return start if len(input_ids) == 1 else keep
 
     return allowed
+
+
+class _LettersMask:
+    """`letters_only` 와 **똑같이** 가두되, 파이썬 호출 대신 마스크를 더한다.
+
+    왜 이것이 필요한가. `letters_only` 는 첫 걸음만 빼면 늘 같은 목록을
+    돌려준다. 그런데 `generate` 는 그것을 (묶음 x 빔 x 토큰)마다 파이썬으로
+    부르고 그때마다 허용 목록에서 마스크를 새로 만든다. 빔이 5면 파이썬
+    호출이 다섯 배다. 실측으로 **채점 시간의 3분의 2가 여기서 나갔다**
+    (글씨체 한 벌 12.6초 -> 4.4초, 답은 162칸 전부 글자 하나까지 같았다).
+
+    늘 같은 값이니 미리 만들어 두고 더하기만 하면 된다. 가두는 조건은
+    그대로라 답이 바뀌지 않는다.
+
+    마스크는 첫 부름 때 만든다. 그때라야 로짓의 너비·자리·정밀도를 알 수 있다.
+    """
+
+    def __init__(self, vocab: Vocab):
+        from .vocab import COMPAT_JAMO
+
+        ban = {vocab.ids[t] for t in COMPAT_JAMO if t in vocab.ids}
+        ban |= {vocab.pad, vocab.bos, vocab.unk}
+        self._keep = sorted(set(range(len(vocab))) - ban)
+        self._bos = vocab.bos
+        self._made: tuple | None = None
+        self._like: tuple | None = None
+
+    def _masks(self, scores):
+        wide = scores.shape[-1]
+        first = torch.full((wide,), float("-inf"),
+                           device=scores.device, dtype=scores.dtype)
+        first[self._bos] = 0.0
+        rest = torch.full((wide,), float("-inf"),
+                          device=scores.device, dtype=scores.dtype)
+        rest[torch.tensor([i for i in self._keep if i < wide],
+                          device=scores.device)] = 0.0
+        return first, rest
+
+    def __call__(self, input_ids, scores):
+        like = (scores.shape[-1], scores.device, scores.dtype)
+        if self._like != like:
+            self._made, self._like = self._masks(scores), like
+        first, rest = self._made
+        # 첫 걸음에서 `<s>` 를 반드시 허용해야 한다. `letters_only` 머리말 참고.
+        return scores + (first if input_ids.shape[1] == 1 else rest)
+
+
+def letters_gate(vocab: Vocab):
+    """`generate(logits_processor=...)` 에 넣을 가두는 판.
+
+    `prefix_allowed_tokens_fn=letters_only(vocab)` 을 이것으로 바꾸면 답은
+    그대로이고 세 배 가까이 빨라진다. 이쪽을 쓸 것.
+    """
+    from transformers import LogitsProcessorList
+
+    return LogitsProcessorList([_LettersMask(vocab)])
 
 
 def _close(left: str, right: str, cutoff: float = 0.5) -> bool:

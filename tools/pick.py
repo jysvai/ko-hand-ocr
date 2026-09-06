@@ -16,7 +16,7 @@
 저기서는 줄 하나에 한 표다(hand-07 은 줄이 4개라 저기서 표를 더 갖는다).
 고르는 데는 장 단위가 맞다 — 우리가 넘어야 하는 것이 장이기 때문이다.
 
-그래서 여기서는 판마다 (평균, **가장 나쁜 장**, 85% 를 넘긴 장 수, 초) 를 같이
+그래서 여기서는 판마다 (평균, **가장 나쁜 장**, 90% 를 넘긴 장 수, 초) 를 같이
 찍고 마지막에 골라 준다. 고르는 순서는 **못 넘긴 장이 적은 것 → 가장 나쁜 장이
 높은 것 → 평균이 높은 것** 이다.
 """
@@ -33,7 +33,10 @@ from pathlib import Path
 import torch
 
 ROOT = Path(__file__).resolve().parent.parent
-APP = ROOT.parent
+# 시험 자료(data/eval)가 저장소 안에 있으면 그쪽이다. 예전에는 이 저장소가
+# 앱 폴더 **안에** 있어서 늘 부모를 봤는데, 따로 떼어 낸 뒤로는 부모가
+# 바탕화면이라 아무것도 없다. 두 자리를 다 받아 준다.
+APP = ROOT if (ROOT / "data" / "eval").exists() else ROOT.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(APP))
 sys.path.insert(0, str(ROOT / "tools"))

@@ -32,6 +32,10 @@ def upright(image: Any) -> Any:
 
     return ImageOps.exif_transpose(image) or image
 
+# 그림자를 걷어 낼 때 흐리는 정도(사진 긴 변에 대한 비율). 조이면 획이
+# 같이 깎이고, 풀면 그늘이 남는다. `tools/prepsweep.py` 로 재서 고른다.
+_BLUR_SHARE = 0.02
+
 def flatten(image: Any, blur: int | None = None) -> Any:
     """그림자와 밝기 기울기를 걷어 낸다.
 
@@ -49,7 +53,7 @@ def flatten(image: Any, blur: int | None = None) -> Any:
     # 흐리는 정도는 사진 크기에 따라간다. 고정값을 쓰면 축소본에서는 결까지
     # 뭉개져 배경도 종이처럼 하얘진다(실측: 축소본에서 가죽을 종이로 봤다).
     if blur is None:
-        blur = max(8, round(max(image.size) * 0.02))
+        blur = max(8, round(max(image.size) * _BLUR_SHARE))
     gray = image.convert("L")
     # 종이의 밝기만 남긴 판. 글자는 흐려져 사라진다.
     paper = gray.filter(ImageFilter.GaussianBlur(radius=blur))
@@ -141,7 +145,14 @@ def prepare(data: bytes, max_side: int = 2200) -> bytes:
         scale = max_side / max(image.size)
         image = image.resize((round(image.width * scale), round(image.height * scale)), Image.LANCZOS)
     buffer = io.BytesIO()
-    flatten(image).convert("RGB").save(buffer, format="PNG")
+    # 흑백 그대로 저장한다. `flatten` 이 내놓는 것은 이미 한 채널인데, RGB 로
+    # 늘리면 **같은 값을 셋으로 베껴** PNG 로 굳힌다. 화소 셋을 하나로 되돌리는
+    # 쪽은 `convert("L")` 이 정수로 (r*299+g*587+b*114)//1000 을 하는데
+    # 셋이 같은 값이면 그대로라, 늘렸다 줄이면 언제나 처음 값이다.
+    # 실측(사진 12장): 칸 자리도 칸 화소도 하나까지 같고, PNG 로 굳히는 데
+    # 0.24초에서 0.12초로 줄고 파일도 1207KB 에서 936KB 로 작아졌다.
+    # 사진 한 장을 자르는 데 0.69초가 들었고 그 절반이 여기였다.
+    flatten(image).save(buffer, format="PNG")
     return buffer.getvalue()
 
 _MIN_LINE = 0.012
@@ -154,6 +165,16 @@ _MAX_INK = 0.25
 
 _GAP_Y = 0.004
 
+# 가로로 가를 때 띄어야 하는 간격(글자 높이 배수).
+#
+# 2026-09-04 에 0.8 로 내렸다가 **되돌렸다.** 훑기(`tools/cutsweep.py`)가
+# 0.8 을 골랐고 hand-01 이 84.9%에서 93.3% 로 올라 보였는데, 자르기를
+# 판독 점수로 고른 것이 잘못이었다. 칸 수를 직접 세 보면 0.8 은 hand-01 을
+# 칸 6개에서 **7개**로 더 잘게 부순다(정답은 3줄). 나머지 열한 장은 두 값이
+# 똑같다. 점수가 오른 것은 그 조각이 그때 조합에서 우연히 잘 맞은 것이다.
+#
+# **자르기는 판독 점수로 고르지 말 것.** 잘 잘렸는지는 조합과 무관하다 —
+# 정답이 세 줄이면 칸도 셋이어야 한다. 그 자로 재면 1.2 가 낫다.
 _GAP_X = 1.2
 
 def lines(png: bytes, max_lines: int = 12, pad: int = 6) -> list[dict[str, Any]]:
