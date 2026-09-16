@@ -297,6 +297,18 @@ was the peak and 30,000 steps was worse).
 python tools/pick.py runs/v1-15000 runs/v1-30000    # score the kept checkpoints and pick
 ```
 
+## How this was built
+
+The engineering behind this model is written up as a 12-page document — why it exists,
+the four decisions that shaped it, how the training data was produced at zero labelling
+cost, how the evaluation was designed, and what is still missing.
+
+**[Engineering write-up — PDF, 12 pages](https://github.com/jysvai/ko-hand-ocr/releases/download/v0.2.0/ko-hand-ocr-portfolio-en.pdf)** &nbsp;·&nbsp;
+[한국어판](https://github.com/jysvai/ko-hand-ocr/releases/download/v0.2.0/ko-hand-ocr-portfolio-ko.pdf)
+
+It includes the parts that are usually left out: the measurement that was wrong, the
+approach that was tried and failed, and the numbers that have not been measured yet.
+
 ## License
 
 Apache-2.0, weights included. The licenses of the fonts used in training do not attach

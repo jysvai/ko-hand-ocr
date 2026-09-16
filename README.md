@@ -286,6 +286,16 @@ python tools/match.py        # 과녁과 지금 합성을 나란히 본다
 python tools/pick.py runs/v1-15000 runs/v1-30000    # 남긴 판들을 재서 고른다
 ```
 
+## 만든 과정
+
+이 모델을 왜 만들었는지, 어떤 판단을 했고 무엇을 대가로 내줬는지, 레이블링 비용을 어떻게
+0원으로 만들었는지, 평가를 어떻게 설계했는지를 12쪽 문서로 정리했다.
+
+**[만든 과정 — PDF, 12쪽](https://github.com/jysvai/ko-hand-ocr/releases/download/v0.2.0/ko-hand-ocr-portfolio-ko.pdf)** &nbsp;·&nbsp;
+[English](https://github.com/jysvai/ko-hand-ocr/releases/download/v0.2.0/ko-hand-ocr-portfolio-en.pdf)
+
+보통 빼는 것까지 적었다 — 잘못 쟀던 것, 해 보고 안 됐던 것, 아직 못 잰 것.
+
 ## 라이선스
 
 Apache-2.0. 가중치도 같다. 학습에 쓴 글꼴의 라이선스는 가중치에 옮아붙지
