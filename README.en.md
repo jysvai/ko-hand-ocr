@@ -75,6 +75,9 @@ pip install ko-hand-ocr
 Weights ship separately — they are too large for the repository, so they are attached
 to [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.2.0).
 
+> Weights are versioned separately from the package. The current weights are on the
+> **v0.2.0** release; a package bump does not mean the weights changed.
+
 | Download | Size | What it is |
 |---|---|---|
 | `ko-hand-ocr-v46.zip` | 116MB | **A single checkpoint.** Enough for most uses. 0.16 s/cell |
