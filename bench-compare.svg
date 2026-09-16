@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 356" width="760" height="356" role="img" aria-label="Comparison of ko-hand-ocr v46 and ko-trocr. ko-hand-ocr has 31 million parameters, ko-trocr has 213.7 million. ko-hand-ocr trains on synthetic images drawn from OFL fonts and inherits no dataset terms; ko-trocr trains on the AI Hub handwriting corpus whose usage terms apply. Both ship Apache-2.0 weights. No head-to-head accuracy benchmark has been run yet.">
+<style>
+  .surface{fill:#fcfcfb}
+  .ink{fill:#0b0b0b}
+  .ink2{fill:#52514e}
+  .s1{fill:#2a78d6}
+  .rule{stroke:#e3e2de;stroke-width:1}
+  .box{fill:none;stroke:#bcbab3;stroke-width:1;stroke-dasharray:4 3}
+  text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  @media (prefers-color-scheme: dark){
+    .surface{fill:#1a1a19}
+    .ink{fill:#ffffff}
+    .ink2{fill:#c3c2b7}
+    .s1{fill:#3987e5}
+    .rule{stroke:#3a3a38}
+    .box{stroke:#5c5a54}
+  }
+</style>
+
+<rect class="surface" width="760" height="356" rx="6"/>
+
+<text class="ink" x="20" y="27" font-size="15" font-weight="600">What is actually different from ko-trocr</text>
+<text class="ink2" x="20" y="45" font-size="11.5">The reason this model exists is not accuracy — it is what the training data drags along with it.</text>
+
+<text class="ink2" x="20" y="76" font-size="11.5" font-weight="600">Parameters</text>
+
+<path class="s1" d="M200,66 H254 Q258,66 258,70 V78 Q258,82 254,82 H200 Z"/>
+<text class="ink" x="266" y="78" font-size="12" font-weight="600">31M</text>
+<text class="ink2" x="300" y="78" font-size="11.5">ko-hand-ocr v46</text>
+
+<path class="s1" d="M200,94 H596 Q600,94 600,98 V106 Q600,110 596,110 H200 Z"/>
+<text class="ink" x="608" y="106" font-size="12" font-weight="600">213.7M</text>
+<text class="ink2" x="656" y="106" font-size="11.5">ko-trocr</text>
+
+<line class="rule" x1="20" y1="128" x2="740" y2="128"/>
+
+<text class="ink2" x="240" y="148" font-size="11.5" font-weight="700">ko-hand-ocr v46</text>
+<text class="ink2" x="520" y="148" font-size="11.5" font-weight="700">ko-trocr</text>
+<line class="rule" x1="20" y1="158" x2="740" y2="158"/>
+
+<text class="ink2" x="20" y="180" font-size="11.5">Training data</text>
+<text class="ink" x="240" y="180" font-size="11.5">synthetic, drawn from OFL fonts</text>
+<text class="ink" x="520" y="180" font-size="11.5">AI Hub handwriting corpus</text>
+<line class="rule" x1="20" y1="192" x2="740" y2="192"/>
+
+<text class="ink2" x="20" y="214" font-size="11.5">Terms inherited from data</text>
+<text class="ink" x="240" y="214" font-size="11.5" font-weight="600">none</text>
+<text class="ink" x="520" y="214" font-size="11.5">AI Hub usage terms apply</text>
+<line class="rule" x1="20" y1="226" x2="740" y2="226"/>
+
+<text class="ink2" x="20" y="248" font-size="11.5">Weight license</text>
+<text class="ink" x="240" y="248" font-size="11.5">Apache-2.0</text>
+<text class="ink" x="520" y="248" font-size="11.5">Apache-2.0</text>
+<line class="rule" x1="20" y1="260" x2="740" y2="260"/>
+
+<text class="ink2" x="20" y="282" font-size="11.5">Speed on CPU</text>
+<text class="ink" x="240" y="282" font-size="11.5">0.16 s / cell (measured)</text>
+<text class="ink2" x="520" y="282" font-size="11.5">not measured here</text>
+
+<rect class="box" x="20" y="298" width="720" height="26" rx="4"/>
+<text class="ink" x="32" y="315" font-size="11.5" font-weight="600">Head-to-head accuracy: not measured yet.</text>
+<text class="ink2" x="284" y="315" font-size="11.5">No shared test set has been run across both models — so no accuracy claim is made here.</text>
+
+<text class="ink2" x="20" y="344" font-size="11">Parameter counts come from each model's published metadata. Everything above is a checkable fact, not a benchmark result.</text>
+</svg>

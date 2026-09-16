@@ -23,6 +23,9 @@ on purpose of use and on redistribution. That blocks it from being embedded in a
 in-house tool or shipped as a public package. So **the same capability was rebuilt
 from scratch** — with a provenance chain that can be audited part by part.
 
+
+![ko-hand-ocr vs ko-trocr](bench-compare.svg)
+
 ## Install
 
 ```bash
@@ -149,6 +152,9 @@ another carries the cell — the worst photo goes from 66.7% with one checkpoint
 83.1% with four. The cost is being ten times slower.
 
 ### Per font (400 lines each)
+
+![Accuracy by handwriting font](bench-accuracy.svg)
+
 
 Look only at the average and **the font that collapses is hidden.** The real spread
 is 12%p.
