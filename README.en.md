@@ -5,6 +5,7 @@
 **Reads one line of handwritten Korean + English.**
 A 31M model trained from scratch on synthetic data — no handwriting dataset, no inherited terms.
 
+[![PyPI](https://img.shields.io/pypi/v/ko-hand-ocr)](https://pypi.org/project/ko-hand-ocr/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](https://github.com/jysvai/ko-hand-ocr/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://github.com/jysvai/ko-hand-ocr)
 [![Params](https://img.shields.io/badge/params-31M-1baf7a)](https://github.com/jysvai/ko-hand-ocr)
@@ -68,10 +69,8 @@ from scratch** — with a provenance chain that can be audited part by part.
 ## Install
 
 ```bash
-pip install git+https://github.com/jysvai/ko-hand-ocr.git
+pip install ko-hand-ocr
 ```
-
-> Not on PyPI yet. Until it is, install from the repository.
 
 Weights ship separately — they are too large for the repository, so they are attached
 to [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.2.0).

@@ -5,6 +5,7 @@
 **한글·영문이 섞인 손글씨 한 줄을 읽는다.**
 손글씨 데이터셋 없이, 합성 그림만으로 처음부터 학습한 31M 모델. 약관이 따라붙지 않는다.
 
+[![PyPI](https://img.shields.io/pypi/v/ko-hand-ocr)](https://pypi.org/project/ko-hand-ocr/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](https://github.com/jysvai/ko-hand-ocr/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://github.com/jysvai/ko-hand-ocr)
 [![Params](https://img.shields.io/badge/params-31M-1baf7a)](https://github.com/jysvai/ko-hand-ocr)
@@ -67,10 +68,8 @@ AI Hub 라 이용 목적·재배포에 제약이 붙는다. 사내 도구에 넣
 ## 설치
 
 ```bash
-pip install git+https://github.com/jysvai/ko-hand-ocr.git
+pip install ko-hand-ocr
 ```
-
-> 아직 PyPI 에 없다. 올라갈 때까지는 저장소에서 받는다.
 
 무게(가중치)는 따로다. 크기가 커서 저장소에 안 넣고
 [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.2.0) 에 붙였다.
