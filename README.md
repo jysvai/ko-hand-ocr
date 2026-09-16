@@ -2,7 +2,7 @@
 
 한글·영문이 섞인 **손글씨 한 줄**을 읽는 작은 모델. Apache-2.0.
 
-**한국어** · [English](README.en.md)
+**한국어** · [English](https://github.com/jysvai/ko-hand-ocr/blob/main/README.en.md)
 
 ```
 사진 한 장  ->  줄 자르기  ->  ko-hand-ocr  ->  "부서 : 포테토뭉부서"
@@ -13,10 +13,10 @@
   못 본 글자도 쓸 수 있다.
 - **손글씨 데이터셋을 쓰지 않았다.** 디코더는 처음부터 학습했고 인코더는
   ImageNet ViT(Apache-2.0)다. 학습 그림은 손글씨 **글꼴**로 그때그때 그렸다.
-  그래서 데이터셋 약관을 물려받지 않는다 → [PROVENANCE.md](PROVENANCE.md)
+  그래서 데이터셋 약관을 물려받지 않는다 → [PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
 
 
-![ko-hand-ocr 와 ko-trocr 비교](bench-compare.svg)
+![ko-hand-ocr 와 ko-trocr 비교](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-compare.svg)
 
 ## 설치
 
@@ -139,7 +139,7 @@ CPU 로만, 사진 11장(칸 37개)을 재서 가운데값을 쓴다. 시간을 
 
 ### 글씨체마다 (벌마다 400줄)
 
-![글씨체마다의 정확도](bench-accuracy.svg)
+![글씨체마다의 정확도](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-accuracy.svg)
 
 
 합계 하나만 보면 **무너지는 글씨체가 가려진다.** 실제로 12%p 가 벌어진다.
@@ -164,7 +164,7 @@ python tools/holdout.py <판폴더> --per-font --sample sample.png
 
 ### 시험지가 실제로 어떻게 생겼나
 
-![안 배운 글씨체 시험지](holdout-sample.png)
+![안 배운 글씨체 시험지](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/holdout-sample.png)
 
 글씨체마다 세 줄씩, 정답과 모델이 읽은 것과 닮음을 같이 적었다. 오른쪽의 옅은
 띠는 64×640 틀에 맞추느라 남은 자리다 — 모델이 실제로 보는 그림 그대로다.
@@ -174,7 +174,7 @@ python tools/holdout.py <판폴더> --per-font --sample sample.png
 이 거의 딴 글자로 보인다 — 사람이 봐도 앞뒤 없이는 못 읽는다.
 
 이 그림은 **글꼴 파일이 아니라 그림**이다. 글꼴로 글자를 그리는 것은 OFL 이
-허용한다. 재배포하지 않는 것은 `.ttf` 파일 쪽이다([PROVENANCE.md](PROVENANCE.md)).
+허용한다. 재배포하지 않는 것은 `.ttf` 파일 쪽이다([PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)).
 
 ## 학습
 
@@ -195,7 +195,7 @@ python -m kohandocr.train --out runs/v1 \
 
 글꼴은 이 저장소에 들어 있지 않고 **재배포하지 않는다.** 나눔손글씨 109벌은
 [clova.ai/handwriting](https://clova.ai/handwriting) 에서 받는다. 자세한 것은
-[PROVENANCE.md](PROVENANCE.md).
+[PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md).
 
 합성이 실제 손글씨와 얼마나 닮았는지는 `kohandocr/measured.json` 에 적힌
 실측 분포(잉크량, 밀도, 가로세로, 여백 등 아홉 가지)로 견준다.
@@ -221,4 +221,4 @@ python tools/pick.py runs/v1-15000 runs/v1-30000    # 남긴 판들을 재서 �
 
 Apache-2.0. 가중치도 같다. 학습에 쓴 글꼴의 라이선스는 가중치에 옮아붙지
 않는다 — 가중치는 글자 모양의 저작물이 아니라 그림에서 배운 값이다.
-근거는 [PROVENANCE.md](PROVENANCE.md) 에 부품별로 적어 두었다.
+근거는 [PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md) 에 부품별로 적어 두었다.

@@ -2,7 +2,7 @@
 
 Reads **one line of handwritten Korean/English**. A small model. Apache-2.0.
 
-[한국어](README.md) · **English**
+[한국어](https://github.com/jysvai/ko-hand-ocr/blob/main/README.md) · **English**
 
 ```
 photo  ->  line cutting  ->  ko-hand-ocr  ->  "부서 : 포테토뭉부서"
@@ -13,7 +13,7 @@ photo  ->  line cutting  ->  ko-hand-ocr  ->  "부서 : 포테토뭉부서"
   produce characters it never saw in training.
 - **No handwriting dataset was used.** The decoder was trained from scratch; the
   encoder is an ImageNet ViT (Apache-2.0). Training images are drawn on the fly from
-  handwriting **fonts**, so no dataset terms are inherited → [PROVENANCE.md](PROVENANCE.md)
+  handwriting **fonts**, so no dataset terms are inherited → [PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
 
 ## Why this exists
 
@@ -24,7 +24,7 @@ in-house tool or shipped as a public package. So **the same capability was rebui
 from scratch** — with a provenance chain that can be audited part by part.
 
 
-![ko-hand-ocr vs ko-trocr](bench-compare.svg)
+![ko-hand-ocr vs ko-trocr](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-compare.svg)
 
 ## Install
 
@@ -153,7 +153,7 @@ another carries the cell — the worst photo goes from 66.7% with one checkpoint
 
 ### Per font (400 lines each)
 
-![Accuracy by handwriting font](bench-accuracy.svg)
+![Accuracy by handwriting font](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-accuracy.svg)
 
 
 Look only at the average and **the font that collapses is hidden.** The real spread
@@ -179,7 +179,7 @@ python tools/holdout.py <checkpoint-dir> --per-font --sample sample.png
 
 ### What the test sheet actually looks like
 
-![unseen-font test sheet](holdout-sample.png)
+![unseen-font test sheet](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/holdout-sample.png)
 
 Three lines per font, with the ground truth, what the model read, and the similarity.
 The pale band on the right is the leftover space from fitting into a 64x640 frame —
@@ -192,7 +192,7 @@ either.
 
 This is **an image, not a font file.** Drawing glyphs with a font is what the OFL
 permits; what is not redistributed is the `.ttf` files themselves
-([PROVENANCE.md](PROVENANCE.md)).
+([PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)).
 
 ## Training
 
@@ -214,7 +214,7 @@ Fonts are looked up in this order. **No path is hard-coded.**
 
 The fonts are not in this repository and are **not redistributed.** The 109 Nanum
 handwriting fonts come from [clova.ai/handwriting](https://clova.ai/handwriting).
-Details in [PROVENANCE.md](PROVENANCE.md).
+Details in [PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md).
 
 How closely the synthetic images match real handwriting is checked against the measured
 distributions recorded in `kohandocr/measured.json` — nine of them (ink coverage,
@@ -243,4 +243,4 @@ python tools/pick.py runs/v1-15000 runs/v1-30000    # score the kept checkpoints
 Apache-2.0, weights included. The licenses of the fonts used in training do not attach
 to the weights — the weights are not a derivative of the glyph artwork, they are values
 learned from images. The reasoning is recorded part by part in
-[PROVENANCE.md](PROVENANCE.md).
+[PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md).
