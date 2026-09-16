@@ -1,28 +1,67 @@
+<div align="center">
+
 # ko-hand-ocr
 
-Reads **one line of handwritten Korean/English**. A small model. Apache-2.0.
+**Reads one line of handwritten Korean + English.**
+A 31M model trained from scratch on synthetic data — no handwriting dataset, no inherited terms.
+
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](https://github.com/jysvai/ko-hand-ocr/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://github.com/jysvai/ko-hand-ocr)
+[![Params](https://img.shields.io/badge/params-31M-1baf7a)](https://github.com/jysvai/ko-hand-ocr)
+[![Weights](https://img.shields.io/badge/weights-116MB-1baf7a)](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.2.0)
+[![CPU](https://img.shields.io/badge/runs%20on-CPU%20only-eda100)](https://github.com/jysvai/ko-hand-ocr)
+[![Data](https://img.shields.io/badge/training%20data-synthetic-e87ba4)](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
 
 [한국어](https://github.com/jysvai/ko-hand-ocr/blob/main/README.md) · **English**
+
+</div>
 
 ```
 photo  ->  line cutting  ->  ko-hand-ocr  ->  "부서 : 포테토뭉부서"
 ```
 
-- **31M parameters.** No GPU required — 0.16 s per cell on CPU, 900 MB of memory.
-- **229 jamo tokens.** It does not memorise all 11,172 Hangul syllables, so it can
-  produce characters it never saw in training.
-- **No handwriting dataset was used.** The decoder was trained from scratch; the
-  encoder is an ImageNet ViT (Apache-2.0). Training images are drawn on the fly from
-  handwriting **fonts**, so no dataset terms are inherited → [PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
+---
 
-## Why this exists
+## At a glance
+
+| | |
+|---|---|
+| **What it reads** | One line of handwritten Korean + English, from a photo |
+| **Model** | ViT-Small encoder (ImageNet, Apache-2.0) + 4-layer TrOCR decoder trained from scratch |
+| **Vocabulary** | 229 jamo tokens — not 11,172 syllables, so unseen characters are still writable |
+| **Parameters** | **31M** — one seventh of `ko-trocr` (213.7M) |
+| **Weights** | **116 MB** single · 465 MB four-way ensemble *(downloaded separately)* |
+| **Package** | 83 KB — the code only |
+| **Speed** | **0.16 s per cell** · 1.37 s for a whole photo — **CPU only, no GPU** |
+| **Memory** | 890 MB single · 1.35 GB ensemble |
+| **Accuracy** | **93.5%** on handwriting fonts never seen in training (93.9% ensemble) |
+| **Training data** | Synthetic — drawn on the fly from OFL fonts. Nothing is stored on disk |
+| **License** | Apache-2.0, weights included — **no dataset terms inherited** |
+| **Python** | 3.10+ · PyTorch 2.5+ |
+
+## What it does — and does not
+
+**Does**
+
+- Reads a **whole photo**: finds the lines, cuts them, reads each one (`read_photo`)
+- Reads **pre-cut line images**, batched (`read`)
+- **Constrained decoding** — restrict the output to a candidate list, and report whether the free and constrained readings agree (`both`)
+- **Ensemble reading** — run several checkpoints and take the answer they agree on
+- Runs **fully offline on CPU.** Nothing is sent anywhere
+
+**Does not**
+
+- Split a table cell into label and value — `read_photo` only cuts down to lines
+- Handle vertical writing or merged cells
+- Stay silent on an empty cell — a cell that is pure scribble still produces something
+
+## Why it exists
 
 In practice the only publicly available Korean handwriting OCR model is
 `ddobokki/ko-trocr`, and its training data comes from AI Hub, which places conditions
 on purpose of use and on redistribution. That blocks it from being embedded in an
 in-house tool or shipped as a public package. So **the same capability was rebuilt
 from scratch** — with a provenance chain that can be audited part by part.
-
 
 ![ko-hand-ocr vs ko-trocr](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-compare.svg)
 
@@ -49,22 +88,7 @@ curl -LO https://github.com/jysvai/ko-hand-ocr/releases/download/v0.2.0/ko-hand-
 Pass the unzipped folder straight to `Reader()`. It must contain `config.json`,
 `vocab.json` and `model.safetensors`.
 
-## Where it runs
-
-**Built and tested on Windows.** Training and inference were both run on
-Windows 11 with Python 3.13/3.14.
-
-| | |
-|---|---|
-| Windows | Where it was built. Training and inference both verified |
-| macOS | **Untested.** Inference is pure PyTorch + PIL so it should run, but it has not been confirmed |
-| Linux | Not tried yet |
-
-`tools/train.ps1` is PowerShell, so it is Windows-only. Elsewhere, call
-`python -m kohandocr.train` directly — all that script does is wait for the previous
-run to release the GPU, launch it, and watch the first few steps.
-
-## Usage
+## Quick start
 
 ```python
 from kohandocr.reader import Reader
@@ -108,28 +132,32 @@ Combining by confidence was measured and **it did not work** — the model is so
 more confident about a wrong answer. So selection is by **how much the outputs agree**,
 not by confidence.
 
-## Speed and footprint (measured)
+## How it is built
 
-No GPU needed. Emitting jamo one at a time is the bottleneck, so more cores do not help
-much — and by the same token **it does not get slower on a weak machine.**
+```
+  64 x 640 line image
+          |
+   ViT-Small encoder          facebook/deit-small-patch16-224 (ImageNet-1k, Apache-2.0)
+   patch 16                   pretrained weights, continued at a lower learning rate
+          |
+   TrOCR decoder              4 layers, 6 heads — trained from scratch
+          |
+   229 jamo tokens            ㄱ ㅏ ㅁ ... assembled into 감
+          |
+      "부서 : 감자밭"
+```
 
-CPU only, median over 11 photos (37 cells). Time is split into **cutting and reading** —
-shrinking the model does not shrink cutting, and when a photo holds only three or four
-lines, cutting is more than half the cost.
+Two decisions carry most of the result.
 
-| | cut | read | one photo (3.4 cells) | per cell |
-|---|---|---|---|---|
-| single, beam 5 | 0.82s | 0.55s | 1.37s | 0.16s |
-| single, greedy | 0.82s | 0.32s | 1.13s | 0.10s |
-| four, beam 5 | 0.82s | 5.73s | 6.55s | 1.70s |
+**Jamo, not syllables.** Memorising all 11,172 Hangul syllables needs a large output
+layer and still fails on anything rare. 229 jamo compose into any syllable, so a
+character the model never saw in training is still writable — which matters for names.
 
-Memory is about 890MB for one checkpoint, about 1.35GB for four.
+**The encoder is not frozen, but it is not shaken either.** It already learned to see
+on ImageNet, so it continues at a lower learning rate while the blank decoder learns
+fast. Training both at the same rate destroys what the encoder knew.
 
-Produced with `python tools/bench.py --all --device cpu`. That harness walks exactly the
-path the application walks — a speed measured along a different path is not the speed
-the user gets.
-
-## How well does it read
+## Accuracy
 
 Measured two ways. **Both matter.** All figures below come from
 `python tools/verify.py` (400 lines per font, 11 photos).
@@ -154,7 +182,6 @@ another carries the cell — the worst photo goes from 66.7% with one checkpoint
 ### Per font (400 lines each)
 
 ![Accuracy by handwriting font](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-accuracy.svg)
-
 
 Look only at the average and **the font that collapses is hidden.** The real spread
 is 12%p.
@@ -194,6 +221,42 @@ This is **an image, not a font file.** Drawing glyphs with a font is what the OF
 permits; what is not redistributed is the `.ttf` files themselves
 ([PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)).
 
+## Speed and footprint (measured)
+
+No GPU needed. Emitting jamo one at a time is the bottleneck, so more cores do not help
+much — and by the same token **it does not get slower on a weak machine.**
+
+CPU only, median over 11 photos (37 cells). Time is split into **cutting and reading** —
+shrinking the model does not shrink cutting, and when a photo holds only three or four
+lines, cutting is more than half the cost.
+
+| | cut | read | one photo (3.4 cells) | per cell |
+|---|---|---|---|---|
+| single, beam 5 | 0.82s | 0.55s | 1.37s | 0.16s |
+| single, greedy | 0.82s | 0.32s | 1.13s | 0.10s |
+| four, beam 5 | 0.82s | 5.73s | 6.55s | 1.70s |
+
+Memory is about 890MB for one checkpoint, about 1.35GB for four.
+
+Produced with `python tools/bench.py --all --device cpu`. That harness walks exactly the
+path the application walks — a speed measured along a different path is not the speed
+the user gets.
+
+## Where it runs
+
+**Built and tested on Windows.** Training and inference were both run on
+Windows 11 with Python 3.13/3.14.
+
+| | |
+|---|---|
+| Windows | Where it was built. Training and inference both verified |
+| macOS | **Untested.** Inference is pure PyTorch + PIL so it should run, but it has not been confirmed |
+| Linux | Not tried yet |
+
+`tools/train.ps1` is PowerShell, so it is Windows-only. Elsewhere, call
+`python -m kohandocr.train` directly — all that script does is wait for the previous
+run to release the GPU, launch it, and watch the first few steps.
+
 ## Training
 
 No data is baked ahead of time. A corpus line is generated, drawn with a handwriting
@@ -231,12 +294,6 @@ was the peak and 30,000 steps was worse).
 ```bash
 python tools/pick.py runs/v1-15000 runs/v1-30000    # score the kept checkpoints and pick
 ```
-
-## Not there yet
-
-- It does not split a table cell into label and value. `read_photo` only cuts to lines.
-- Vertical writing and merged cells are not handled.
-- A cell with nothing to read (one that is entirely scribble) still produces something.
 
 ## License
 

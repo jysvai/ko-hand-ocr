@@ -1,28 +1,76 @@
+<div align="center">
+
 # ko-hand-ocr
 
-한글·영문이 섞인 **손글씨 한 줄**을 읽는 작은 모델. Apache-2.0.
+**한글·영문이 섞인 손글씨 한 줄을 읽는다.**
+손글씨 데이터셋 없이, 합성 그림만으로 처음부터 학습한 31M 모델. 약관이 따라붙지 않는다.
+
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](https://github.com/jysvai/ko-hand-ocr/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://github.com/jysvai/ko-hand-ocr)
+[![Params](https://img.shields.io/badge/params-31M-1baf7a)](https://github.com/jysvai/ko-hand-ocr)
+[![Weights](https://img.shields.io/badge/weights-116MB-1baf7a)](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.2.0)
+[![CPU](https://img.shields.io/badge/%EB%8F%8C%EC%95%84%EA%B0%80%EB%8A%94%20%EA%B3%B3-CPU%20%EB%A7%8C%EC%9C%BC%EB%A1%9C-eda100)](https://github.com/jysvai/ko-hand-ocr)
+[![Data](https://img.shields.io/badge/%ED%95%99%EC%8A%B5%20%EC%9E%90%EB%A3%8C-%ED%95%A9%EC%84%B1-e87ba4)](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
 
 **한국어** · [English](https://github.com/jysvai/ko-hand-ocr/blob/main/README.en.md)
+
+</div>
 
 ```
 사진 한 장  ->  줄 자르기  ->  ko-hand-ocr  ->  "부서 : 포테토뭉부서"
 ```
 
-- **31M 파라미터.** GPU 없이 CPU 에서 칸당 0.2초. 메모리 900MB.
-- **자모 어휘 229개.** 음절 11,172자를 통째로 외우지 않는다. 학습에서 한 번도
-  못 본 글자도 쓸 수 있다.
-- **손글씨 데이터셋을 쓰지 않았다.** 디코더는 처음부터 학습했고 인코더는
-  ImageNet ViT(Apache-2.0)다. 학습 그림은 손글씨 **글꼴**로 그때그때 그렸다.
-  그래서 데이터셋 약관을 물려받지 않는다 → [PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
+---
 
+## 한눈에
+
+| | |
+|---|---|
+| **읽는 것** | 사진 속 손글씨 한 줄 (한글 + 영문) |
+| **모델** | ViT-Small 인코더(ImageNet, Apache-2.0) + 4층 TrOCR 디코더(처음부터 학습) |
+| **어휘** | 자모 229개 — 음절 11,172자를 외우지 않는다. 못 본 글자도 쓴다 |
+| **파라미터** | **31M** — `ko-trocr`(213.7M)의 1/7 |
+| **판(가중치)** | **116MB** 하나 · 465MB 넷 *(따로 받는다)* |
+| **꾸러미** | 83KB — 코드만 |
+| **속도** | **칸당 0.16초** · 사진 한 장 1.37초 — **GPU 없이 CPU 만으로** |
+| **메모리** | 890MB 하나 · 1.35GB 넷 |
+| **성적** | 학습에 안 쓴 글씨체에서 **93.5%** (판 넷이면 93.9%) |
+| **학습 자료** | 합성 — OFL 글꼴로 그때그때 그린다. 디스크에 남지 않는다 |
+| **라이선스** | Apache-2.0, 가중치도 같다 — **자료에서 물려받는 약관이 없다** |
+| **필요한 것** | Python 3.10+ · PyTorch 2.5+ |
+
+## 되는 것 — 그리고 안 되는 것
+
+**된다**
+
+- **사진 한 장을 통째로.** 줄을 찾아 자르고 각각 읽는다 (`read_photo`)
+- **이미 잘린 줄 그림**을 묶음으로 (`read`)
+- **가둬서 읽기** — 후보 목록 안에서만 고르게 하고, 자유롭게 읽은 것과 맞는지 알려 준다 (`both`)
+- **여러 판으로 읽기** — 판을 여럿 두고 서로 닮은 답을 고른다
+- **아무 데도 보내지 않는다.** CPU 에서 완전히 혼자 돈다
+
+**안 된다**
+
+- 표 안의 칸을 라벨과 값으로 갈라 주지 않는다. `read_photo` 는 줄까지만 자른다
+- 세로쓰기, 칸 병합은 다루지 않는다
+- 읽을 것이 없는 칸(전체가 낙서인 것)도 무언가 읽어 낸다
+
+## 왜 만들었나
+
+한국어 손글씨 OCR 로 공개된 것은 사실상 `ddobokki/ko-trocr` 하나뿐인데, 학습 자료가
+AI Hub 라 이용 목적·재배포에 제약이 붙는다. 사내 도구에 넣거나 공개 꾸러미로
+배포하려면 걸린다. 그래서 **같은 일을 하는 모델을 처음부터 다시 만들었다** —
+부품마다 출처를 따져 볼 수 있게.
 
 ![ko-hand-ocr 와 ko-trocr 비교](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-compare.svg)
 
 ## 설치
 
 ```bash
-pip install ko-hand-ocr
+pip install git+https://github.com/jysvai/ko-hand-ocr.git
 ```
+
+> 아직 PyPI 에 없다. 올라갈 때까지는 저장소에서 받는다.
 
 무게(가중치)는 따로다. 크기가 커서 저장소에 안 넣고
 [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.2.0) 에 붙였다.
@@ -39,22 +87,7 @@ curl -LO https://github.com/jysvai/ko-hand-ocr/releases/download/v0.2.0/ko-hand-
 푼 폴더를 그대로 `Reader()` 에 넘긴다. 안에 `config.json`, `vocab.json`,
 `model.safetensors` 가 함께 있어야 한다.
 
-## 돌아가는 곳
-
-**Windows 에서 만들고 시험했다.** Windows 11 + Python 3.13/3.14 에서 학습과
-판독을 모두 돌렸다.
-
-| | |
-|---|---|
-| Windows | 만든 자리. 학습·판독 모두 확인 |
-| macOS | **시험 중.** 판독은 순수 PyTorch + PIL 이라 돌 것으로 보지만 아직 확인 전 |
-| Linux | 아직 안 해 봤다 |
-
-`tools/train.ps1` 은 PowerShell 이라 Windows 전용이다. 다른 곳에서는
-`python -m kohandocr.train` 을 직접 부르면 된다 — 그 대본이 하는 일은
-앞 학습이 GPU 를 놓을 때까지 기다렸다가 띄우고 첫 걸음을 지켜보는 것뿐이다.
-
-## 쓰는 법
+## 빨리 써 보기
 
 ```python
 from kohandocr.reader import Reader
@@ -96,25 +129,30 @@ reader.both([cell_b], options=["포테토뭉부서", "감자밭", "김클로드"
 확신도로 합치는 것은 재 봤고 **안 됐다** — 틀린 답을 더 확신하는 일이 있어서다.
 그래서 확신도가 아니라 **서로 얼마나 닮았나**로 고른다.
 
-## 속도와 사양 (실측)
+## 어떻게 생겼나
 
-GPU 가 필요 없다. 자모를 하나씩 차례로 뽑는 것이 병목이라 코어를 늘려도
-별로 안 빨라지고, 반대로 **약한 PC 에서도 느려지지 않는다.**
+```
+  64 x 640 줄 그림
+          |
+   ViT-Small 인코더           facebook/deit-small-patch16-224 (ImageNet-1k, Apache-2.0)
+   패치 16                    이미 배운 가중치를 낮은 배움 속도로 이어서 학습
+          |
+   TrOCR 디코더               4층, 머리 6개 — 백지에서 시작
+          |
+   자모 229개                 ㄱ ㅏ ㅁ ... 을 모아 '감'
+          |
+      "부서 : 감자밭"
+```
 
-CPU 로만, 사진 11장(칸 37개)을 재서 가운데값을 쓴다. 시간을 **자르기와 읽기로
-나눠** 적는다 — 판을 줄여도 자르기는 안 줄고, 사진 한 장에 서너 줄뿐이면
-자르기가 절반을 넘는다.
+결과의 대부분은 두 가지 판단에서 나왔다.
 
-| | 자르기 | 읽기 | 사진 한 장(3.4칸) | 칸당 |
-|---|---|---|---|---|
-| 판 하나, 빔 5 | 0.82초 | 0.55초 | 1.37초 | 0.16초 |
-| 판 하나, 그리디 | 0.82초 | 0.32초 | 1.13초 | 0.10초 |
-| 판 넷, 빔 5 | 0.82초 | 5.73초 | 6.55초 | 1.70초 |
+**음절이 아니라 자모.** 음절 11,172자를 통째로 외우려면 출력층이 커지는데도
+드문 글자는 여전히 틀린다. 자모 229개를 모으면 어떤 음절이든 만들 수 있어서,
+학습에서 한 번도 못 본 글자도 쓸 수 있다 — **이름을 지켜 준다.**
 
-메모리는 판 하나 약 890MB, 판 넷 약 1.35GB.
-
-`python tools/bench.py --all --device cpu` 로 낸 값이다. 그 자는 앱이 지나는
-길을 그대로 지난다 — 다른 길로 잰 속도는 쓰는 사람의 속도가 아니다.
+**인코더를 얼리지도, 세게 흔들지도 않는다.** 인코더는 ImageNet 에서 이미 눈을
+떴다. 그래서 낮은 배움 속도로 이어 가고, 백지인 디코더는 빨리 배우게 둔다.
+둘을 같은 속도로 흔들면 인코더가 알던 것이 망가진다.
 
 ## 얼마나 맞히나
 
@@ -140,7 +178,6 @@ CPU 로만, 사진 11장(칸 37개)을 재서 가운데값을 쓴다. 시간을 
 ### 글씨체마다 (벌마다 400줄)
 
 ![글씨체마다의 정확도](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-accuracy.svg)
-
 
 합계 하나만 보면 **무너지는 글씨체가 가려진다.** 실제로 12%p 가 벌어진다.
 
@@ -174,7 +211,43 @@ python tools/holdout.py <판폴더> --per-font --sample sample.png
 이 거의 딴 글자로 보인다 — 사람이 봐도 앞뒤 없이는 못 읽는다.
 
 이 그림은 **글꼴 파일이 아니라 그림**이다. 글꼴로 글자를 그리는 것은 OFL 이
-허용한다. 재배포하지 않는 것은 `.ttf` 파일 쪽이다([PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)).
+허용한다. 재배포하지 않는 것은 `.ttf` 파일 쪽이다
+([PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)).
+
+## 속도와 사양 (실측)
+
+GPU 가 필요 없다. 자모를 하나씩 차례로 뽑는 것이 병목이라 코어를 늘려도
+별로 안 빨라지고, 반대로 **약한 PC 에서도 느려지지 않는다.**
+
+CPU 로만, 사진 11장(칸 37개)을 재서 가운데값을 쓴다. 시간을 **자르기와 읽기로
+나눠** 적는다 — 판을 줄여도 자르기는 안 줄고, 사진 한 장에 서너 줄뿐이면
+자르기가 절반을 넘는다.
+
+| | 자르기 | 읽기 | 사진 한 장(3.4칸) | 칸당 |
+|---|---|---|---|---|
+| 판 하나, 빔 5 | 0.82초 | 0.55초 | 1.37초 | 0.16초 |
+| 판 하나, 그리디 | 0.82초 | 0.32초 | 1.13초 | 0.10초 |
+| 판 넷, 빔 5 | 0.82초 | 5.73초 | 6.55초 | 1.70초 |
+
+메모리는 판 하나 약 890MB, 판 넷 약 1.35GB.
+
+`python tools/bench.py --all --device cpu` 로 낸 값이다. 그 자는 앱이 지나는
+길을 그대로 지난다 — 다른 길로 잰 속도는 쓰는 사람의 속도가 아니다.
+
+## 돌아가는 곳
+
+**Windows 에서 만들고 시험했다.** Windows 11 + Python 3.13/3.14 에서 학습과
+판독을 모두 돌렸다.
+
+| | |
+|---|---|
+| Windows | 만든 자리. 학습·판독 모두 확인 |
+| macOS | **시험 중.** 판독은 순수 PyTorch + PIL 이라 돌 것으로 보지만 아직 확인 전 |
+| Linux | 아직 안 해 봤다 |
+
+`tools/train.ps1` 은 PowerShell 이라 Windows 전용이다. 다른 곳에서는
+`python -m kohandocr.train` 을 직접 부르면 된다 — 그 대본이 하는 일은
+앞 학습이 GPU 를 놓을 때까지 기다렸다가 띄우고 첫 걸음을 지켜보는 것뿐이다.
 
 ## 학습
 
@@ -211,14 +284,9 @@ python tools/match.py        # 과녁과 지금 합성을 나란히 본다
 python tools/pick.py runs/v1-15000 runs/v1-30000    # 남긴 판들을 재서 고른다
 ```
 
-## 아직 안 되는 것
-
-- 표 안의 칸을 라벨과 값으로 갈라 주지 않는다. `read_photo` 는 줄까지만 자른다.
-- 세로쓰기, 칸 병합은 다루지 않는다.
-- 읽을 것이 없는 칸(칸 전체가 낙서인 것)도 무언가 읽어 낸다.
-
 ## 라이선스
 
 Apache-2.0. 가중치도 같다. 학습에 쓴 글꼴의 라이선스는 가중치에 옮아붙지
 않는다 — 가중치는 글자 모양의 저작물이 아니라 그림에서 배운 값이다.
-근거는 [PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md) 에 부품별로 적어 두었다.
+근거는 [PROVENANCE.md](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
+에 부품별로 적어 두었다.
