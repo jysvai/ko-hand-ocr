@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 780" width="760" height="780" role="img" aria-label="Character error rate by content type and line length. Lower is better. 라틴 섞임: ko-hand-ocr 앙상블 14 percent, ko-hand-ocr 판 하나 18 percent, ddobokki/ko-trocr 60 percent. 서식 라벨: ko-hand-ocr 앙상블 10 percent, ko-hand-ocr 판 하나 11 percent, ddobokki/ko-trocr 30 percent. 숫자 섞임: ko-hand-ocr 앙상블 9 percent, ko-hand-ocr 판 하나 10 percent, ddobokki/ko-trocr 49 percent. 한글 낱말·이름: ko-hand-ocr 앙상블 5 percent, ko-hand-ocr 판 하나 6 percent, ddobokki/ko-trocr 25 percent. 한글 문장: ko-hand-ocr 앙상블 8 percent, ko-hand-ocr 판 하나 10 percent, ddobokki/ko-trocr 46 percent.">
+<style>
+  .surface{fill:#fcfcfb}
+  .ink{fill:#0b0b0b}
+  .ink2{fill:#52514e}
+  .ink3{fill:#82807a}
+  .s0{fill:#2a78d6}
+  .s1{fill:#eb6834}
+  .s2{fill:#8a8880}
+  .grid{stroke:#e3e2de;stroke-width:1}
+  .rule{stroke:#cdccc6;stroke-width:1}
+  text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  @media (prefers-color-scheme: dark){
+    .surface{fill:#1a1a19}
+    .ink{fill:#ffffff}
+    .ink2{fill:#c3c2b7}
+    .ink3{fill:#8e8c84}
+    .s0{fill:#3987e5}
+    .s1{fill:#d95926}
+    .s2{fill:#7c7a73}
+    .grid{stroke:#3a3a38}
+    .rule{stroke:#4a4946}
+  }
+</style>
+<rect class="surface" width="760" height="780" rx="6"/>
+<text class="ink" x="20" y="28" font-size="15" font-weight="600">어디서 지고 어디서 이기나 — 글자 오류율(CER)</text>
+<text class="ink2" x="20" y="47" font-size="11.5">안 배운 글씨체 6벌 670줄을 갈래로 나눠 쟀다. 낮을수록 좋다.</text>
+<rect class="s0" x="186" y="69" width="10" height="10" rx="2"/>
+<text class="ink2" x="201" y="78" font-size="11.5">ko-hand-ocr 앙상블 (108M)</text>
+<rect class="s1" x="374.0" y="69" width="10" height="10" rx="2"/>
+<text class="ink2" x="389.0" y="78" font-size="11.5">ko-hand-ocr 판 하나 (36M)</text>
+<rect class="s2" x="562.0" y="69" width="10" height="10" rx="2"/>
+<text class="ink2" x="577.0" y="78" font-size="11.5">ddobokki/ko-trocr (214M)</text>
+<text class="ink" x="20" y="108" font-size="12" font-weight="600">줄 안에 무엇이 들었나</text>
+<line class="grid" x1="196.0" y1="112.0" x2="196.0" y2="402.0"/>
+<line class="grid" x1="294.8" y1="112.0" x2="294.8" y2="402.0"/>
+<line class="grid" x1="393.6" y1="112.0" x2="393.6" y2="402.0"/>
+<line class="grid" x1="492.4" y1="112.0" x2="492.4" y2="402.0"/>
+<line class="grid" x1="591.2" y1="112.0" x2="591.2" y2="402.0"/>
+<line class="grid" x1="690.0" y1="112.0" x2="690.0" y2="402.0"/>
+<text class="ink2" x="184" y="145.0" font-size="12" text-anchor="end">라틴 섞임</text>
+<path class="s0" d="M196,120.0 H260.6 Q264.1,120.0 264.1,123.5 V128.5 Q264.1,132.0 260.6,132.0 H196 Z"/>
+<text class="ink2" x="270.1" y="130.5" font-size="10.5">13.8%</text>
+<path class="s1" d="M196,135.0 H279.0 Q282.5,135.0 282.5,138.5 V143.5 Q282.5,147.0 279.0,147.0 H196 Z"/>
+<text class="ink2" x="288.5" y="145.5" font-size="10.5">17.5%</text>
+<path class="s2" d="M196,150.0 H486.5 Q490.0,150.0 490.0,153.5 V158.5 Q490.0,162.0 486.5,162.0 H196 Z"/>
+<text class="ink2" x="496.0" y="160.5" font-size="10.5">59.5%</text>
+<text class="ink2" x="184" y="206.0" font-size="12" text-anchor="end">서식 라벨</text>
+<path class="s0" d="M196,181.0 H243.6 Q247.1,181.0 247.1,184.5 V189.5 Q247.1,193.0 243.6,193.0 H196 Z"/>
+<text class="ink2" x="253.1" y="191.5" font-size="10.5">10.4%</text>
+<path class="s1" d="M196,196.0 H244.9 Q248.4,196.0 248.4,199.5 V204.5 Q248.4,208.0 244.9,208.0 H196 Z"/>
+<text class="ink2" x="254.4" y="206.5" font-size="10.5">10.6%</text>
+<path class="s2" d="M196,211.0 H342.2 Q345.7,211.0 345.7,214.5 V219.5 Q345.7,223.0 342.2,223.0 H196 Z"/>
+<text class="ink2" x="351.7" y="221.5" font-size="10.5">30.3%</text>
+<text class="ink2" x="184" y="267.0" font-size="12" text-anchor="end">숫자 섞임</text>
+<path class="s0" d="M196,242.0 H234.5 Q238.0,242.0 238.0,245.5 V250.5 Q238.0,254.0 234.5,254.0 H196 Z"/>
+<text class="ink2" x="244.0" y="252.5" font-size="10.5">8.5%</text>
+<path class="s1" d="M196,257.0 H241.7 Q245.2,257.0 245.2,260.5 V265.5 Q245.2,269.0 241.7,269.0 H196 Z"/>
+<text class="ink2" x="251.2" y="267.5" font-size="10.5">10.0%</text>
+<path class="s2" d="M196,272.0 H436.7 Q440.2,272.0 440.2,275.5 V280.5 Q440.2,284.0 436.7,284.0 H196 Z"/>
+<text class="ink2" x="446.2" y="282.5" font-size="10.5">49.4%</text>
+<text class="ink2" x="184" y="328.0" font-size="12" text-anchor="end">한글 낱말·이름</text>
+<path class="s0" d="M196,303.0 H216.6 Q220.1,303.0 220.1,306.5 V311.5 Q220.1,315.0 216.6,315.0 H196 Z"/>
+<text class="ink2" x="226.1" y="313.5" font-size="10.5">4.9%</text>
+<path class="s1" d="M196,318.0 H221.9 Q225.4,318.0 225.4,321.5 V326.5 Q225.4,330.0 221.9,330.0 H196 Z"/>
+<text class="ink2" x="231.4" y="328.5" font-size="10.5">6.0%</text>
+<path class="s2" d="M196,333.0 H316.2 Q319.7,333.0 319.7,336.5 V341.5 Q319.7,345.0 316.2,345.0 H196 Z"/>
+<text class="ink2" x="325.7" y="343.5" font-size="10.5">25.0%</text>
+<text class="ink2" x="184" y="389.0" font-size="12" text-anchor="end">한글 문장</text>
+<path class="s0" d="M196,364.0 H232.8 Q236.3,364.0 236.3,367.5 V372.5 Q236.3,376.0 232.8,376.0 H196 Z"/>
+<text class="ink2" x="242.3" y="374.5" font-size="10.5">8.1%</text>
+<path class="s1" d="M196,379.0 H239.8 Q243.3,379.0 243.3,382.5 V387.5 Q243.3,391.0 239.8,391.0 H196 Z"/>
+<text class="ink2" x="249.3" y="389.5" font-size="10.5">9.6%</text>
+<path class="s2" d="M196,394.0 H420.3 Q423.8,394.0 423.8,397.5 V402.5 Q423.8,406.0 420.3,406.0 H196 Z"/>
+<text class="ink2" x="429.8" y="404.5" font-size="10.5">46.1%</text>
+<text class="ink" x="20" y="435" font-size="12" font-weight="600">줄이 얼마나 긴가</text>
+<line class="grid" x1="196.0" y1="439.0" x2="196.0" y2="671.0"/>
+<line class="grid" x1="294.8" y1="439.0" x2="294.8" y2="671.0"/>
+<line class="grid" x1="393.6" y1="439.0" x2="393.6" y2="671.0"/>
+<line class="grid" x1="492.4" y1="439.0" x2="492.4" y2="671.0"/>
+<line class="grid" x1="591.2" y1="439.0" x2="591.2" y2="671.0"/>
+<line class="grid" x1="690.0" y1="439.0" x2="690.0" y2="671.0"/>
+<text class="ink2" x="184" y="472.0" font-size="12" text-anchor="end">1~5자</text>
+<path class="s0" d="M196,447.0 H220.7 Q224.2,447.0 224.2,450.5 V455.5 Q224.2,459.0 220.7,459.0 H196 Z"/>
+<text class="ink2" x="230.2" y="457.5" font-size="10.5">5.7%</text>
+<path class="s1" d="M196,462.0 H226.6 Q230.1,462.0 230.1,465.5 V470.5 Q230.1,474.0 226.6,474.0 H196 Z"/>
+<text class="ink2" x="236.1" y="472.5" font-size="10.5">6.9%</text>
+<path class="s2" d="M196,477.0 H344.2 Q347.7,477.0 347.7,480.5 V485.5 Q347.7,489.0 344.2,489.0 H196 Z"/>
+<text class="ink2" x="353.7" y="487.5" font-size="10.5">30.7%</text>
+<text class="ink2" x="184" y="533.0" font-size="12" text-anchor="end">6~10자</text>
+<path class="s0" d="M196,508.0 H237.7 Q241.2,508.0 241.2,511.5 V516.5 Q241.2,520.0 237.7,520.0 H196 Z"/>
+<text class="ink2" x="247.2" y="518.5" font-size="10.5">9.2%</text>
+<path class="s1" d="M196,523.0 H243.6 Q247.1,523.0 247.1,526.5 V531.5 Q247.1,535.0 243.6,535.0 H196 Z"/>
+<text class="ink2" x="253.1" y="533.5" font-size="10.5">10.3%</text>
+<path class="s2" d="M196,538.0 H365.5 Q369.0,538.0 369.0,541.5 V546.5 Q369.0,550.0 365.5,550.0 H196 Z"/>
+<text class="ink2" x="375.0" y="548.5" font-size="10.5">35.0%</text>
+<text class="ink2" x="184" y="594.0" font-size="12" text-anchor="end">11~20자</text>
+<path class="s0" d="M196,569.0 H230.8 Q234.3,569.0 234.3,572.5 V577.5 Q234.3,581.0 230.8,581.0 H196 Z"/>
+<text class="ink2" x="240.3" y="579.5" font-size="10.5">7.8%</text>
+<path class="s1" d="M196,584.0 H238.5 Q242.0,584.0 242.0,587.5 V592.5 Q242.0,596.0 238.5,596.0 H196 Z"/>
+<text class="ink2" x="248.0" y="594.5" font-size="10.5">9.3%</text>
+<path class="s2" d="M196,599.0 H443.2 Q446.7,599.0 446.7,602.5 V607.5 Q446.7,611.0 443.2,611.0 H196 Z"/>
+<text class="ink2" x="452.7" y="609.5" font-size="10.5">50.7%</text>
+<text class="ink2" x="184" y="655.0" font-size="12" text-anchor="end">21자 이상</text>
+<path class="s0" d="M196,630.0 H268.0 Q271.5,630.0 271.5,633.5 V638.5 Q271.5,642.0 268.0,642.0 H196 Z"/>
+<text class="ink2" x="277.5" y="640.5" font-size="10.5">15.3%</text>
+<path class="s1" d="M196,645.0 H297.7 Q301.2,645.0 301.2,648.5 V653.5 Q301.2,657.0 297.7,657.0 H196 Z"/>
+<text class="ink2" x="307.2" y="655.5" font-size="10.5">21.3%</text>
+<path class="s2" d="M196,660.0 H647.6 Q651.1,660.0 651.1,663.5 V668.5 Q651.1,672.0 647.6,672.0 H196 Z"/>
+<text class="ink2" x="657.1" y="670.5" font-size="10.5">92.1%</text>
+<line class="rule" x1="196" y1="685" x2="690" y2="685"/>
+<text class="ink3" x="196.0" y="699" font-size="10.5" text-anchor="middle">0%</text>
+<text class="ink3" x="294.8" y="699" font-size="10.5" text-anchor="middle">20%</text>
+<text class="ink3" x="393.6" y="699" font-size="10.5" text-anchor="middle">40%</text>
+<text class="ink3" x="492.4" y="699" font-size="10.5" text-anchor="middle">60%</text>
+<text class="ink3" x="591.2" y="699" font-size="10.5" text-anchor="middle">80%</text>
+<text class="ink3" x="690.0" y="699" font-size="10.5" text-anchor="middle">100%</text>
+<text class="ink3" x="20" y="736" font-size="10.5">CER 은 고쳐야 하는 글자 수를 정답 글자 수로 나눈 값이다. 자모 닮음과 다른 자다 — '팀'을 '탐'으로 읽으면 자모로는 0.67, CER 로는 1.0 이다.</text>
+<text class="ink3" x="20" y="751" font-size="10.5">줄마다 평균 내지 않고 글자를 다 모아 놓고 나눈다. 안 그러면 한 글자 줄과 서른 글자 줄이 같은 무게가 된다.</text>
+<text class="ink3" x="20" y="766" font-size="10.5">잰 날 2026-09-20 20:41 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
+</svg>

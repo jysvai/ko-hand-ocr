@@ -53,13 +53,13 @@
 <text class="ink" x="520" y="248" font-size="11.5">Apache-2.0</text>
 <line class="rule" x1="20" y1="260" x2="740" y2="260"/>
 
-<text class="ink2" x="20" y="282" font-size="11.5">Speed on CPU</text>
-<text class="ink" x="240" y="282" font-size="11.5">0.20 s / line (measured)</text>
-<text class="ink2" x="520" y="282" font-size="11.5">not measured here</text>
+<text class="ink2" x="20" y="282" font-size="11.5">Reading one line on CPU</text>
+<text class="ink" x="240" y="282" font-size="11.5">0.09 s / line (measured)</text>
+<text class="ink2" x="520" y="282" font-size="11.5">0.92 s / line (measured)</text>
 
 <rect class="box" x="20" y="298" width="720" height="26" rx="4"/>
-<text class="ink" x="32" y="315" font-size="11.5" font-weight="600">Head-to-head accuracy: not measured yet.</text>
-<text class="ink2" x="284" y="315" font-size="11.5">No shared test set has been run across both models — so no accuracy claim is made here.</text>
+<text class="ink" x="32" y="315" font-size="11.5" font-weight="600">Head-to-head accuracy: measured.</text>
+<text class="ink2" x="240" y="315" font-size="11.5">Both models were run on one shared test set — see the benchmark section of the README.</text>
 
-<text class="ink2" x="20" y="344" font-size="11">Parameter counts come from each model's published metadata. Everything above is a checkable fact, not a benchmark result.</text>
+<text class="ink2" x="20" y="344" font-size="11">Parameter counts come from each model's published metadata. Speeds are measured by tools/vs.py on the same GPU-less path, same moment.</text>
 </svg>

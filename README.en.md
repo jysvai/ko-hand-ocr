@@ -33,7 +33,7 @@ photo  ->  line cutting  ->  ko-hand-ocr  ->  "부서 : 포테토뭉부서"
 | **Parameters** | **36M** — one sixth of `ko-trocr` (213.7M) |
 | **Weights** | **138 MB** single · 414 MB three-way ensemble *(downloaded separately)* |
 | **Package** | 83 KB — the code only |
-| **Speed** | **0.20 s per line** · 1.35 s for a whole photo — **CPU only, no GPU** |
+| **Speed** | **0.17 s per line** · 0.99 s for a whole photo — **CPU only, no GPU** |
 | **Memory** | 905 MB single · 1.18 GB ensemble |
 | **Accuracy** | **94.6%** mean on six handwriting fonts never seen in training (95.3% ensemble) · worst font 88.5% (90.3% ensemble) |
 | **Training data** | Synthetic — drawn on the fly from OFL fonts. Nothing is stored on disk |
@@ -66,6 +66,129 @@ from scratch** — with a provenance chain that can be audited part by part.
 
 ![ko-hand-ocr vs ko-trocr](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-compare.svg)
 
+## Measured against ko-trocr on the same ruler
+
+The chart above compares **terms and footprint**. Reading accuracy was
+measured separately.
+
+A comparison only holds if **the model is the only thing that differs**.
+Photos were cut once with our line cutter (`kohandocr.page`) and the **same
+cells** were handed to both. Font test sheets were handed over **raw**,
+exactly as `synth.render` drew them — putting our preprocessing (64×640
+letterbox) on them would squash the other model twice. Metric, precision
+(float32), beam width (5), GPU and the moment of measurement are all shared.
+What was measured and how is spelled out in the header of `tools/vs.py`, and
+every number below comes from the `runs/VS.json` it leaves behind.
+
+![Head to head](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs.gif)
+
+#### Real handwriting photos · 34 lines, 209 characters
+|  | Jamo similarity | Character error rate | Exact line match | Worst photo |
+|---|---|---|---|---|
+| ko-hand-ocr ensemble (108M) | **95.43%** | **10.05%** | **61.8%** | **90.28%** |
+| ko-hand-ocr single (36M) | 88.94% | 24.40% | 47.1% | 66.67% |
+| ddobokki/ko-trocr (214M) | 78.50% | 39.23% | 26.5% | 58.56% |
+
+#### Six unseen handwriting fonts · 670 lines, 4708 characters
+|  | Jamo similarity | Character error rate | Exact line match | Worst font |
+|---|---|---|---|---|
+| ko-hand-ocr ensemble (108M) | **95.71%** | **8.26%** | **72.2%** | **89.26%** |
+| ko-hand-ocr single (36M) | 94.82% | 9.79% | 68.5% | 88.43% |
+| ddobokki/ko-trocr (214M) | 77.62% | 41.67% | 29.4% | 65.24% |
+
+#### Breadth — 24 more fonts · 648 lines, 3768 characters
+|  | Jamo similarity | Character error rate | Exact line match | Worst font |
+|---|---|---|---|---|
+| ko-hand-ocr ensemble (108M) | **97.32%** | **3.66%** | **85.3%** | **90.81%** |
+| ko-hand-ocr single (36M) | 96.49% | 4.72% | 82.4% | 89.00% |
+| ddobokki/ko-trocr (214M) | 79.94% | 32.38% | 42.0% | 46.52% |
+
+#### All 480 fonts · 12 lines each, 4320 lines, 22560 characters
+|  | held out (6)<br>6 | breadth (24)<br>24 | seen in training<br>450 | All<br>480 | fonts ≥ 95% | fonts < 80% |
+|---|---|---|---|---|---|---|
+| ko-hand-ocr ensemble (108M) | 98.66% | 99.03% | 97.72% | **97.80%** | 425 | 8 |
+| ko-hand-ocr single (36M) | 98.04% | 97.93% | 96.82% | **96.89%** | 399 | 10 |
+| ddobokki/ko-trocr (214M) | 85.29% | 83.29% | 82.48% | **82.56%** | 46 | 158 |
+
+- **A single 36M checkpoint already beats the 214M one.** On the six unseen
+  fonts, 94.82% against 77.62%.
+- **Neither model has ever seen the eleven photos.** That is the cleanest
+  ground here: 95.43% against 78.50%, with 61.8% of lines read exactly right
+  against 26.5%.
+- **Run every single font in the folder — all 480 of them — and it is still
+  97.80% against 82.56%.** 425 fonts clear 95% against 46; 8 fall below 80%
+  against 158. **The 24 fonts we have never seen (99.03%) score higher than
+  the 450 used in training (97.72%)** — so this is not a number propped up by
+  memorisation.
+- **Some fonts still collapse.** The worst of the 480 sits at 34.96%. Six
+  fonts would never have shown that. With only 12 lines per font a single
+  font's score swings hard, so read the herd totals and the distribution, not
+  one row.
+
+### Where the gap opens
+
+#### CER by line content — lower is better
+|  | Latin mixed in<br>66 lines | form label<br>60 lines | digits mixed in<br>84 lines | Hangul word / name<br>304 lines | Hangul sentence<br>156 lines |
+|---|---|---|---|---|---|
+| ko-hand-ocr ensemble (108M) | 13.8% | 10.4% | 8.5% | 4.9% | 8.1% |
+| ko-hand-ocr single (36M) | 17.5% | 10.6% | 10.0% | 6.0% | 9.6% |
+| ddobokki/ko-trocr (214M) | 59.5% | 30.3% | 49.4% | 25.0% | 46.1% |
+
+#### CER by line length — lower is better
+|  | 1-5 chars<br>286 lines | 6-10 chars<br>270 lines | 11-20 chars<br>108 lines | 21+ chars<br>6 lines |
+|---|---|---|---|---|
+| ko-hand-ocr ensemble (108M) | 5.7% | 9.2% | 7.8% | 15.3% |
+| ko-hand-ocr single (36M) | 6.9% | 10.3% | 9.3% | 21.3% |
+| ddobokki/ko-trocr (214M) | 30.7% | 35.0% | 50.7% | 92.1% |
+
+- **Latin abbreviations split them.** 59.5% against 13.8% — 4.3 times. The
+  Latin that turns up on forms is mostly abbreviations (`TF`, `OCR`, `Codex`),
+  and the other model mashes those into Hangul.
+- **Longer lines split them further.** ko-trocr's encoder is a 384×384 square,
+  so a long line is squashed whole into it; ours is 64×640. **The 21+ bucket
+  holds only 6 lines, though** — read it as a direction, not a result.
+
+### What it costs
+
+#### Speed and size
+|  | Parameters | Download | lines/s (GPU) | lines/s (CPU) | 30-line page (GPU) | 30-line page (CPU) | Peak VRAM |
+|---|---|---|---|---|---|---|---|
+| ko-hand-ocr ensemble (108M) | 108M | 414MB | 9.4 | 0.9 | 3.58s | 35.2s | 1453MB |
+| ko-hand-ocr single (36M) | 36M | 138MB | **51.1** | **6.7** | **0.99s** | **4.9s** | **839MB** |
+| ddobokki/ko-trocr (214M) | 214M | 408MB | 6.0 | 0.5 | 5.44s | 56.8s | 2744MB |
+
+- **The ensemble is ahead on GPU too** (9.4 against 6.0 lines/s, 1.6×) — and
+  that is while running three checkpoints times three shakes, **nine decodes
+  per cell**. A single checkpoint runs at 51.1 lines/s, 8.6× ko-trocr.
+- **On CPU they part further.** A single checkpoint does 6.7 lines/s against
+  0.5 — **12.5×**. A thirty-line page takes 4.9s against 56.8s. **Whether it
+  fits on an office PC with no GPU is decided here.**
+- **Batch size is measured, not guessed.** 16 lines is cheapest for us, 8 for
+  ko-trocr — its 384×384 encoder gets *more* expensive per line as you batch.
+  A batch that does not fit this card is not timed at all — ko-trocr's 32-line
+  batch is one, and the tool's own reason reads: "앞 묶음 4642MB 의 두 배가
+  카드 8151MB 를 넘는다". **A number that was not measured is not written down
+  as if it were.**
+
+### What is *not* equal — and which side it favours
+
+| What | How | Favours |
+|---|---|---|
+| Test fonts | The six and the twenty-four were held out of **our** training only. What ko-trocr saw on AI Hub is unknown to us | ko-trocr |
+| Length cap | ko-trocr ships `max_length: 16` (character tokenizer). It was raised to 64 | ko-trocr |
+| Line cutting | ko-trocr has none. Ours was lent to it | ko-trocr |
+| Design intent | ko-trocr was trained on AI Hub's "Korean character OCR" and "public administrative document OCR" sets. **It was not built for handwriting alone** | — |
+| Number of checkpoints | Our ensemble is three 36M checkpoints (108M). For a size-matched view read the "single" row | ko-hand-ocr |
+| Training fonts | 450 of the 480 fonts are ones **we have seen**. That is why the herds are reported apart | ko-hand-ocr |
+
+**None of this says ko-trocr is a bad model.** A model built to read printed
+administrative documents was handed a line of handwriting, and on that job
+this one does better. The other direction — whole printed documents — was not
+measured, and if it were, this model would probably lose.
+
+Measured on: NVIDIA GeForce RTX 5060 Laptop GPU · torch 2.14.0+cu130 ·
+2026-09-20 20:41.
+
 ## Install
 
 ```bash
@@ -81,7 +204,7 @@ to [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.3.0).
 
 | Download | Size | What it is |
 |---|---|---|
-| `ko-hand-ocr-v62.zip` | 128MB | **A single checkpoint.** Enough for most uses. 0.20 s/line |
+| `ko-hand-ocr-v62.zip` | 128MB | **A single checkpoint.** Enough for most uses. 0.17 s/line |
 | `ko-hand-ocr-ensemble.zip` | 383MB | Three checkpoints. Raises the floor, 8x slower |
 
 ```bash
@@ -247,11 +370,11 @@ lines, cutting is more than half the cost.
 
 | | cut | read | one photo (3.2 lines) | per line | 30-line page |
 |---|---|---|---|---|---|
-| single, beam 5 | 0.72s | 0.63s | 1.35s | 0.20s | 6.7s |
-| single, greedy | 0.73s | 0.34s | 1.07s | 0.11s | 3.9s |
-| three, beam 5 | 0.74s | 5.31s | 6.04s | 1.67s | 50.8s |
+| single, beam 5 | 0.46s | 0.53s | 0.99s | 0.17s | 5.5s |
+| single, greedy | 0.46s | 0.26s | 0.71s | 0.08s | 2.9s |
+| three, beam 5 | 0.47s | 4.45s | 4.92s | 1.40s | 42.4s |
 
-Memory is about 905MB for one checkpoint, about 1.18GB for three.
+Memory is about 905MB for one checkpoint, about 1.18GB for three. Re-measured on 2026-09-20.
 
 **The right-hand column is not the photo figure multiplied out.** Our test photos hold
 three or four lines each, while the "page" other people quote is a thirty-line
@@ -299,7 +422,8 @@ Fonts are looked up in this order. **No path is hard-coded.**
 Without `--layers` you get a 4-layer decoder. What ships is 6 layers — at 4 layers,
 thirteen rounds of changing the recipe left the font mean stuck between 92.8 and
 93.4%, and 6 layers was the first to clear that band. The extra depth costs little on
-CPU: 0.16 s per line becomes 0.20 s. The encoder and the input size were left alone.
+CPU, the extra depth costs about 25% (4 and 6 layers measured on the same ruler).
+The encoder and the input size were left alone.
 
 `fetch_fonts.py` fetches 482 handwriting fonts. Only **452 of them are trained on**;
 six are the test above and twenty-four are held back for "does it read widely". A font
