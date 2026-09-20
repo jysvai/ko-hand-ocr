@@ -117,7 +117,7 @@ JOINERS = ("/", "-", "_", "+", "=", "&", "*", "#", "@", "%", "^", "|", "\\", "`"
 # 실측(v8 판독 34줄): 모델이 없는 기호를 콜론 뒤에 지어냈다.
 #   '성명 : 홍길동'   -> '성명: ` 홍길동'
 #   '이름 : 감자밭'   -> '미름: ` 강자발'
-#   '부서: 인재육성팀' -> '부서: ` 인재육설팀'
+#   '부서: (부서 이름)' -> '부서: ` (끝 글자가 바뀐 이름)'
 # 세 줄 모두 **백틱 하나**로 깎였다. 까닭은 `{앞} {JOINERS} {뒤}` 를 6% 나
 # 만들고 있었기 때문이다 — '성명 ` : 홍길동' 같은 줄을 배웠으니 그대로 뱉는다.
 # 사람은 서식 줄 가운데에 백틱·역슬래시·꺾쇠를 쓰지 않는다.
@@ -155,8 +155,8 @@ def _latin(rng: random.Random) -> str:
     v11 을 15,000 걸음과 30,000 걸음에서 재 보니, 학습이 길어질수록 라틴으로
     바꿔 읽는 것이 심해졌다:
         'Codex 서약'     100% -> 53%  ('Codex Adge')
-        '부서 - OCR조직'  100% -> 70%  ('OCR73')
-        '데이터팀'  'Team 데이터팀' -> 'Track 데이터팀'
+        '부서 - (약어)조직'  100% -> 70%  (한글 '조직' 을 '73' 으로)
+        (부서 이름 한 줄)  앞에 없던 'Team' 을 붙이더니 'Track' 으로 바뀌었다
     재 보니 말뭉치의 라틴은 **양이 문제가 아니었다** — 라틴이 든 줄이 9.8% 로
     실제(20.6%)보다 오히려 적었다. 문제는 **쏠림**이었다. 177종뿐인데 흔한
     12개가 전체의 27% 라, 모델이 '라틴 다음엔 아는 라틴' 을 외워 버렸다.
@@ -190,22 +190,22 @@ def _name(rng: random.Random) -> str:
 def _org(rng: random.Random) -> str:
     """조직 이름.
 
-    라틴 약어가 앞에 붙는 꼴을 늘렸다. v8 은 'AI혁신TF' 는 두 번 다 맞혔는데
-    'OCR팀' 은 '인사얼' 로, 'OCR조직' 은 'OCRZ직' 으로 읽었다. 앞의 것은
-    `_org` 가 실제로 만드는 모양이고(라틴 + 한글 + ORG_TAIL), 뒤의 것은
-    **한글 없이 라틴이 곧바로 꼬리에 붙는 모양**이라 한 번도 못 봤다.
-    약어 목록도 여섯 개뿐이라 OCR 은 그 자리에 서 본 적이 없었다.
+    라틴 약어가 앞에 붙는 꼴을 늘렸다. v8 은 **라틴 + 한글 + 꼬리**인 부서
+    이름은 두 번 다 맞혔는데, **한글 없이 라틴이 곧바로 꼬리에 붙는** 부서
+    이름은 '인사얼' 로, 'OCRZ직' 으로 읽었다. 앞의 것은 `_org` 가 실제로
+    만드는 모양이고(라틴 + 한글 + ORG_TAIL), 뒤의 것은 한 번도 못 본 모양이다.
+    약어 목록도 여섯 개뿐이라 그 약어는 그 자리에 서 본 적이 없었다.
     """
     head = _made(rng) if rng.random() < 0.15 else rng.choice(ORG_HEAD)
     if rng.random() < 0.25:
         head += rng.choice(ORG_HEAD)
     roll = rng.random()
     if roll < 0.10:
-        head = rng.choice(LATIN_SHORT) + head        # AI혁신팀
+        head = rng.choice(LATIN_SHORT) + head        # AI포테토팀
     elif roll < 0.18:
-        head = rng.choice(LATIN_SHORT)               # OCR팀 — 한글 없이 바로 꼬리
+        head = rng.choice(LATIN_SHORT)               # API팀 — 한글 없이 바로 꼬리
     elif roll < 0.21:
-        head = rng.choice(LATIN_SHORT) + " "         # OCR 개발팀
+        head = rng.choice(LATIN_SHORT) + " "         # API 개발팀
     return head + rng.choice(ORG_TAIL)
 
 
@@ -379,7 +379,7 @@ def title_line(rng: random.Random) -> str:
     if kind < 0.52:
         return rng.choice(DOC_HEAD) + rng.choice(DOC_TAIL)   # 보안점검표
     if kind < 0.68:
-        return _org(rng)                                     # AI본부, 강원도팀
+        return _org(rng)                                     # API본부, 강원도팀
     if kind < 0.78:                                          # Codex 서약
         # 예전에는 여기서 **무작위 글자**를 이어 붙였다('Xflqk 서약'). 그래서
         # 실제 'Codex 서약' 을 만나면 앞은 맞히고 뒤를 'API' 로 바꿔 읽었다 —
@@ -446,7 +446,7 @@ def decorate(text: str, rng: random.Random) -> str:
 # '17. 자긍륨 TF 서약', '9. 뢼길라먹'. 재 보니 합성 줄의 11.3% 가 숫자로,
 # 9.8% 가 기호로 시작하고 있었다(실제 34줄은 0줄).
 #
-# 특히 나빴던 것은 `{JOINERS} {글월}` 이었다. '% 명세서', '` 인재팀', '\ 시행일'
+# 특히 나빴던 것은 `{JOINERS} {글월}` 이었다. '% 명세서', '` 강원도팀', '\ 시행일'
 # 같은 것을 4% 나 만들고 있었는데, 사람은 줄 앞에 그런 기호를 쓰지 않는다.
 # 모델이 뱉던 쓰레기가 정확히 그 기호들이었다.
 #

@@ -47,8 +47,8 @@ def fonts():
 
 # ── 어휘 ────────────────────────────────────────────────────────
 @pytest.mark.parametrize("text", [
-    "AI혁신TF", "조직개편팀", "홍서말", "보안점검표 2026-08-31",
-    "ㄱㄴㄷㄹㅁ ㅏㅑㅓㅕㅗ", "부서 : 데이터팀", "Hello World 42%",
+    "AI포테토TF", "포테토뭉부서", "홍서말", "보안점검표 2026-08-31",
+    "ㄱㄴㄷㄹㅁ ㅏㅑㅓㅕㅗ", "부서 : 강원도팀", "Hello World 42%",
     "초성 퀴즈를 맞히면 튜립 한 송이와 야생 다람쥐, 표범, 여우를 고루 준다.",
 ])
 def test_글월은_그대로_되돌아온다(vocab, text):
@@ -100,7 +100,7 @@ def test_실제만큼_긴_줄도_만든다(vocab):
 # ── 그림 ────────────────────────────────────────────────────────
 def test_칸은_언제나_같은_규격이다(fonts):
     rng = random.Random(0)
-    for text in ("김", "부서 : 데이터팀", "가" * 40):
+    for text in ("김", "부서 : 강원도팀", "가" * 40):
         page = synth.render(text, fonts, rng)
         assert page is not None
         assert synth.fit(page).size == (synth.CELL[1], synth.CELL[0])
@@ -173,7 +173,7 @@ def test_가둔_판독은_명단_밖으로_안_샌다(vocab):
     torch = pytest.importorskip("torch")
     from kohandocr.reader import Reader
 
-    options = ["데이터팀", "AI혁신TF", "인재팀"]
+    options = ["강원도팀", "AI포테토TF", "김구팀"]
     walker = Reader.__new__(Reader)
     walker.vocab = vocab
     walker.skip = 1
@@ -184,17 +184,18 @@ def test_가둔_판독은_명단_밖으로_안_샌다(vocab):
     heads = {vocab.encode(o, wrap=False)[0] for o in options}
     assert set(first) == heads
 
-    # '데이터팀' 을 끝까지 따라가면 마지막에는 끝 토큰만 남는다
-    ids = [vocab.bos, *vocab.encode("데이터팀", wrap=False)]
+    # '강원도팀' 을 끝까지 따라가면 마지막에는 끝 토큰만 남는다
+    ids = [vocab.bos, *vocab.encode("강원도팀", wrap=False)]
     assert allowed(0, torch.tensor(ids)) == [vocab.eos]
 
 
 def test_길이가_안_맞으면_같은_글씨로_안_본다():
-    """7자를 3자 이름에 욱여넣은 것을 걸러내야 한다(실측: 전자금융TF서약 -> 홍서말)."""
+    """긴 줄을 3자 이름에 욱여넣은 것을 걸러내야 한다(실측: 여덟 글자짜리
+    서약 제목 한 줄이 세 글자 이름으로 읽혔다)."""
     from kohandocr.reader import _close
 
-    assert _close("데이터팀", "데이더팀")
-    assert not _close("전자금융TF서약", "홍서말")
+    assert _close("강원도팀", "강원더팀")
+    assert not _close("감자금융TF서약", "홍서말")
 
 
 # ── 기억한 과녁 ──────────────────────────────────────────────────
@@ -253,7 +254,7 @@ def test_읽을_때_홀자모를_빼되_시작토큰은_막지_않는다():
     assert vocab.eos in later, "끝낼 수 없으면 줄이 안 끝난다"
 
     # 정답 줄이 이 판을 통과해야 한다. 안 그러면 맞는 답을 막고 있는 것이다.
-    for text in ("성명 : 홍서말", "AI혁신TF", "2026-01-31", "Codex 서약"):
+    for text in ("성명 : 홍서말", "AI포테토TF", "2026-01-31", "Codex 서약"):
         ids = vocab.encode(text)
         for token in ids[1:]:
             assert token in later, f"{text!r} 의 {vocab.tokens[token]!r} 이 막혔다"
@@ -288,8 +289,8 @@ def test_학습의_지운_자국_비율은_시험지를_안_바꾼다(fonts):
 
     assert "strike" not in inspect.getsource(holdout.sheet)
     for seed in range(12):
-        plain = synth.render("부서 : 데이터팀", fonts, random.Random(seed))
-        said = synth.render("부서 : 데이터팀", fonts, random.Random(seed),
+        plain = synth.render("부서 : 강원도팀", fonts, random.Random(seed))
+        said = synth.render("부서 : 강원도팀", fonts, random.Random(seed),
                             strike=synth.STRIKE)
         assert (plain is None) == (said is None)
         if plain is not None:
