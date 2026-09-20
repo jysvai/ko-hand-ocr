@@ -21,10 +21,14 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import math
+import os
 import random
+import sys
+from collections import OrderedDict
 from pathlib import Path
 
 import numpy as np
@@ -185,6 +189,7 @@ STRIKE = 0.075
 # 'Team' 으로 읽었다), 칸0 `전자금융TF서약` 의 '융' 은 덧그어 진해져 있다
 # (모델이 '글륦' 으로 뭉갰다). 지운 것만 가르치면 덧그은 글자까지 버리게 된다.
 RETRACE = 0.06               # 이 비율의 줄에서 한두 글자를 덧긋는다
+
 # 뭉갤 토막에 쓸 글자. 한글이 대부분이고 숫자·영문도 섞는다 — 사람은
 # 아무거나 잘못 쓰고 지운다. 글꼴이 다 그릴 수 있는 것만 골라 둔다.
 _STRIKE_POOL = ("가나다라마바사아자차카타파하고노도로모보소오조구누두루무부수우주"
@@ -218,7 +223,8 @@ def _thickness(canvas: Image.Image) -> float:
     return (2 * area / eaten) / tall
 
 
-# 시험용으로 빼 둘 글꼴의 몫. 109벌 중 12벌쯤이 빠진다.
+# 시험용으로 빼 두는 글꼴. 지금은 `FONT_TEST` 여섯 벌과 `FONT_WIDE`
+# 스물네 벌이다(아래에 이름으로 못 박아 두었다).
 #
 # 왜 빼는가. 시험지를 **학습과 같은 글꼴로** 만들면, 재는 것이 '손글씨를 읽나'가
 # 아니라 '내 생성기를 외웠나'가 된다. 실제로 그렇게 됐다 — 합성 시험지는
@@ -250,6 +256,106 @@ def _for_test(name: str) -> bool:
     return name in FONT_TEST
 
 
+# **두루 읽나를 재는 스물네 벌.** 시험용 여섯 벌은 전부 구글 글꼴이라, 그것만
+# 넘겼다고 "한글 손글씨를 읽는다"고 말할 수 없다. 여기 적은 벌은 학습에서
+# 빼고(`part="train"` 이 뺀다) `tools/wide.py` 가 가끔 재는 데만 쓴다.
+#
+# 고르는 법은 **골고루**다. 이름순으로 죽 늘어놓고 나눔 109벌·그밖 325벌·구글
+# 8벌에서 몫만큼 고르게 집었다(6/17/1). 마음에 드는 것을 고르면 쉬운 것만
+# 남는다. 스물넷인 까닭은 학습에서 5%(442 -> 418벌)만 덜어 내는 자리이기
+# 때문이다. 바꾸면 **학습 자료가 바뀐다** — 바꾼 날을 여기 적을 것.
+# 2026-09-18 에 정했다.
+FONT_WIDE = (
+    "구글 나눔브러시스크립트 NanumBrushScript-Regular.ttf",
+    "그밖 KCC 도담도담체 KCCDodamdodam.ttf",
+    "그밖 가비아 봄바람체 GabiaBombaram.ttf",
+    "그밖 그리운 규원체 Griun_Gyuwon-Rg.woff2",
+    "그밖 그리운 프롬솔 Griun_Fromsol-Rg.woff2",
+    "그밖 날쌘돌이체 CallifontSharpie-Light.woff2",
+    "그밖 세구세구체 SeguSegu-Regular.woff2",
+    "그밖 어비 김빠른체 UhBeekimbbareun.ttf",
+    "그밖 어비 마츠코체 UhBeematsuko.ttf",
+    "그밖 어비 스윗체 UhBeeswit.ttf",
+    "그밖 어비 은디체 UhBeeeunD.ttf",
+    "그밖 어비 퀸제이체 UhBeeQUEENJ.ttf",
+    "그밖 온글잎 공부잘하자나 Ownglyph_StudyHard-Rg.woff2",
+    "그밖 온글잎 언즈체 Ownglyph_UNZ-Rg.woff2",
+    "그밖 윤초록우산어린이 민국 YoonChildfundkoreaMinGuk.woff2",
+    "그밖 카페24 동동 Cafe24Dongdong.ttf",
+    "그밖 학교안심 꾸러기 HakgyoansimGgooreogi.ttf",
+    "그밖 학교안심 칠판지우개 HakgyoansimChilpanjiugae-L.ttf",
+    "나눔손글씨 기쁨밝음.ttf",
+    "나눔손글씨 따뜻한 작별.ttf",
+    "나눔손글씨 부장님 눈치체.ttf",
+    "나눔손글씨 아빠글씨.ttf",
+    "나눔손글씨 외할머니글씨.ttf",
+    "나눔손글씨 하람체.ttf",
+)
+
+
+def _for_wide(name: str) -> bool:
+    return name in FONT_WIDE
+
+
+# 글꼴 폴더에서 집는 파일. woff/woff2 는 **바꾸지 않고 그대로** 연다 — FreeType
+# 2.14 가 직접 읽는다(2026-09-17 확인). 눈누에만 있는 손글씨 글꼴은 웹폰트로만
+# 받을 수 있는데, 약관 가운데 **형식 변환을 금지**하는 것이 있어서 ttf 로 바꿔
+# 두는 길은 안 쓴다. 폴더 아래 `twins/` 는 훑지 않는다(`tools/fetch_fonts.py`).
+FONT_KINDS = ("*.ttf", "*.otf", "*.woff", "*.woff2")
+
+# ── 글꼴을 여는 길 — 메모리 ──────────────────────────────────────────
+#
+# 2026-09-17, 글꼴을 117벌에서 440벌로 늘리자 학습 일꾼이 MemoryError 로 죽었다.
+# 재 보니 **프로세스 하나가 글꼴을 다 열면 17.5GB** 였다. 까닭이 둘이다.
+#
+# 하나. Pillow 는 Windows 에서 경로에 ASCII 가 아닌 글자가 있으면 FreeType 이
+# 못 연다고 보고 **파일을 통째로 메모리에 읽는다. 크기마다 따로.** 우리 글꼴
+# 이름은 전부 '나눔손글씨 …' 라 크기 여섯 x 파일 크기가 그대로 쌓였다(117벌
+# 때도 일꾼마다 수 GB 를 조용히 먹고 있었다). 같은 파일에 ASCII 이름을 붙인
+# **하드링크**(디스크를 더 안 쓴다)로 열면 FreeType 이 필요한 표만 읽는다.
+# 실측, 40벌 x 크기 여섯: 2,960MB -> 11MB.
+#
+# 둘. woff/woff2 는 경로로 열어도 FreeType 이 면(face)마다 압축을 풀어 들고
+# 있다(면당 2.4~4.6MB). 그래서 웹폰트 면은 **최근 것 몇 개만** 들고 있는다.
+# 다시 여는 데 10~20ms 라, 한 장 그리는 데 드는 시간에 견주면 싸다.
+LINKS = ".ascii"
+PACKED = (".woff", ".woff2")
+PACKED_FACES = 24
+
+# 음절 11,172자 가운데 **잉크가 있는** 것. 글꼴마다 한 번 재서 글꼴 폴더의
+# `cover.json` 에 적어 둔다. 이것이 없으면 `has` 가 검사용 40px 면을 글꼴마다
+# 들고 있어야 하는데, 웹폰트는 그 면 하나가 수 MB 다.
+COVER = "cover.json"
+SYLLABLES = 11172
+
+
+def _ascii_path(path: Path) -> str:
+    """Windows 에서 한글 이름 글꼴을 ASCII 하드링크로 연다. 안 되면 원래 경로."""
+    name = str(path)
+    if sys.platform != "win32" or name.isascii():
+        return name
+    spot = path.parent / LINKS
+    link = spot / (hashlib.sha1(path.name.encode("utf-8")).hexdigest()[:16]
+                   + path.suffix.lower())
+    if not str(link).isascii():
+        return name
+    try:
+        if link.exists():
+            # 글꼴을 새로 받아 갈아 끼우면 옛 링크는 **옛 내용**을 가리킨다.
+            # 하드링크는 같은 파일이라 크기·시각이 같아야 한다.
+            mine, theirs = link.stat(), path.stat()
+            if (mine.st_size, mine.st_mtime_ns) == (theirs.st_size, theirs.st_mtime_ns):
+                return str(link)
+            link.unlink()
+        spot.mkdir(exist_ok=True)
+        os.link(path, link)
+    except FileExistsError:
+        pass                                  # 다른 일꾼이 먼저 만들었다
+    except OSError:
+        return name
+    return str(link) if link.exists() else name
+
+
 def font_folder(given: str = "") -> Path:
     """손글씨 글꼴이 있는 폴더. **경로를 코드에 박지 않는다.**
 
@@ -274,8 +380,9 @@ def font_folder(given: str = "") -> Path:
 class Fonts:
     """글꼴 꾸러미. 일꾼(worker)마다 따로 열리도록 게으르게 연다.
 
-    `part` 는 "train"(시험용을 뺀 것) / "test"(시험용만) / "all" 이다.
-    학습은 "train", `tools/holdout.py` 는 "test" 를 쓴다.
+    `part` 는 "train"(시험용을 다 뺀 것) / "test"(시험용 여섯 벌) /
+    "wide"(두루 재는 스물네 벌) / "all" 이다. 학습은 "train",
+    `tools/holdout.py` 는 "test", `tools/wide.py` 는 "wide" 를 쓴다.
 
     `only` 를 주면 이름에 그 글자가 든 글꼴만 남긴다. **한 글씨체씩 따로 재는
     데 쓴다** — 합계만 보면 어떤 글씨체가 무너지는지 안 보인다. 실측으로 시험용
@@ -299,7 +406,7 @@ class Fonts:
         # 틈이 실제만큼 메워진다.
         self.folder = Path(folder)
         self.sizes = sizes
-        found = sorted(self.folder.glob("*.ttf")) + sorted(self.folder.glob("*.otf"))
+        found = [one for kind in FONT_KINDS for one in sorted(self.folder.glob(kind))]
         if not found:
             raise FileNotFoundError(f"글꼴이 없다: {self.folder}")
         # 나눔손글씨 109종 중 2종은 FreeType 이 "too many function definitions" 로 뱉는다.
@@ -315,7 +422,7 @@ class Fonts:
         # 적어 둔 것을 쓰되, **새로 들어온 글꼴만 다시 잰다.**
         #
         # 예전에는 적어 둔 것에 없는 글꼴을 조용히 빼 버렸다. 그래서 글꼴을 14벌
-        # 더 넣고도 계속 107벌로 돌았는데, 아무 말도 안 나오니 한참 몰랐다.
+        # 더 넣고도 계속 109벌로 돌았는데, 아무 말도 안 나오니 한참 몰랐다.
         # 적어 둔 것은 **빠른 길**이지 글꼴 목록이 아니다.
         try:
             known = json.loads(note.read_text(encoding="utf-8"))
@@ -350,11 +457,16 @@ class Fonts:
                 note.write_text(json.dumps(known, ensure_ascii=False), encoding="utf-8")
             except OSError:
                 pass                      # 못 적어도 그냥 매번 재면 된다
-        if part not in ("all", "train", "test"):
-            raise ValueError(f"part 는 all/train/test 다: {part!r}")
-        if part != "all":
-            want = part == "test"
-            pairs = [(f, t) for f, t in pairs if _for_test(f.name) == want]
+        if part not in ("all", "train", "test", "wide"):
+            raise ValueError(f"part 는 all/train/test/wide 다: {part!r}")
+        if part == "train":
+            # 시험용 여섯 벌과 넓은 시험용 스물네 벌을 **둘 다** 뺀다.
+            pairs = [(f, t) for f, t in pairs
+                     if not _for_test(f.name) and not _for_wide(f.name)]
+        elif part == "test":
+            pairs = [(f, t) for f, t in pairs if _for_test(f.name)]
+        elif part == "wide":
+            pairs = [(f, t) for f, t in pairs if _for_wide(f.name)]
         if only:
             pairs = [(f, t) for f, t in pairs if only in f.name]
             if not pairs:
@@ -363,31 +475,82 @@ class Fonts:
         self.only = only
         self.files = [p for p, _ in pairs]
         self.weights = [t for _, t in pairs]
+        # 여는 경로. 글꼴 파일(`files`)과 자리가 같다(`_ascii_path` 머리말).
+        self.paths = [_ascii_path(p) for p in self.files]
         self._cache: dict = {}
+        self._packed: OrderedDict = OrderedDict()
         self._gap: dict = {}
         self._know: dict = {}
+        self._cover = self._read_cover()
         # '다 담은 글꼴'은 마지막에 기댈 자리다. 흔치 않은 글자 몇으로 가른다.
         self.full = [i for i in range(len(self.files))
                      if all(self.has(i, c) for c in "힣뷁쫑햏똠")]
         if not self.files:
             raise RuntimeError(f"쓸 수 있는 글꼴이 없다: {self.folder} ({part})")
-        # 여기서 `self._cache = {}` 를 한 번 더 하고 있었다. **바로 위에서 채운 것을
-        # 통째로 버리는 줄이었다** — `self.full` 을 세느라 글꼴 121개를 열어 놨는데
-        # 그것을 지우고, 일꾼마다 처음 몇백 장을 그리는 동안 같은 파일을 다시 읽었다.
-        # 합성 시간의 5%가 여기였다(실측: 170장에 파일 읽기 77번, 0.43초).
-        # 지우려던 뜻은 알겠으나(훑기용 40px 글꼴이 남는 것) 그건 121개뿐이고,
-        # 어차피 그릴 때도 `has()` 가 40px 을 다시 쓴다.
+        # `self.full` 은 음절 잉크 표(`cover.json`)만 보므로 글꼴을 하나도 안 연다.
+        # 예전에는 여기서 글꼴마다 40px 면을 열어 두었고, 그것이 일꾼 메모리의
+        # 한 몫이었다(`_ascii_path` 위의 설명).
 
     def __len__(self) -> int:
         return len(self.files)
 
     def _font(self, which: int, size: int) -> ImageFont.FreeTypeFont:
         key = (which, size)
+        if self.files[which].suffix.lower() in PACKED:
+            font = self._packed.get(key)
+            if font is None:
+                font = ImageFont.truetype(self.paths[which], size)
+                self._packed[key] = font
+                while len(self._packed) > PACKED_FACES:
+                    self._packed.popitem(last=False)
+            else:
+                self._packed.move_to_end(key)
+            return font
         font = self._cache.get(key)
         if font is None:
-            font = ImageFont.truetype(str(self.files[which]), size)
+            font = ImageFont.truetype(self.paths[which], size)
             self._cache[key] = font
         return font
+
+    def _read_cover(self) -> list[bytes]:
+        """글꼴마다 음절 잉크 표. 적어 둔 것이 없는 글꼴만 새로 잰다."""
+        note = self.folder / COVER
+        try:
+            known = json.loads(note.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            known = {}
+        out, fresh = [], False
+        for which, path in enumerate(self.files):
+            stamp = "%d:%d" % (path.stat().st_size, path.stat().st_mtime_ns)
+            row = known.get(path.name)
+            if not row or row.get("stamp") != stamp:
+                row = {"stamp": stamp,
+                       "ink": base64.b64encode(self._measure_cover(which)).decode("ascii")}
+                known[path.name] = row
+                fresh = True
+            out.append(base64.b64decode(row["ink"]))
+        if fresh:
+            # 일꾼 여럿이 한꺼번에 적을 수 있다. 반쯤 쓴 파일을 남이 읽지 않게
+            # 옆에 쓰고 바꿔 끼운다.
+            spare = note.with_name("%s.%d.part" % (note.name, os.getpid()))
+            try:
+                spare.write_text(json.dumps(known, ensure_ascii=False), encoding="utf-8")
+                spare.replace(note)
+            except OSError:
+                pass                      # 못 적어도 다음에 다시 재면 된다
+        return out
+
+    def _measure_cover(self, which: int) -> bytes:
+        """음절 11,172자마다 잉크가 있나를 비트로. 검사용 면은 들고 있지 않는다."""
+        font = ImageFont.truetype(self.paths[which], 40)
+        empty = font.getmask("", mode="L")         # 아무도 안 쓰는 자리
+        missing = (empty.size, bytes(empty))
+        bits = bytearray((SYLLABLES + 7) // 8)
+        for at in range(SYLLABLES):
+            mask = font.getmask(chr(0xAC00 + at), mode="L")
+            if mask.getbbox() is not None and (mask.size, bytes(mask)) != missing:
+                bits[at >> 3] |= 1 << (at & 7)
+        return bytes(bits)
 
     def _missing(self, which: int) -> tuple:
         """그 글꼴이 '없는 글자'를 그리는 모양. 이것과 같으면 그 글자가 없다."""
@@ -399,11 +562,26 @@ class Fonts:
         return got
 
     def has(self, which: int, char: str) -> bool:
-        """이 글꼴에 이 글자가 있나. 한 번 잰 것은 적어 둔다."""
+        """이 글꼴에 이 글자가 있나. 한 번 잰 것은 적어 둔다.
+
+        **잉크가 있어야 있는 것이다.** 없는 글자 모양과 다르기만 하면 있다고
+        봤더니, 음절 11,172자를 글자표에 다 올려 두고 모양은 흔한 2,350자만
+        그려 둔 글꼴 79벌(2026-09-17 에 더한 것 가운데 학교안심·카페24·눈누
+        웹폰트 등)이 **빈 모양을 '있다'로** 통과했다. 그대로 두면 드문 음절
+        자리에 빈칸을 그려 놓고 정답에는 그 글자를 적어 먹인다 — 빈칸을 글자로
+        읽으라고 가르치는 셈이다. 합성 줄에서 '뱫' 자리가 비어 있는 것을 보고
+        알았다. 띄어쓰기 같은 빈 글자는 `pick` 이 음절만 물으므로 걸리지 않는다.
+        """
+        if "가" <= char <= "힣":
+            at = ord(char) - 0xAC00
+            return bool(self._cover[which][at >> 3] >> (at & 7) & 1)
         seen = self._know.setdefault(which, {})
         if char not in seen:
             mask = self._font(which, 40).getmask(char, mode="L")
-            seen[char] = (mask.size, bytes(mask)) != self._missing(which)
+            if mask.getbbox() is None:
+                seen[char] = False
+            else:
+                seen[char] = (mask.size, bytes(mask)) != self._missing(which)
         return seen[char]
 
     def pick(self, rng: random.Random,
@@ -421,9 +599,16 @@ class Fonts:
             which = rng.randrange(len(self.files))
             if not want or all(self.has(which, c) for c in want):
                 return self._font(which, rng.choice(self.sizes)), self.weights[which]
-        # 여섯 번을 골라도 못 담으면 **다 담은 글꼴**에서 고른다.
-        pool = self.full or range(len(self.files))
-        which = rng.choice(list(pool))
+        # 여섯 번을 골라도 못 담으면 **그 글월을 실제로 담은 글꼴**에서 고른다.
+        #
+        # 예전에는 '다 담은 글꼴'(`self.full`, 드문 글자 다섯으로 가른 것)에서
+        # 그냥 골랐다. 글꼴이 나눔·구글뿐일 때는 그 다섯이 있으면 11,172자가 다
+        # 있었는데, 2026-09-17 에 더한 글꼴에는 그 다섯은 있고 '쒫' 은 없는 것이
+        # 있다(KCC 안중근체). 그러면 여기서도 두부가 그려진다. 드문 글월에서만
+        # 오는 자리라 훑는 값이 싸고, 잰 것은 `has` 가 적어 둔다.
+        base = list(self.full or range(len(self.files)))
+        pool = [i for i in base if all(self.has(i, c) for c in want)] or base
+        which = rng.choice(pool)
         return self._font(which, rng.choice(self.sizes)), self.weights[which]
 
 
@@ -444,7 +629,7 @@ HANDMARK_SHARE = 0.72        # 이 비율만큼은 손으로 쓴 모양으로. �
 def _handmark(char: str, font: ImageFont.FreeTypeFont, rng: random.Random):
     """콜론·세미콜론을 손으로 쓴 모양으로 그린다.
 
-    글꼴을 안 쓰고 직접 긋는다. 나눔손글씨 107벌 어느 것도 이렇게 안 그린다.
+    글꼴을 안 쓰고 직접 긋는다. 나눔손글씨 109벌 어느 것도 이렇게 안 그린다.
     """
     size = int(font.size)
     tall = max(6, int(size * rng.uniform(0.28, 0.50)))
@@ -593,6 +778,20 @@ def _compose(text: str, font: ImageFont.FreeTypeFont, rng: random.Random):
     # 맞추려고 **엉뚱한 쪽**을 좁힌 것이다. 그림을 안 봤으면 그대로 갔다.
     #
     # 그래서 자간은 실제대로 되돌린다. 안쪽이 끊기는 것은 따로 찾아야 한다.
+    #
+    # 2026-09-20 에 **닫기 연산으로 이어 보려다 안 됐다.** 적어 둔다 — 또 해
+    # 볼 만해 보이는 길이라서다. 깎은(`_weight` 의 MinFilter) 뒤에 3x3 닫기
+    # (불렸다 다시 깎기)를 걸면 굵기도 자간도 안 건드리고 틈만 메울 것 같았다.
+    #
+    # 그런데 재 보니 **바뀐 화소가 0** 이었다. 글자 안쪽 획 사이 틈이 8~17px 인데
+    # (그릴 때 글자 높이가 73~157px 다) 3x3 은 2px 만 메운다. 깎고 나면 틈이 더
+    # 벌어져서 아예 못 닿는다. 틈을 메울 만큼(9x9) 키우면 ㅌ 의 가로획 사이가
+    # 메워져 **학습 자료에 틀린 이름표**를 붙이게 된다 — 금을 긍으로 만들어
+    # 먹이는 셈이다. 잇는 일은 그릴 때 획을 이어 긋는 쪽에서 해야 한다.
+    #
+    # 덤으로 알아낸 것: 이때 난수를 한 번 더 뽑았더니 그림이 통째로 밀려서
+    # 동해독도가 91.56% -> 92.86% 로 **올라 보였다.** 글씨체당 70줄에서 난수만
+    # 바꾼 잡음이 1.3%p 다. 이만한 폭 아래의 차이는 이 자로 못 가린다.
     gap = rng.uniform(*WIDE_GAP_RANGE) if wide else rng.uniform(-0.14, 0.20)
     # 띄어쓰기는 자간보다 늘 더 벌어져야 한다. 자간을 벌린 줄에서 빈칸을 그대로
     # 두면 둘이 겹쳐서, 모델이 자간을 띄어쓰기로 읽는다(전에 겪은 그 오류다).
@@ -860,8 +1059,13 @@ def _bleed(sheet: Image.Image, ink: Image.Image, rng: random.Random) -> Image.Im
     return Image.composite(Image.new("L", sheet.size, rng.randint(150, 205)), sheet, layer)
 
 
-def render(text: str, fonts: Fonts, rng: random.Random):
+def render(text: str, fonts: Fonts, rng: random.Random,
+           strike: float | None = None):
     """글월 한 줄 -> 흑백 이미지. 못 그리면 None.
+
+    `strike` 는 지운 자국을 넣을 비율이다. 안 주면 `STRIKE`. **학습만 바꾼다** —
+    시험지(`tools/holdout.py`)는 이 값을 안 넘기므로, 학습 쪽 비율을 올려도
+    자는 그대로다. 난수를 뽑는 횟수도 같아서 그림이 한 장도 안 바뀐다.
 
     실제 경로와 순서를 맞춘다. 앱은 **여백이 넓은 판 전체를 표백한 뒤** 줄을 잘라낸다.
     바싹 자른 조각을 표백하면 흐림판이 글자로 물들어 획이 도로 하얘진다(실측함).
@@ -874,7 +1078,7 @@ def render(text: str, fonts: Fonts, rng: random.Random):
     # 지운 자국이 있지만 **이름표는 `text` 그대로**다. 그래야 '뭉갠 덩이는
     # 글자가 아니다' 를 배운다. `render` 를 부르는 쪽은 아무것도 안 바꿔도 된다.
     drawn_text, cross, apart = text, None, False
-    if len(text) >= 2 and rng.random() < STRIKE:
+    if len(text) >= 2 and rng.random() < (STRIKE if strike is None else strike):
         # 몇 글자를 지우나. 예전에는 1~4 를 고르게 뽑아 평균 2.5 글자였다.
         # 실제 사진의 자국을 합성 자국과 나란히 놓고 보니 **실제가 훨씬 작다** —
         # hand-06 의 '데이터팀' 앞 덩이도, hand-01 의 '융' 위 자국도 한 글자

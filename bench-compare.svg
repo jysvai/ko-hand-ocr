@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 356" width="760" height="356" role="img" aria-label="Comparison of ko-hand-ocr v46 and ko-trocr. ko-hand-ocr has 31 million parameters, ko-trocr has 213.7 million. ko-hand-ocr trains on synthetic images drawn from OFL fonts and inherits no dataset terms; ko-trocr trains on the AI Hub handwriting corpus whose usage terms apply. Both ship Apache-2.0 weights. No head-to-head accuracy benchmark has been run yet.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 356" width="760" height="356" role="img" aria-label="Comparison of ko-hand-ocr v62 and ko-trocr. ko-hand-ocr has 31 million parameters, ko-trocr has 213.7 million. ko-hand-ocr trains on synthetic images drawn from OFL fonts and inherits no dataset terms; ko-trocr trains on the AI Hub handwriting corpus whose usage terms apply. Both ship Apache-2.0 weights. No head-to-head accuracy benchmark has been run yet.">
 <style>
   .surface{fill:#fcfcfb}
   .ink{fill:#0b0b0b}
@@ -24,9 +24,9 @@
 
 <text class="ink2" x="20" y="76" font-size="11.5" font-weight="600">Parameters</text>
 
-<path class="s1" d="M200,66 H254 Q258,66 258,70 V78 Q258,82 254,82 H200 Z"/>
-<text class="ink" x="266" y="78" font-size="12" font-weight="600">31M</text>
-<text class="ink2" x="300" y="78" font-size="11.5">ko-hand-ocr v46</text>
+<path class="s1" d="M200,66 H263.4 Q267.4,66 267.4,70 V78 Q267.4,82 263.4,82 H200 Z"/>
+<text class="ink" x="275.4" y="78" font-size="12" font-weight="600">36M</text>
+<text class="ink2" x="309.4" y="78" font-size="11.5">ko-hand-ocr v62</text>
 
 <path class="s1" d="M200,94 H596 Q600,94 600,98 V106 Q600,110 596,110 H200 Z"/>
 <text class="ink" x="608" y="106" font-size="12" font-weight="600">213.7M</text>
@@ -34,7 +34,7 @@
 
 <line class="rule" x1="20" y1="128" x2="740" y2="128"/>
 
-<text class="ink2" x="240" y="148" font-size="11.5" font-weight="700">ko-hand-ocr v46</text>
+<text class="ink2" x="240" y="148" font-size="11.5" font-weight="700">ko-hand-ocr v62</text>
 <text class="ink2" x="520" y="148" font-size="11.5" font-weight="700">ko-trocr</text>
 <line class="rule" x1="20" y1="158" x2="740" y2="158"/>
 
@@ -54,7 +54,7 @@
 <line class="rule" x1="20" y1="260" x2="740" y2="260"/>
 
 <text class="ink2" x="20" y="282" font-size="11.5">Speed on CPU</text>
-<text class="ink" x="240" y="282" font-size="11.5">0.16 s / cell (measured)</text>
+<text class="ink" x="240" y="282" font-size="11.5">0.20 s / line (measured)</text>
 <text class="ink2" x="520" y="282" font-size="11.5">not measured here</text>
 
 <rect class="box" x="20" y="298" width="720" height="26" rx="4"/>

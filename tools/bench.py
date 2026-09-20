@@ -69,7 +69,7 @@ MODES: dict[str, tuple[int | None, int]] = {
 }
 
 
-def busy() -> list[str]:
+def busy() -> list[str] | None:
     """지금 GPU 를 쥐고 있는 우리 프로세스. **시간을 재기 전에 반드시 본다.**
 
     학습이 도는 중에 재면 같은 조합이 1.23초에서 1.92초로 나온다. 숫자가
@@ -83,8 +83,11 @@ def busy() -> list[str]:
              "Where-Object { $_.CommandLine -match 'kohandocr.train|loop.py' } | "
              "ForEach-Object { $_.ProcessId }"],
             capture_output=True, text=True, timeout=30)
-    except Exception:
-        return []
+    except (subprocess.SubprocessError, OSError):
+        # **못 물어본 것을 '한가하다'로 세면 안 된다.** 예전에는 여기서 빈
+        # 목록을 주었다. 그러면 물어보기가 한 번 어긋난 날, 학습과 GPU 를
+        # 나눠 쓴 채로 재고도 성적표에는 깨끗한 숫자처럼 적힌다.
+        return None
     return [one for one in got.stdout.split() if one.strip()]
 
 
@@ -348,6 +351,10 @@ def main() -> None:
     # 여기서 막는다. 정확도만 필요하면 --anyway 로 넘어갈 수 있고, 그때는
     # 성적표에 '나눠 썼다'고 적어 둔다.
     others = busy()
+    if others is None and not args.anyway:
+        raise SystemExit(
+            "지금 학습이 도는지 물어보지 못했다. 모르는 채로 재면 그 숫자가\n"
+            "  무엇을 잰 것인지 나중에 알 수 없다. 다시 부르거나 --anyway 를 준다.")
     if others and not args.anyway:
         raise SystemExit(
             "학습이 돌고 있다 (pid %s). GPU 를 나눠 쓰면 시간이 딴 값이 된다.\n"

@@ -56,13 +56,18 @@ def _has_bare_jamo(text: str) -> bool:
     return any(0x3131 <= ord(c) <= 0x318E for c in text)
 
 
-def sheet(count: int, fonts_dir: str, only: str = "") -> list[tuple[str, object]]:
+def sheet(count: int, fonts_dir: str, only: str = "",
+          part: str = "test") -> list[tuple[str, object]]:
     """시험지를 만든다. 씨앗이 고정이라 몇 번을 불러도 같은 그림이 나온다.
 
     `only` 를 주면 이름에 그 글자가 든 글씨체 하나로만 만든다(`--per-font`).
+
+    `part` 는 어느 글꼴로 찍을지다. 기본은 시험용 여섯 벌이고, `tools/wide.py`
+    가 넓은 스물네 벌(`synth.FONT_WIDE`)을 잴 때만 "wide" 를 준다. **기본값을
+    바꾸면 자가 통째로 바뀐다** — 바퀴끼리 못 견준다.
     """
     # **학습에 안 쓴 글꼴로만** 만든다. 여기가 이 자의 핵심이다.
-    fonts = synth.Fonts(fonts_dir, part="test", only=only)
+    fonts = synth.Fonts(fonts_dir, part=part, only=only)
     rng = random.Random(SEED)
     out = []
     for text in corpus.lines(count, seed=SEED):

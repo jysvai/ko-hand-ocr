@@ -46,6 +46,11 @@ def parse() -> argparse.Namespace:
                     help="이 걸음마다 판을 따로 남긴다 (덮어쓰지 않고). 0 이면 안 남김")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--resume", default=None, help="이어서 학습할 저장 폴더")
+    ap.add_argument("--strike", type=float, default=None,
+                    help="지운 자국을 넣을 줄 비율. 안 주면 synth.STRIKE. 학습 자료만 바꾼다")
+    ap.add_argument("--layers", type=int, default=0,
+                    help="이어받은 판의 디코더가 이보다 얕으면 이만큼 늘려서 학습한다 "
+                         "(`model.grow`). 0 이면 그대로")
     return ap.parse_args()
 
 
@@ -123,12 +128,19 @@ def main() -> None:
 
     model = builder.load(args.resume) if args.resume else builder.build(
         vocab, letters=args.letters)
+    if args.layers:
+        added = builder.grow(model, args.layers)
+        if added:
+            print("디코더를 %d층 늘렸다 -> %d층" % (added, args.layers))
     model.to(device)
     print("모델(M):", {k: round(v, 1) for k, v in builder.sizes(model).items()},
           "| 어휘", len(vocab), "| 입력", synth.CELL, "|", device)
 
     stream = data.Lines(args.fonts, vocab, letters=args.letters,
-                        seed=args.seed, length=args.steps * args.batch)
+                        seed=args.seed, length=args.steps * args.batch,
+                        strike=args.strike)
+    if args.strike is not None:
+        print("지운 자국: 줄의 %.1f%% (기본 %.1f%%)" % (100 * args.strike, 100 * synth.STRIKE))
     loader = DataLoader(
         stream, batch_size=args.batch, num_workers=args.workers,
         collate_fn=data.collate,

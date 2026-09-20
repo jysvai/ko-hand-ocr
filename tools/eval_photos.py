@@ -1,4 +1,5 @@
-"""실제 손글씨 사진 7장으로 재 본다.
+"""실제 손글씨 사진으로 재 본다(`data/eval/samples`, 지금 12장 — 그 가운데
+hand-12 는 `labels.json` 에 `"gauge": true` 라 재기만 하고 점수에서 뺀다).
 
     python tools/eval_photos.py runs/base
 
@@ -46,7 +47,19 @@ from kohandocr.vocab import Vocab                       # noqa: E402
 _hf_logging.set_verbosity_error()
 
 
-GOAL = 90          # 사진 한 장이 넘어야 하는 값(%). 평균이 아니라 **모든 장**이 넘어야 한다.
+GOAL = 95          # 사진 한 장이 넘어야 하는 값(%). 평균이 아니라 **모든 장**이 넘어야 한다.
+# 90 에서 95 로 올렸다(2026-09-18). 90 은 2026-09-18 06:29 에 열일곱 개가 모두
+# 넘겼다 — 글씨체 최저 90.25%, 사진 최저 90.28%(`runs/VERIFY.json`). 목표에
+# 닿으면 고리가 멈추므로, 더 밀려면 여기를 올린다. **한 곳에서만 정한다.**
+
+# 먼저 닿을 바닥(%). 2026-09-17 에 85 로 정했고 그날 밤 열일곱 개가 다 넘었다.
+# 2026-09-18 에 90 으로 올린다 — 이미 다 넘긴 값을 바닥으로 두면 조합을 고르는
+# 차례에서 아무것도 못 가른다(열일곱 개가 모두 16/17 로 같아진다).
+# 끝나는 조건은 여전히 GOAL 이다. 이것은 조합을 고르는 차례에서 **맨 앞**에
+# 선다: 90% 를 넘긴 개수가 하나 많은 조합보다, 85% 밑으로 떨어진 것이 하나
+# 적은 조합을 먼저 고른다. 한 종목이 80% 인 조합은 서식 한 장을 통째로 사람
+# 손에 넘기지만, 88% 와 91% 의 차이는 그만큼 크지 않다.
+FLOOR = 90
 
 
 def jamo(text: str) -> str:
@@ -144,7 +157,7 @@ def main() -> None:
     vocab = Vocab.load(Path(args.run) / "vocab.json")
     model = builder.load(args.run).to(args.device).eval()
 
-    # 명단은 일곱 장 전체의 이름·조직을 모은 것. 한 장을 읽을 때 그 장의 답만
+    # 명단은 사진 전체의 이름·조직을 모은 것. 한 장을 읽을 때 그 장의 답만
     # 주면 시험이 너무 쉬워진다. 실제로도 회사 명단 전체와 맞춰 본다.
     pool: list[str] = []
     if args.roster:
@@ -158,7 +171,12 @@ def main() -> None:
     pairs_all: list[tuple[str, str]] = []
     by_photo: dict[str, list[float]] = {}
     for jpg in sorted(Path(args.photos).glob("hand-*.jpg")):
-        want = truth.get(jpg.name, {}).get("lines", [])
+        # 정답이 없으면 **거기서 멈춘다.** 빈 정답을 받으면 그 장은 짝이
+        # 하나도 안 맞아 성적표에서 통째로 사라지는데, 사라진 장은 아무 데도
+        # 안 적혀서 열한 장을 쟀다고 믿게 된다.
+        if jpg.name not in truth or not truth[jpg.name].get("lines"):
+            raise SystemExit("labels.json 에 %s 의 정답이 없다." % jpg.name)
+        want = truth[jpg.name]["lines"]
         start = time.perf_counter()
         cells = cells_of(jpg)
         if pool:

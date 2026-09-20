@@ -30,13 +30,17 @@ class Lines(IterableDataset):
     """끝없이 나오는 (그림, 글월) 짝."""
 
     def __init__(self, fonts_dir, vocab, cell: tuple[int, int] = CELL,
-                 letters: int = 64, seed: int = 0, length: int = 100_000) -> None:
+                 letters: int = 64, seed: int = 0, length: int = 100_000,
+                 strike: float | None = None) -> None:
         self.fonts_dir = fonts_dir
         self.vocab = vocab
         self.cell = cell
         self.letters = letters
         self.seed = seed
         self.length = length            # 한 epoch 을 몇 장으로 볼지. 끝은 없다.
+        # 지운 자국 비율. None 이면 synth.STRIKE. 모듈 값을 고쳐 넣으면 안 된다 —
+        # 일꾼은 spawn 으로 뜨므로 synth 를 새로 읽어 원래 값으로 돌아간다.
+        self.strike = strike
         self._fonts: synth.Fonts | None = None
 
     def __len__(self) -> int:
@@ -44,10 +48,13 @@ class Lines(IterableDataset):
 
     def _ready(self) -> synth.Fonts:
         if self._fonts is None:         # 일꾼마다 제 것을 연다 (프로세스 넘어 못 간다)
-            # **시험용 글꼴은 여기서 안 쓴다**(part="train", 107벌 중 91벌).
-            # 나머지 16벌은 `tools/holdout.py` 가 시험지를 만드는 데만 쓴다.
-            # 같은 글꼴로 시험지를 만들면 '손글씨를 읽나'가 아니라 '내 생성기를
-            # 외웠나'를 재게 된다(synth.FONT_TEST_SHARE 의 설명을 보라).
+            # **시험용 글꼴은 여기서 안 쓴다.** `part="train"` 이 `FONT_TEST`
+            # 여섯 벌과 `FONT_WIDE` 스물네 벌을 뺀다. 앞의 여섯은
+            # `tools/holdout.py` 가 시험지를 만드는 데, 뒤의 스물넷은
+            # `tools/wide.py` 가 두루 읽나를 재는 데만 쓴다. 같은 글꼴로
+            # 시험지를 만들면 '손글씨를 읽나'가 아니라 '내 생성기를 외웠나'를
+            # 재게 된다(`synth.FONT_TEST` 머리말). **수는 여기 안 적는다** —
+            # 글꼴은 늘어나고 적어 둔 수는 안 늘어난다.
             self._fonts = synth.Fonts(self.fonts_dir, part="train")
         return self._fonts
 
@@ -59,20 +66,33 @@ class Lines(IterableDataset):
         fonts = self._ready()
         made = 0
         share = self.length // total + 1
+        # 헛도는 횟수를 센다. 글월이 안 나오거나 그림이 안 그려지면 그냥 다시
+        # 뽑는데, 그 자리가 **영영 안 되는 자리**가 되면 일꾼이 아무 말 없이
+        # 돌기만 한다(오류도 로그도 없다. 밖에서는 '느리다'로만 보인다).
+        # 만 번을 잇달아 헛돌면 그것은 뽑기 운이 아니라 고장이다.
+        misses = 0
         while made < share:
+            if misses > 10_000:
+                raise RuntimeError(
+                    "합성이 만 번을 잇달아 실패했다 (글꼴 %d벌, 일꾼 %d). "
+                    "글꼴 폴더나 corpus 를 보라." % (len(fonts), worker))
             text = corpus.decorate(corpus.line(rng), rng)
             if not text or (corpus.UNDRAWABLE & set(text)):
+                misses += 1
                 continue
             ids = self.vocab.encode(text)
             if len(ids) > self.letters:
+                misses += 1
                 continue
-            page = synth.render(text, fonts, rng)
+            page = synth.render(text, fonts, rng, strike=self.strike)
             if page is None:
+                misses += 1
                 continue
             yield {"gray": to_gray(synth.fit(page, *self.cell)),
                    "labels": torch.tensor(ids, dtype=torch.long),
                    "text": text}
             made += 1
+            misses = 0
 
 
 def to_gray(cell) -> torch.Tensor:

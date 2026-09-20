@@ -160,7 +160,12 @@ def middle(reads: list[str]) -> tuple[str, float]:
     if not kept:
         return "", 0.0
     if len(kept) == 1:
-        return kept[0], 1.0
+        # 혼자 답했으면 **나머지는 입을 다문 것**이다. 예전에는 여기서 1.0 을
+        # 주었다. 그러면 여섯 번 읽어 다섯 번이 빈칸이어도 `reader.TRUST_EDGE`
+        # (0.80)를 그냥 넘어, 막으려던 바로 그 자리에서 샌다 — 서식에서 틀린
+        # 답은 빈칸보다 나쁘다(`reader.py` 의 TRUST_EDGE 머리말).
+        # 답한 몫으로 준다. 한 번만 읽었으면 견줄 것이 없으니 그대로 1.0 이다.
+        return kept[0], 1.0 if len(reads) <= 1 else 1.0 / len(reads)
     # **자리로 센다.** 예전엔 `for other in kept if other is not one` 이었는데,
     # 그러면 값이 같은 답끼리 서로를 빼 버린다. 파이썬은 같은 글월을 한 객체로
     # 묶는 일이 있어서(상수 접기·인터닝), 그럴 때 이 함수가 정확히 거꾸로 답한다:
@@ -174,8 +179,3 @@ def middle(reads: list[str]) -> tuple[str, float]:
               for mine, one in enumerate(kept)]
     scores.sort(key=lambda pair: -pair[0])
     return scores[0][1], scores[0][0]
-
-
-def steady(reads: list[str], floor: float = 0.55) -> bool:
-    """읽을 때마다 크게 다르면 못 읽은 것으로 본다."""
-    return middle(reads)[1] >= floor

@@ -42,11 +42,23 @@ param(
   # 그러면 학습이 1걸음에서 몇 분씩 멈춘다. 게다가 속도 이득도 없었다 —
   # 3일꾼 72장/초, 5일꾼 73장/초다(단독으로 재도 그렇다).
   # **이 PC 에서 3 이 상한이다.** 더 빠르게 하려면 RAM 을 꽂아야 한다.
+  #
+  # **2026-09-17 에 뒤집혔다.** 그 7.9GB 의 대부분은 CUDA 가 아니라 글꼴이었다 —
+  # Windows 의 Pillow 가 한글 이름 글꼴을 크기마다 통째로 메모리에 읽고 있었다
+  # (`kohandocr/synth.py` 의 `_ascii_path` 머리말). 고친 뒤 일꾼 하나가 커밋
+  # 1.7GB 이고, 일꾼 셋이 코어 하나씩 꽉 채운 채 GPU 가 놀았다. 고리는 이제
+  # `runs\KNOBS.json` 의 `workers` 로 정한다.
   [int]$Seed = 0,
   # 씨앗. **여태 안 넘기고 있었다** — train.py 에 --seed 가 있는데 여기서
   # 안 주니 모든 판이 씨앗 0 이었다. 앙상블은 식구가 서로 다를수록 이득인데,
   # 그 가장 싼 축(첫 무게와 자료 순서)을 안 쓰고 있었다.
   [int]$Letters = 128,
+  # 디코더 층 수. 이어받은 판이 이보다 얕으면 늘려서 학습한다(kohandocr/model.py
+  # 의 grow). 0 이면 이어받은 그대로다.
+  [int]$Layers = 0,
+  # 지운 자국을 넣을 줄 비율(kohandocr/synth.py 의 STRIKE). 0 이면 기본값 그대로.
+  # 학습 자료만 바꾸고 시험지는 안 바꾼다.
+  [double]$Strike = 0,
   # 경로를 코드에 박지 않는다. 만든 사람의 PC 경로가 박혀 있으면 공개했을 때
   # 남의 PC 에서 안 돌고 계정 이름도 같이 나간다.
   #   글꼴  : $env:KOHAND_FONTS  없으면 ~/.cache/ko-hand-ocr/fonts
@@ -116,6 +128,8 @@ $args = @("-u", "-m", "kohandocr.train",
           "--log-every", "500", "--check-every", "2500", "--save-every", "2500",
           "--keep", $Keep)
 if ($Resume) { $args += @("--resume", $Resume) }
+if ($Layers) { $args += @("--layers", $Layers) }
+if ($Strike) { $args += @("--strike", $Strike) }
 # 값에 공백이 있으면 감싼다. 위 프로브와 같은 함정이다 — 글꼴 폴더 이름에
 # 빈칸이 하나만 있어도 Start-Process 가 두 인자로 쪼개서 엉뚱한 곳을 뒤진다.
 $args = $args | ForEach-Object { if ("$_" -match '\s') { '"' + $_ + '"' } else { $_ } }
@@ -130,10 +144,16 @@ $args = $args | ForEach-Object { if ("$_" -match '\s') { '"' + $_ + '"' } else {
 # 로 적으면 PowerShell 이 배열을 따옴표 없이 공백으로 이어 붙여서, 파이썬은
 # `-c import` 만 받고 SyntaxError 로 죽는다. 그러면 이 검사가 **멀쩡한 파이썬을
 # 'torch 가 없다'고 몰아세운다** — 실제로 그래서 v24 를 못 띄웠다.
-$probe = Start-Process -FilePath $Python -ArgumentList @("-c", '"import torch, transformers"') `
+#
+# **CUDA 까지 본다.** torch 가 있다고 GPU 로 도는 것이 아니다. 2026-09-17 에
+# 앱 venv 의 torch(2.14.0+cpu)를 잡았더니 train.py 가 경고 한 줄만 찍고 CPU 로
+# 2장/초(GPU 는 72장/초) 학습을 시작했고, 여기서는 첫 손실 줄을 보고 '돈다'로
+# 넘겼다. 한 바퀴가 이틀이 되는데 겉으로는 멀쩡해 보인다.
+$probe = Start-Process -FilePath $Python `
+  -ArgumentList @("-c", '"import torch, transformers; assert torch.cuda.is_available()"') `
   -NoNewWindow -Wait -PassThru -RedirectStandardError ([System.IO.Path]::GetTempFileName())
 if ($probe.ExitCode -ne 0) {
-  Write-Output "이 파이썬에는 torch/transformers 가 없다: $Python"
+  Write-Output "이 파이썬에는 torch/transformers 가 없거나 torch 가 CUDA 를 못 쓴다: $Python"
   Write-Output "  `$env:KOHAND_PYTHON 을 정하거나 -Python 으로 넘겨라."
   exit 1
 }

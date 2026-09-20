@@ -114,6 +114,56 @@ def load(folder) -> VisionEncoderDecoderModel:
     return model
 
 
+def grow(model: VisionEncoderDecoderModel, layers: int) -> int:
+    """디코더를 `layers` 층까지 **이어받은 채로** 늘린다. 늘린 층 수를 돌려준다.
+
+    맨바닥에서 큰 모델을 새로 배우지 않는 까닭. 씨앗만 바꾼 맨바닥 판 넷
+    (v27~v30)이 모두 글씨체 평균 87%대에 멈춰 이어받은 판(93%)을 한 번도 못
+    이겼다. 자리를 늘리더라도 **지금 아는 것을 들고** 늘려야 한다.
+
+    인코더와 입력 크기는 건드리지 않는다. 읽는 시간의 대부분은 자모를 하나씩
+    뽑는 오버헤드라 디코더 층을 늘려도 느려지는 몫이 작고, 인코더를 키우면
+    31M 이라는 이 모델의 성격(CPU 만으로 칸당 0.16초)이 먼저 무너진다.
+
+    새 층은 맨 끝 층을 복제하되 **더하는 몫(attention 출력, fc2)을 0** 으로
+    두고, 가운데 LayerNorm 둘은 항등(1, 0)으로, 층 끝 LayerNorm 은 맨 끝 층 것을
+    물려받는다. 답을 그대로 지키지는 못한다 — TrOCR 층은 더한 뒤에 정규화하는
+    post-LN 이라 더하는 몫이 0 이어도 LayerNorm 이 한 번 더 걸린다. 그래서 재서
+    골랐다(2026-09-17, v46 을 6층으로, 합성 48줄, CPU):
+
+        그대로 4층        손실 0.052
+        0 으로 늘림       손실 0.060   그리디 답 8줄 중 7줄 그대로
+        끝 층 복제        손실 2.585   그리디 답 8줄 중 0줄 — 통째로 무너진다
+    """
+    import copy
+
+    decoder = model.decoder.model.decoder
+    have = len(decoder.layers)
+    if layers <= have:
+        return 0
+    last = decoder.layers[-1]
+    for at in range(have, layers):
+        fresh = copy.deepcopy(last)
+        for lin in (fresh.self_attn.out_proj, fresh.encoder_attn.out_proj, fresh.fc2):
+            torch.nn.init.zeros_(lin.weight)
+            if lin.bias is not None:
+                torch.nn.init.zeros_(lin.bias)
+        for norm in (fresh.self_attn_layer_norm, fresh.encoder_attn_layer_norm):
+            torch.nn.init.ones_(norm.weight)
+            torch.nn.init.zeros_(norm.bias)
+        # 캐시 자리 번호. 복제한 층은 맨 끝 층의 번호를 들고 있어서, 그대로 두면
+        # 읽을 때 두 층이 **같은 캐시 칸**에 키·값을 덮어쓴다.
+        for attn in (fresh.self_attn, fresh.encoder_attn):
+            if hasattr(attn, "layer_idx"):
+                attn.layer_idx = at
+        if hasattr(fresh, "layer_idx"):
+            fresh.layer_idx = at
+        decoder.layers.append(fresh)
+    model.decoder.config.decoder_layers = layers
+    model.config.decoder.decoder_layers = layers
+    return layers - have
+
+
 def sizes(model: VisionEncoderDecoderModel) -> dict[str, float]:
     million = 1e6
     return {

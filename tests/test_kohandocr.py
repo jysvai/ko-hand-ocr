@@ -12,6 +12,7 @@
 
 from __future__ import annotations
 
+import inspect
 import os
 import random
 import sys
@@ -164,7 +165,7 @@ def test_망가진_글꼴은_걸러낸다(fonts):
     """109종 중 2종은 FreeType 이 뱉는다. 학습 도중에 터지면 원인 찾기가 어렵다."""
     assert len(fonts) >= 100
     for path in fonts.files:
-        assert path.suffix.lower() in (".ttf", ".otf")
+        assert path.suffix.lower() in (".ttf", ".otf", ".woff", ".woff2")
 
 
 # ── 명단 가두기 ──────────────────────────────────────────────────
@@ -268,9 +269,31 @@ def test_글꼴은_그_글월을_담은_것으로_고른다(fonts):
     hard = "뷁쫑햏똠힣쒫"
     for _ in range(40):
         font, _ = fonts.pick(rng, hard)
-        which = fonts.files.index(Path(font.path))
+        # 여는 경로는 Windows 에서 ASCII 하드링크라 `files` 가 아니라 `paths` 로 찾는다.
+        which = fonts.paths.index(font.path)
         for char in hard:
-            assert fonts.has(which, char), f"{Path(font.path).name} 에 {char} 가 없다"
+            assert fonts.has(which, char), f"{fonts.files[which].name} 에 {char} 가 없다"
+
+
+def test_학습의_지운_자국_비율은_시험지를_안_바꾼다(fonts):
+    """고리가 `runs/KNOBS.json` 의 `strike` 로 학습 자료만 바꾼다.
+
+    시험지(`tools/holdout.py`)가 그 값을 받거나, 안 준 것이 기본값과 다르게
+    그려지면 **바퀴마다 자가 달라져서** 판끼리 못 견준다.
+    """
+    import inspect
+
+    sys.path.insert(0, str(ROOT / "tools"))
+    import holdout
+
+    assert "strike" not in inspect.getsource(holdout.sheet)
+    for seed in range(12):
+        plain = synth.render("부서 : 데이터팀", fonts, random.Random(seed))
+        said = synth.render("부서 : 데이터팀", fonts, random.Random(seed),
+                            strike=synth.STRIKE)
+        assert (plain is None) == (said is None)
+        if plain is not None:
+            assert plain.tobytes() == said.tobytes()
 
 def test_가운데_답은_같은_답이_겹칠수록_세진다():
     """값이 같은 답끼리 서로를 빼면 안 된다.
