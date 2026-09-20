@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 372" width="760" height="372" role="img" aria-label="Jamo similarity on three test sets. 실제 손글씨 사진 11장: ko-hand-ocr 앙상블 95.4 percent, ko-hand-ocr 판 하나 88.9 percent, ddobokki/ko-trocr 78.5 percent. 안 배운 글씨체 6벌: ko-hand-ocr 앙상블 95.7 percent, ko-hand-ocr 판 하나 94.8 percent, ddobokki/ko-trocr 77.6 percent. 두루 읽나 — 24벌: ko-hand-ocr 앙상블 97.3 percent, ko-hand-ocr 판 하나 96.5 percent, ddobokki/ko-trocr 79.9 percent.">
+<style>
+  .surface{fill:#fcfcfb}
+  .ink{fill:#0b0b0b}
+  .ink2{fill:#52514e}
+  .ink3{fill:#82807a}
+  .s0{fill:#2a78d6}
+  .s1{fill:#eb6834}
+  .s2{fill:#8a8880}
+  .grid{stroke:#e3e2de;stroke-width:1}
+  .rule{stroke:#cdccc6;stroke-width:1}
+  text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  @media (prefers-color-scheme: dark){
+    .surface{fill:#1a1a19}
+    .ink{fill:#ffffff}
+    .ink2{fill:#c3c2b7}
+    .ink3{fill:#8e8c84}
+    .s0{fill:#3987e5}
+    .s1{fill:#d95926}
+    .s2{fill:#7c7a73}
+    .grid{stroke:#3a3a38}
+    .rule{stroke:#4a4946}
+  }
+</style>
+<rect class="surface" width="760" height="372" rx="6"/>
+<text class="ink" x="20" y="28" font-size="15" font-weight="600">얼마나 맞히나 — 같은 그림, 같은 자</text>
+<text class="ink2" x="20" y="47" font-size="11.5">자모 단위 닮음(띄어쓰기 무시). 높을수록 좋다. 가로축은 50%부터 — 0 부터 그리면 셋이 다 붙어 보인다.</text>
+<line class="grid" x1="196.0" y1="92.0" x2="196.0" y2="266.0"/>
+<line class="grid" x1="294.8" y1="92.0" x2="294.8" y2="266.0"/>
+<line class="grid" x1="393.6" y1="92.0" x2="393.6" y2="266.0"/>
+<line class="grid" x1="492.4" y1="92.0" x2="492.4" y2="266.0"/>
+<line class="grid" x1="591.2" y1="92.0" x2="591.2" y2="266.0"/>
+<line class="grid" x1="690.0" y1="92.0" x2="690.0" y2="266.0"/>
+<text class="ink2" x="184" y="125.0" font-size="12" text-anchor="end">실제 손글씨 사진 11장 · 34줄</text>
+<path class="s0" d="M196,100.0 H641.4 Q644.9,100.0 644.9,103.5 V108.5 Q644.9,112.0 641.4,112.0 H196 Z"/>
+<text class="ink2" x="650.9" y="110.5" font-size="10.5">95.4%</text>
+<path class="s1" d="M196,115.0 H577.2 Q580.7,115.0 580.7,118.5 V123.5 Q580.7,127.0 577.2,127.0 H196 Z"/>
+<text class="ink2" x="586.7" y="125.5" font-size="10.5">88.9%</text>
+<path class="s2" d="M196,130.0 H474.1 Q477.6,130.0 477.6,133.5 V138.5 Q477.6,142.0 474.1,142.0 H196 Z"/>
+<text class="ink2" x="483.6" y="140.5" font-size="10.5">78.5%</text>
+<text class="ink2" x="184" y="186.0" font-size="12" text-anchor="end">안 배운 글씨체 6벌 · 670줄</text>
+<path class="s0" d="M196,161.0 H644.1 Q647.6,161.0 647.6,164.5 V169.5 Q647.6,173.0 644.1,173.0 H196 Z"/>
+<text class="ink2" x="653.6" y="171.5" font-size="10.5">95.7%</text>
+<path class="s1" d="M196,176.0 H635.3 Q638.8,176.0 638.8,179.5 V184.5 Q638.8,188.0 635.3,188.0 H196 Z"/>
+<text class="ink2" x="644.8" y="186.5" font-size="10.5">94.8%</text>
+<path class="s2" d="M196,191.0 H465.4 Q468.9,191.0 468.9,194.5 V199.5 Q468.9,203.0 465.4,203.0 H196 Z"/>
+<text class="ink2" x="474.9" y="201.5" font-size="10.5">77.6%</text>
+<text class="ink2" x="184" y="247.0" font-size="12" text-anchor="end">두루 읽나 — 24벌 · 648줄</text>
+<path class="s0" d="M196,222.0 H660.0 Q663.5,222.0 663.5,225.5 V230.5 Q663.5,234.0 660.0,234.0 H196 Z"/>
+<text class="ink2" x="669.5" y="232.5" font-size="10.5">97.3%</text>
+<path class="s1" d="M196,237.0 H651.8 Q655.3,237.0 655.3,240.5 V245.5 Q655.3,249.0 651.8,249.0 H196 Z"/>
+<text class="ink2" x="661.3" y="247.5" font-size="10.5">96.5%</text>
+<path class="s2" d="M196,252.0 H488.3 Q491.8,252.0 491.8,255.5 V260.5 Q491.8,264.0 488.3,264.0 H196 Z"/>
+<text class="ink2" x="497.8" y="262.5" font-size="10.5">79.9%</text>
+<line class="rule" x1="196" y1="277" x2="690" y2="277"/>
+<text class="ink3" x="196.0" y="291" font-size="10.5" text-anchor="middle">50%</text>
+<text class="ink3" x="294.8" y="291" font-size="10.5" text-anchor="middle">60%</text>
+<text class="ink3" x="393.6" y="291" font-size="10.5" text-anchor="middle">70%</text>
+<text class="ink3" x="492.4" y="291" font-size="10.5" text-anchor="middle">80%</text>
+<text class="ink3" x="591.2" y="291" font-size="10.5" text-anchor="middle">90%</text>
+<text class="ink3" x="690.0" y="291" font-size="10.5" text-anchor="middle">100%</text>
+<rect class="s0" x="186" y="69" width="10" height="10" rx="2"/>
+<text class="ink2" x="201" y="78" font-size="11.5">ko-hand-ocr 앙상블 (108M)</text>
+<rect class="s1" x="374.0" y="69" width="10" height="10" rx="2"/>
+<text class="ink2" x="389.0" y="78" font-size="11.5">ko-hand-ocr 판 하나 (36M)</text>
+<rect class="s2" x="562.0" y="69" width="10" height="10" rx="2"/>
+<text class="ink2" x="577.0" y="78" font-size="11.5">ddobokki/ko-trocr (214M)</text>
+<text class="ink3" x="20" y="328" font-size="10.5">사진은 우리 줄 자르기로 자른 같은 칸을 양쪽에 넣었다. 글씨체 시험지는 합성 날것을 넣었다(양쪽 각자의 전처리).</text>
+<text class="ink3" x="20" y="343" font-size="10.5">시험 글꼴 여섯·스물네 벌은 우리 학습에서 뺀 것이다. ko-trocr 가 무엇을 봤는지는 모르므로 그쪽에 불리하지 않다.</text>
+<text class="ink3" x="20" y="358" font-size="10.5">잰 날 2026-09-20 20:41 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
+</svg>

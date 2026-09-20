@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 513" width="760" height="513" role="img" aria-label="Character error rate by line content. Lower is better. 라틴 섞임: ko-hand-ocr 앙상블 14 percent, ko-hand-ocr 판 하나 18 percent, ddobokki/ko-trocr 60 percent. 서식 라벨: ko-hand-ocr 앙상블 10 percent, ko-hand-ocr 판 하나 11 percent, ddobokki/ko-trocr 30 percent. 숫자 섞임: ko-hand-ocr 앙상블 9 percent, ko-hand-ocr 판 하나 10 percent, ddobokki/ko-trocr 49 percent. 한글 낱말·이름: ko-hand-ocr 앙상블 5 percent, ko-hand-ocr 판 하나 6 percent, ddobokki/ko-trocr 25 percent. 한글 문장: ko-hand-ocr 앙상블 8 percent, ko-hand-ocr 판 하나 10 percent, ddobokki/ko-trocr 46 percent.">
+<style>
+  .surface{fill:#fcfcfb}
+  .ink{fill:#0b0b0b}
+  .ink2{fill:#52514e}
+  .ink3{fill:#82807a}
+  .s0{fill:#2a78d6}
+  .s1{fill:#eb6834}
+  .s2{fill:#8a8880}
+  .grid{stroke:#e3e2de;stroke-width:1}
+  .rule{stroke:#cdccc6;stroke-width:1}
+  text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  @media (prefers-color-scheme: dark){
+    .surface{fill:#1a1a19}
+    .ink{fill:#ffffff}
+    .ink2{fill:#c3c2b7}
+    .ink3{fill:#8e8c84}
+    .s0{fill:#3987e5}
+    .s1{fill:#d95926}
+    .s2{fill:#7c7a73}
+    .grid{stroke:#3a3a38}
+    .rule{stroke:#4a4946}
+  }
+</style>
+<rect class="surface" width="760" height="513" rx="6"/>
+<text class="ink" x="20" y="28" font-size="15" font-weight="600">줄 안에 무엇이 들었나 — 글자 오류율(CER)</text>
+<text class="ink2" x="20" y="47" font-size="11.5">안 배운 글씨체 6벌 670줄을 내용으로 갈라 쟀다. 낮을수록 좋다.</text>
+<rect class="s0" x="186" y="69" width="10" height="10" rx="2"/>
+<text class="ink2" x="201" y="78" font-size="11.5">ko-hand-ocr 앙상블 (108M)</text>
+<rect class="s1" x="374.0" y="69" width="10" height="10" rx="2"/>
+<text class="ink2" x="389.0" y="78" font-size="11.5">ko-hand-ocr 판 하나 (36M)</text>
+<rect class="s2" x="562.0" y="69" width="10" height="10" rx="2"/>
+<text class="ink2" x="577.0" y="78" font-size="11.5">ddobokki/ko-trocr (214M)</text>
+<line class="grid" x1="196.0" y1="96.0" x2="196.0" y2="386.0"/>
+<line class="grid" x1="294.8" y1="96.0" x2="294.8" y2="386.0"/>
+<line class="grid" x1="393.6" y1="96.0" x2="393.6" y2="386.0"/>
+<line class="grid" x1="492.4" y1="96.0" x2="492.4" y2="386.0"/>
+<line class="grid" x1="591.2" y1="96.0" x2="591.2" y2="386.0"/>
+<line class="grid" x1="690.0" y1="96.0" x2="690.0" y2="386.0"/>
+<text class="ink2" x="184" y="129.0" font-size="12" text-anchor="end">라틴 섞임</text>
+<path class="s0" d="M196,104.0 H260.6 Q264.1,104.0 264.1,107.5 V112.5 Q264.1,116.0 260.6,116.0 H196 Z"/>
+<text class="ink2" x="270.1" y="114.5" font-size="10.5">13.8%</text>
+<path class="s1" d="M196,119.0 H279.0 Q282.5,119.0 282.5,122.5 V127.5 Q282.5,131.0 279.0,131.0 H196 Z"/>
+<text class="ink2" x="288.5" y="129.5" font-size="10.5">17.5%</text>
+<path class="s2" d="M196,134.0 H486.5 Q490.0,134.0 490.0,137.5 V142.5 Q490.0,146.0 486.5,146.0 H196 Z"/>
+<text class="ink2" x="496.0" y="144.5" font-size="10.5">59.5%</text>
+<text class="ink2" x="184" y="190.0" font-size="12" text-anchor="end">서식 라벨</text>
+<path class="s0" d="M196,165.0 H243.6 Q247.1,165.0 247.1,168.5 V173.5 Q247.1,177.0 243.6,177.0 H196 Z"/>
+<text class="ink2" x="253.1" y="175.5" font-size="10.5">10.4%</text>
+<path class="s1" d="M196,180.0 H244.9 Q248.4,180.0 248.4,183.5 V188.5 Q248.4,192.0 244.9,192.0 H196 Z"/>
+<text class="ink2" x="254.4" y="190.5" font-size="10.5">10.6%</text>
+<path class="s2" d="M196,195.0 H342.2 Q345.7,195.0 345.7,198.5 V203.5 Q345.7,207.0 342.2,207.0 H196 Z"/>
+<text class="ink2" x="351.7" y="205.5" font-size="10.5">30.3%</text>
+<text class="ink2" x="184" y="251.0" font-size="12" text-anchor="end">숫자 섞임</text>
+<path class="s0" d="M196,226.0 H234.5 Q238.0,226.0 238.0,229.5 V234.5 Q238.0,238.0 234.5,238.0 H196 Z"/>
+<text class="ink2" x="244.0" y="236.5" font-size="10.5">8.5%</text>
+<path class="s1" d="M196,241.0 H241.7 Q245.2,241.0 245.2,244.5 V249.5 Q245.2,253.0 241.7,253.0 H196 Z"/>
+<text class="ink2" x="251.2" y="251.5" font-size="10.5">10.0%</text>
+<path class="s2" d="M196,256.0 H436.7 Q440.2,256.0 440.2,259.5 V264.5 Q440.2,268.0 436.7,268.0 H196 Z"/>
+<text class="ink2" x="446.2" y="266.5" font-size="10.5">49.4%</text>
+<text class="ink2" x="184" y="312.0" font-size="12" text-anchor="end">한글 낱말·이름</text>
+<path class="s0" d="M196,287.0 H216.6 Q220.1,287.0 220.1,290.5 V295.5 Q220.1,299.0 216.6,299.0 H196 Z"/>
+<text class="ink2" x="226.1" y="297.5" font-size="10.5">4.9%</text>
+<path class="s1" d="M196,302.0 H221.9 Q225.4,302.0 225.4,305.5 V310.5 Q225.4,314.0 221.9,314.0 H196 Z"/>
+<text class="ink2" x="231.4" y="312.5" font-size="10.5">6.0%</text>
+<path class="s2" d="M196,317.0 H316.2 Q319.7,317.0 319.7,320.5 V325.5 Q319.7,329.0 316.2,329.0 H196 Z"/>
+<text class="ink2" x="325.7" y="327.5" font-size="10.5">25.0%</text>
+<text class="ink2" x="184" y="373.0" font-size="12" text-anchor="end">한글 문장</text>
+<path class="s0" d="M196,348.0 H232.8 Q236.3,348.0 236.3,351.5 V356.5 Q236.3,360.0 232.8,360.0 H196 Z"/>
+<text class="ink2" x="242.3" y="358.5" font-size="10.5">8.1%</text>
+<path class="s1" d="M196,363.0 H239.8 Q243.3,363.0 243.3,366.5 V371.5 Q243.3,375.0 239.8,375.0 H196 Z"/>
+<text class="ink2" x="249.3" y="373.5" font-size="10.5">9.6%</text>
+<path class="s2" d="M196,378.0 H420.3 Q423.8,378.0 423.8,381.5 V386.5 Q423.8,390.0 420.3,390.0 H196 Z"/>
+<text class="ink2" x="429.8" y="388.5" font-size="10.5">46.1%</text>
+<line class="rule" x1="196" y1="403" x2="690" y2="403"/>
+<text class="ink3" x="196.0" y="417" font-size="10.5" text-anchor="middle">0%</text>
+<text class="ink3" x="294.8" y="417" font-size="10.5" text-anchor="middle">20%</text>
+<text class="ink3" x="393.6" y="417" font-size="10.5" text-anchor="middle">40%</text>
+<text class="ink3" x="492.4" y="417" font-size="10.5" text-anchor="middle">60%</text>
+<text class="ink3" x="591.2" y="417" font-size="10.5" text-anchor="middle">80%</text>
+<text class="ink3" x="690.0" y="417" font-size="10.5" text-anchor="middle">100%</text>
+<text class="ink3" x="20" y="454" font-size="10.5">CER 은 고쳐야 하는 글자 수를 정답 글자 수로 나눈 값이다. 자모 닮음과 다른 자다 — '팀'을 '탐'으로 읽으면 자모로는 0.67, CER 로는 1.0 이다.</text>
+<text class="ink3" x="20" y="469" font-size="10.5">줄마다 평균 내지 않고 글자를 다 모아 놓고 나눈다. 안 그러면 한 글자 줄과 서른 글자 줄이 같은 무게가 된다.</text>
+<text class="ink3" x="20" y="484" font-size="10.5">가로 눈금은 갈래별·길이별 두 장이 같다. 나란히 놓고 봐도 속지 않게.</text>
+<text class="ink3" x="20" y="499" font-size="10.5">잰 날 2026-09-20 20:41 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
+</svg>

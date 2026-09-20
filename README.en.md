@@ -80,7 +80,7 @@ letterbox) on them would squash the other model twice. Metric, precision
 What was measured and how is spelled out in the header of `tools/vs.py`, and
 every number below comes from the `runs/VS.json` it leaves behind.
 
-![Accuracy](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-accuracy.gif)
+![Accuracy](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-accuracy.svg)
 
 #### Real handwriting photos · 34 lines, 209 characters
 |  | Jamo similarity | Character error rate | Exact line match | Worst photo |
@@ -103,7 +103,7 @@ every number below comes from the `runs/VS.json` it leaves behind.
 | ko-hand-ocr single (36M) | 96.49% | 4.72% | 82.4% | 89.00% |
 | ddobokki/ko-trocr (214M) | 79.94% | 32.38% | 42.0% | 46.52% |
 
-![All 480 fonts](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-fonts.gif)
+![All 480 fonts](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-fonts.svg)
 
 #### All 480 fonts · 12 lines each, 4320 lines, 22560 characters
 |  | held out (6)<br>6 | breadth (24)<br>24 | seen in training<br>450 | All<br>480 | fonts ≥ 95% | fonts < 80% |
@@ -129,7 +129,7 @@ every number below comes from the `runs/VS.json` it leaves behind.
 
 ### Where the gap opens
 
-![CER by content and by length](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-category.gif)
+![CER by line content](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-kind.svg)
 
 #### CER by line content — lower is better
 |  | Latin mixed in<br>66 lines | form label<br>60 lines | digits mixed in<br>84 lines | Hangul word / name<br>304 lines | Hangul sentence<br>156 lines |
@@ -137,6 +137,8 @@ every number below comes from the `runs/VS.json` it leaves behind.
 | ko-hand-ocr ensemble (108M) | 13.8% | 10.4% | 8.5% | 4.9% | 8.1% |
 | ko-hand-ocr single (36M) | 17.5% | 10.6% | 10.0% | 6.0% | 9.6% |
 | ddobokki/ko-trocr (214M) | 59.5% | 30.3% | 49.4% | 25.0% | 46.1% |
+
+![CER by line length](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-span.svg)
 
 #### CER by line length — lower is better
 |  | 1-5 chars<br>286 lines | 6-10 chars<br>270 lines | 11-20 chars<br>108 lines | 21+ chars<br>6 lines |
@@ -154,7 +156,7 @@ every number below comes from the `runs/VS.json` it leaves behind.
 
 ### What it costs
 
-![Speed and size](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-speed.gif)
+![Speed and size](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-speed.svg)
 
 #### Speed and size
 |  | Parameters | Download | lines/s (GPU) | lines/s (CPU) | 30-line page (GPU) | 30-line page (CPU) | Peak VRAM |

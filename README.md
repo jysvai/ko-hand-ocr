@@ -76,7 +76,7 @@ AI Hub 라 이용 목적·재배포에 제약이 붙는다. 사내 도구에 넣
 순간이 모두 같다. 무엇을 어떻게 쟀는지는 `tools/vs.py` 머리말에 다 적혀 있고,
 아래 숫자는 전부 그것이 남긴 `runs/VS.json` 에서 나왔다.
 
-![얼마나 맞히나](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-accuracy.gif)
+![얼마나 맞히나](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-accuracy.svg)
 
 #### 실제 손글씨 사진 · 34줄 209글자
 |  | 자모 닮음 | 글자 오류율(CER) | 줄 통째로 일치 | 가장 나쁜 장 |
@@ -99,7 +99,7 @@ AI Hub 라 이용 목적·재배포에 제약이 붙는다. 사내 도구에 넣
 | ko-hand-ocr 판 하나 (36M) | 96.49% | 4.72% | 82.4% | 89.00% |
 | ddobokki/ko-trocr (214M) | 79.94% | 32.38% | 42.0% | 46.52% |
 
-![글꼴 480벌 전부](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-fonts.gif)
+![글꼴 480벌 전부](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-fonts.svg)
 
 #### 글꼴 480벌 전부 · 벌당 12줄 4320줄 22560글자
 |  | 고르기 6벌<br>6벌 | 두루 24벌<br>24벌 | 학습에 쓴 벌<br>450벌 | 전부<br>480벌 | 95% 넘긴 벌 | 80% 밑인 벌 |
@@ -122,7 +122,7 @@ AI Hub 라 이용 목적·재배포에 제약이 붙는다. 사내 도구에 넣
 
 ### 어디서 갈리나
 
-![갈래별·길이별 오류율](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-category.gif)
+![갈래별 오류율](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-kind.svg)
 
 #### 갈래별 글자 오류율 — 낮을수록 좋다
 |  | 라틴 섞임<br>66줄 | 서식 라벨<br>60줄 | 숫자 섞임<br>84줄 | 한글 낱말·이름<br>304줄 | 한글 문장<br>156줄 |
@@ -130,6 +130,8 @@ AI Hub 라 이용 목적·재배포에 제약이 붙는다. 사내 도구에 넣
 | ko-hand-ocr 앙상블 (108M) | 13.8% | 10.4% | 8.5% | 4.9% | 8.1% |
 | ko-hand-ocr 판 하나 (36M) | 17.5% | 10.6% | 10.0% | 6.0% | 9.6% |
 | ddobokki/ko-trocr (214M) | 59.5% | 30.3% | 49.4% | 25.0% | 46.1% |
+
+![길이별 오류율](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-span.svg)
 
 #### 줄 길이별 글자 오류율 — 낮을수록 좋다
 |  | 1~5자<br>286줄 | 6~10자<br>270줄 | 11~20자<br>108줄 | 21자 이상<br>6줄 |
@@ -146,7 +148,7 @@ AI Hub 라 이용 목적·재배포에 제약이 붙는다. 사내 도구에 넣
 
 ### 무엇을 치렀나
 
-![빠르기와 덩치](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-speed.gif)
+![빠르기와 덩치](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-speed.svg)
 
 #### 빠르기와 덩치
 |  | 파라미터 | 받는 크기 | 줄/초 (GPU) | 줄/초 (CPU) | 30줄 쪽 (GPU) | 30줄 쪽 (CPU) | 꼭대기 VRAM |
