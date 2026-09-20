@@ -80,7 +80,7 @@ letterbox) on them would squash the other model twice. Metric, precision
 What was measured and how is spelled out in the header of `tools/vs.py`, and
 every number below comes from the `runs/VS.json` it leaves behind.
 
-![Head to head](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs.gif)
+![Accuracy](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-accuracy.gif)
 
 #### Real handwriting photos · 34 lines, 209 characters
 |  | Jamo similarity | Character error rate | Exact line match | Worst photo |
@@ -102,6 +102,8 @@ every number below comes from the `runs/VS.json` it leaves behind.
 | ko-hand-ocr ensemble (108M) | **97.32%** | **3.66%** | **85.3%** | **90.81%** |
 | ko-hand-ocr single (36M) | 96.49% | 4.72% | 82.4% | 89.00% |
 | ddobokki/ko-trocr (214M) | 79.94% | 32.38% | 42.0% | 46.52% |
+
+![All 480 fonts](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-fonts.gif)
 
 #### All 480 fonts · 12 lines each, 4320 lines, 22560 characters
 |  | held out (6)<br>6 | breadth (24)<br>24 | seen in training<br>450 | All<br>480 | fonts ≥ 95% | fonts < 80% |
@@ -127,6 +129,8 @@ every number below comes from the `runs/VS.json` it leaves behind.
 
 ### Where the gap opens
 
+![CER by content and by length](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-category.gif)
+
 #### CER by line content — lower is better
 |  | Latin mixed in<br>66 lines | form label<br>60 lines | digits mixed in<br>84 lines | Hangul word / name<br>304 lines | Hangul sentence<br>156 lines |
 |---|---|---|---|---|---|
@@ -149,6 +153,8 @@ every number below comes from the `runs/VS.json` it leaves behind.
   holds only 6 lines, though** — read it as a direction, not a result.
 
 ### What it costs
+
+![Speed and size](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-speed.gif)
 
 #### Speed and size
 |  | Parameters | Download | lines/s (GPU) | lines/s (CPU) | 30-line page (GPU) | 30-line page (CPU) | Peak VRAM |
