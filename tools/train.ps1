@@ -59,6 +59,10 @@ param(
   # 지운 자국을 넣을 줄 비율(kohandocr/synth.py 의 STRIKE). 0 이면 기본값 그대로.
   # 학습 자료만 바꾸고 시험지는 안 바꾼다.
   [double]$Strike = 0,
+  # 글자 속 획을 휠 줄 비율(kohandocr/synth.py 의 WARP). 0 이면 끔. 시험지는 안 바꾼다.
+  [double]$Warp = 0,
+  # 날짜가 아닌 숫자 줄(kohandocr/corpus.py 의 digit_line)로 바꿀 비율. 0 이면 끔.
+  [double]$Digits = 0,
   # 경로를 코드에 박지 않는다. 만든 사람의 PC 경로가 박혀 있으면 공개했을 때
   # 남의 PC 에서 안 돌고 계정 이름도 같이 나간다.
   #   글꼴  : $env:KOHAND_FONTS  없으면 ~/.cache/ko-hand-ocr/fonts
@@ -130,6 +134,8 @@ $args = @("-u", "-m", "kohandocr.train",
 if ($Resume) { $args += @("--resume", $Resume) }
 if ($Layers) { $args += @("--layers", $Layers) }
 if ($Strike) { $args += @("--strike", $Strike) }
+if ($Warp)   { $args += @("--warp", $Warp) }
+if ($Digits) { $args += @("--digits", $Digits) }
 # 값에 공백이 있으면 감싼다. 위 프로브와 같은 함정이다 — 글꼴 폴더 이름에
 # 빈칸이 하나만 있어도 Start-Process 가 두 인자로 쪼개서 엉뚱한 곳을 뒤진다.
 $args = $args | ForEach-Object { if ("$_" -match '\s') { '"' + $_ + '"' } else { $_ } }

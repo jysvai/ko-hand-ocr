@@ -277,6 +277,26 @@ def random_line(rng: random.Random) -> str:
     return "".join(rng.choice("0123456789") for _ in range(rng.randint(2, 10)))
 
 
+def digit_line(rng: random.Random) -> str:
+    """날짜가 **아닌** 숫자 줄. 고리가 `runs/KNOBS.json` 의 `digits` 로 학습에만 섞는다.
+
+    `line()` 은 이것을 안 부른다. 시험지(`tools/holdout.py`)가 `lines()` 로
+    글월을 뽑으므로, 여기를 `MIX` 에 넣으면 **자가 바뀐다.**
+
+    왜 따로 두나(2026-09-21, 조합 v55-2500+v61-2500+v62 로 동해독도 172줄).
+    가장 크게 깎인 줄이 모양을 잘못 본 것이 아니라 **지어낸 것**이었다:
+        '816883539' -> '2025-05-19'     '82238426' -> '2023.04.25'
+    학습 글월에서 날짜가 든 줄(서식 줄의 14%, 전체의 4.8%)이 맨 숫자열(무작위
+    줄의 7%, 전체의 2.4%)보다 두 배 많고, 날짜는 늘 20 으로 시작해 `-`·`.` 로
+    끊긴다. 숫자가 흐리면 모델이 그 틀로 채운다. 그래서 **날짜처럼 끊겼지만
+    날짜가 아닌** 숫자를 보여 준다.
+    """
+    groups = rng.choices((1, 2, 3, 4), weights=(35, 30, 25, 10))[0]
+    sep = rng.choice(("-", ".", "/", " ", "", "-"))
+    return sep.join("".join(rng.choice("0123456789") for _ in range(rng.randint(1, 5)))
+                    for _ in range(groups))
+
+
 def form_line(rng: random.Random) -> str:
     """사내 문서에서 실제로 보이는 줄 모양."""
     kind = rng.random()

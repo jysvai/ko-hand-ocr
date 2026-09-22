@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ko-hand-ocr"
-version = "0.3.0"
-description = "Korean handwriting OCR - reads one line of handwritten Korean/English. 36M params, CPU-only, no dataset terms inherited."
+version = "0.4.0"
+description = "Korean handwriting OCR - reads one line of handwritten Korean/English. 41M params, CPU-only, no dataset terms inherited."
 readme = "README.en.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]

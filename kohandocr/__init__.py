@@ -4,4 +4,4 @@
         모델(model), 학습(train).
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"

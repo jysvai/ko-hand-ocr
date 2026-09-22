@@ -664,6 +664,10 @@ def main() -> None:
     ap.add_argument("--font-dir", default="")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--anyway", action="store_true")
+    # 「판 하나」로 잴 판. 안 주면 조합의 첫 식구다. **릴리스로 내보내는 판을
+    # 준다** — 0.3.0 은 이것이 없어서 견줌표의 판 하나는 v55-2500 을 쟀는데
+    # 내보낸 판 하나는 v62 였다. 표의 숫자가 받는 판의 숫자가 아니었다.
+    ap.add_argument("--one", default="", help="판 하나로 잴 판 폴더 (예: runs/v81)")
     args = ap.parse_args()
 
     others = B.busy()
@@ -720,7 +724,8 @@ def main() -> None:
     # 크기는 `params` 로 재서 적고, 그리는 쪽이 거기서 이름표를 만든다.
     sides = [
         ("ko-hand-ocr 앙상블", lambda: Ours("ours-team", team)),
-        ("ko-hand-ocr 판 하나", lambda: Ours("ours-one", team[:1])),
+        ("ko-hand-ocr 판 하나",
+         lambda: Ours("ours-one", [args.one.replace("\\", "/")] if args.one else team[:1])),
         ("ddobokki/ko-trocr", lambda: Rival()),
     ]
 
@@ -830,6 +835,7 @@ def main() -> None:
 
     out = {"when": time.strftime("%Y-%m-%d %H:%M"), "gear": gear,
            "torch": torch.__version__, "members": team,
+           "one": args.one.replace("\\", "/") if args.one else team[0],
            "lines_per_test_font": args.fonts, "lines_per_wide_font": args.wide,
            "lines_per_every_font": args.every,
            "page_lines": n, "beams": R.BEAMS, "rival_max_new_tokens": RIVAL_TOKENS,

@@ -31,7 +31,8 @@ class Lines(IterableDataset):
 
     def __init__(self, fonts_dir, vocab, cell: tuple[int, int] = CELL,
                  letters: int = 64, seed: int = 0, length: int = 100_000,
-                 strike: float | None = None) -> None:
+                 strike: float | None = None, warp: float | None = None,
+                 digits: float = 0.0) -> None:
         self.fonts_dir = fonts_dir
         self.vocab = vocab
         self.cell = cell
@@ -41,6 +42,9 @@ class Lines(IterableDataset):
         # 지운 자국 비율. None 이면 synth.STRIKE. 모듈 값을 고쳐 넣으면 안 된다 —
         # 일꾼은 spawn 으로 뜨므로 synth 를 새로 읽어 원래 값으로 돌아간다.
         self.strike = strike
+        self.warp = warp                # 글자 속 획을 휠 줄 비율. None 이면 synth.WARP(끔)
+        # 날짜가 아닌 숫자 줄(`corpus.digit_line`)로 바꿀 비율. 0 이면 난수도 안 뽑는다.
+        self.digits = digits
         self._fonts: synth.Fonts | None = None
 
     def __len__(self) -> int:
@@ -76,7 +80,9 @@ class Lines(IterableDataset):
                 raise RuntimeError(
                     "합성이 만 번을 잇달아 실패했다 (글꼴 %d벌, 일꾼 %d). "
                     "글꼴 폴더나 corpus 를 보라." % (len(fonts), worker))
-            text = corpus.decorate(corpus.line(rng), rng)
+            text = corpus.decorate(
+                corpus.digit_line(rng) if self.digits and rng.random() < self.digits
+                else corpus.line(rng), rng)
             if not text or (corpus.UNDRAWABLE & set(text)):
                 misses += 1
                 continue
@@ -84,7 +90,7 @@ class Lines(IterableDataset):
             if len(ids) > self.letters:
                 misses += 1
                 continue
-            page = synth.render(text, fonts, rng, strike=self.strike)
+            page = synth.render(text, fonts, rng, strike=self.strike, warp=self.warp)
             if page is None:
                 misses += 1
                 continue

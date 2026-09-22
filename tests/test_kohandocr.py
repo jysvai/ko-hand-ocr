@@ -288,13 +288,23 @@ def test_학습의_지운_자국_비율은_시험지를_안_바꾼다(fonts):
     import holdout
 
     assert "strike" not in inspect.getsource(holdout.sheet)
+    # 획 휘기(`warp`)도 같다. 기본이 **끔**이어야 하고, 끈 채로는 난수를 한 번도
+    # 안 뽑아야 한다 — 뽑기만 해도 그 뒤의 종이·기울기가 다 바뀌어 자가 흔들린다.
+    assert "warp" not in inspect.getsource(holdout.sheet)
+    assert synth.WARP == 0
+    # 날짜 아닌 숫자 줄(`digits`)도. 시험지는 `corpus.lines` 로 글월을 뽑으니
+    # 거기서 `digit_line` 을 부르는 순간 자가 바뀐다.
+    from kohandocr import corpus
+    assert "digits" not in inspect.getsource(holdout.sheet)
+    assert "digit_line" not in inspect.getsource(corpus.line)
+    assert "digit_line" not in inspect.getsource(corpus.lines)
     for seed in range(12):
         plain = synth.render("부서 : 강원도팀", fonts, random.Random(seed))
-        said = synth.render("부서 : 강원도팀", fonts, random.Random(seed),
-                            strike=synth.STRIKE)
-        assert (plain is None) == (said is None)
-        if plain is not None:
-            assert plain.tobytes() == said.tobytes()
+        for knob in ({"strike": synth.STRIKE}, {"warp": synth.WARP}, {"warp": 0.0}):
+            said = synth.render("부서 : 강원도팀", fonts, random.Random(seed), **knob)
+            assert (plain is None) == (said is None)
+            if plain is not None:
+                assert plain.tobytes() == said.tobytes(), knob
 
 def test_가운데_답은_같은_답이_겹칠수록_세진다():
     """값이 같은 답끼리 서로를 빼면 안 된다.

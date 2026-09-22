@@ -48,6 +48,10 @@ def parse() -> argparse.Namespace:
     ap.add_argument("--resume", default=None, help="이어서 학습할 저장 폴더")
     ap.add_argument("--strike", type=float, default=None,
                     help="지운 자국을 넣을 줄 비율. 안 주면 synth.STRIKE. 학습 자료만 바꾼다")
+    ap.add_argument("--warp", type=float, default=None,
+                    help="글자 속 획을 휠 줄 비율. 안 주면 synth.WARP(끔). 학습 자료만 바꾼다")
+    ap.add_argument("--digits", type=float, default=0.0,
+                    help="날짜가 아닌 숫자 줄(corpus.digit_line)로 바꿀 비율. 0 이면 끔. 학습 자료만 바꾼다")
     ap.add_argument("--layers", type=int, default=0,
                     help="이어받은 판의 디코더가 이보다 얕으면 이만큼 늘려서 학습한다 "
                          "(`model.grow`). 0 이면 그대로")
@@ -138,9 +142,13 @@ def main() -> None:
 
     stream = data.Lines(args.fonts, vocab, letters=args.letters,
                         seed=args.seed, length=args.steps * args.batch,
-                        strike=args.strike)
+                        strike=args.strike, warp=args.warp, digits=args.digits)
     if args.strike is not None:
         print("지운 자국: 줄의 %.1f%% (기본 %.1f%%)" % (100 * args.strike, 100 * synth.STRIKE))
+    if args.warp is not None:
+        print("획 휘기: 줄의 %.1f%% (기본 %.1f%%)" % (100 * args.warp, 100 * synth.WARP))
+    if args.digits:
+        print("날짜 아닌 숫자 줄: %.1f%%" % (100 * args.digits))
     loader = DataLoader(
         stream, batch_size=args.batch, num_workers=args.workers,
         collate_fn=data.collate,

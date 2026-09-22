@@ -191,6 +191,24 @@ STRIKE = 0.075
 # '글륦' 으로 뭉갰다). 지운 것만 가르치면 덧그은 글자까지 버리게 된다.
 RETRACE = 0.06               # 이 비율의 줄에서 한두 글자를 덧긋는다
 
+# 글자 **속** 획 모양을 비튼다. 기본은 끔이고, 고리가 `runs/KNOBS.json` 의
+# `warp` 로 학습 자료에만 켠다(시험지는 이 값을 안 넘긴다).
+#
+# 왜. 지금까지의 흔들기는 모두 통째다 — 글자마다 기울이기(`_glyph`), 줄 전체
+# 눕히기(`_shear`), 칸 여섯 개로 위아래 흔들기(`_wobble`). 글자 속 자모의 모양은
+# 글꼴이 그린 그대로다. 그런데 사진에서 틀리는 자리가 바로 그 자모다
+# (2026-09-21, v62 로 11장): 금->글, 융->륨, 감->갈, 김->길(받침 ㅁ->ㄹ),
+# 피->회(ㅍ->ㅎ), 클->쿧, 테->데(ㅌ->ㄷ), 감->검(ㅏ->ㅓ). 사람 손의 ㅁ 은
+# 모서리가 둥글고 한쪽이 트여서 ㄹ 에 가깝다. 글꼴 450 벌이 모양의 폭을 주지만
+# 한 글꼴 안에서는 같은 ㅁ 이 늘 같게 그려진다.
+#
+# 그물 매듭을 글자 높이의 `WARP_CELL` 배 간격으로 깔고 매듭마다 따로 움직인다.
+# 이웃과 평균해 매끄럽게 하므로 획이 꺾이지 않고 휜다.
+WARP = 0.0
+WARP_CELL = 0.30             # 매듭 간격(글자 높이 대비). 자모 하나에 한두 칸
+WARP_AMP = (0.030, 0.080)    # 매듭이 움직이는 폭의 표준편차(글자 높이 대비).
+                             # 0.08 에서도 사람 눈엔 다 읽히고, 0.03 은 거의 안 보인다
+
 # 뭉갤 토막에 쓸 글자. 한글이 대부분이고 숫자·영문도 섞는다 — 사람은
 # 아무거나 잘못 쓰고 지운다. 글꼴이 다 그릴 수 있는 것만 골라 둔다.
 _STRIKE_POOL = ("가나다라마바사아자차카타파하고노도로모보소오조구누두루무부수우주"
@@ -911,6 +929,40 @@ def _wobble(ink: Image.Image, rng: random.Random, cells: int = 6) -> Image.Image
     return ink.transform((width, height), Image.Transform.MESH, mesh, resample=Image.Resampling.BILINEAR)
 
 
+def _warp(ink: Image.Image, size: int, rng: random.Random) -> Image.Image:
+    """글자 속 획을 휜다. 매듭을 촘촘히 깔고 저마다 조금씩 옮긴다(`WARP`)."""
+    width, height = ink.size
+    step = max(6, int(size * WARP_CELL))
+    cols, rows = max(1, math.ceil(width / step)), max(1, math.ceil(height / step))
+    amp = size * rng.uniform(*WARP_AMP)
+    noise = np.random.default_rng(rng.getrandbits(32)).normal(0.0, 1.0, (2, rows + 1, cols + 1))
+    # 이웃 아홉 매듭과 평균한다. 매듭끼리 따로 놀면 획이 꺾여 딴 글자가 된다.
+    edge = np.pad(noise, ((0, 0), (1, 1), (1, 1)), mode="edge")
+    field = np.zeros_like(noise)
+    for dy in (-1, 0, 1):
+        for dx in (-1, 0, 1):
+            field += edge[:, 1 + dy:rows + 2 + dy, 1 + dx:cols + 2 + dx]
+    field *= amp / max(float(field.std()), 1e-6)
+    np.clip(field, -2 * amp, 2 * amp, out=field)
+    move_x, move_y = field
+    xs = [min(width, c * step) for c in range(cols + 1)]
+    ys = [min(height, r * step) for r in range(rows + 1)]
+    mesh = []
+    for r in range(rows):
+        for c in range(cols):
+            left, right, top, low = xs[c], xs[c + 1], ys[r], ys[r + 1]
+            if right <= left or low <= top:
+                continue
+            # 모서리 순서: 왼위, 왼아래, 오른아래, 오른위 (`_wobble` 과 같다)
+            mesh.append(((left, top, right, low), (
+                left + move_x[r, c], top + move_y[r, c],
+                left + move_x[r + 1, c], low + move_y[r + 1, c],
+                right + move_x[r + 1, c + 1], low + move_y[r + 1, c + 1],
+                right + move_x[r, c + 1], top + move_y[r, c + 1])))
+    return ink.transform((width, height), Image.Transform.MESH, mesh,
+                         resample=Image.Resampling.BILINEAR)
+
+
 def _solid(ink: Image.Image) -> Image.Image:
     """번져서 흐려진 잉크 자국을 다시 꽉 채운다.
 
@@ -1061,12 +1113,15 @@ def _bleed(sheet: Image.Image, ink: Image.Image, rng: random.Random) -> Image.Im
 
 
 def render(text: str, fonts: Fonts, rng: random.Random,
-           strike: float | None = None):
+           strike: float | None = None, warp: float | None = None):
     """글월 한 줄 -> 흑백 이미지. 못 그리면 None.
 
     `strike` 는 지운 자국을 넣을 비율이다. 안 주면 `STRIKE`. **학습만 바꾼다** —
     시험지(`tools/holdout.py`)는 이 값을 안 넘기므로, 학습 쪽 비율을 올려도
     자는 그대로다. 난수를 뽑는 횟수도 같아서 그림이 한 장도 안 바뀐다.
+
+    `warp` 는 글자 속 획을 휠 줄 비율이다(`WARP`). 같은 까닭으로 학습만 바꾼다.
+    0 이면 **난수를 아예 안 뽑는다** — 뽑기만 해도 뒤의 그림이 다 바뀐다.
 
     실제 경로와 순서를 맞춘다. 앱은 **여백이 넓은 판 전체를 표백한 뒤** 줄을 잘라낸다.
     바싹 자른 조각을 표백하면 흐림판이 글자로 물들어 획이 도로 하얘진다(실측함).
@@ -1179,7 +1234,11 @@ def render(text: str, fonts: Fonts, rng: random.Random,
     natural = (box[2] - box[0]) / max(box[3] - box[1], 1)
     widen = min(max(want / natural, WIDEN[0]), WIDEN[1])
     ink = _weight(_stretch(ink, widen), size, mine, widen, rng, thin=wide)
-    ink = _solid(_wobble(_shear(ink, rng), rng))
+    ink = _wobble(_shear(ink, rng), rng)
+    share = WARP if warp is None else warp
+    if share and rng.random() < share:
+        ink = _warp(ink, size, rng)
+    ink = _solid(ink)
     box = ink.getbbox()
     if box is None or box[2] - box[0] < 8 or box[3] - box[1] < 8:
         return None
