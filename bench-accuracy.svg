@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 386" width="760" height="386" role="img" aria-label="Per-font jamo similarity. EastSeaDokdo 89.5 and 90.3 percent. KirangHaerang 94.2 and 94.3 percent. NanumPenScript 95.1 and 95.2 percent. HiMelody 95.4 and 95.4 percent. GamjaFlower 98.0 and 97.9 percent. SingleDay 99.0 and 99.1 percent. Goal is 95 percent for every font.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 468" width="820" height="468" role="img" aria-label="Per-font jamo similarity. EastSeaDokdo 90.1 and 90.7 percent. KirangHaerang 94.7 and 94.7 percent. HiMelody 95.4 and 95.4 percent. NanumPenScript 95.7 and 95.9 percent. GamjaFlower 97.9 and 98.0 percent. SingleDay 98.9 and 98.9 percent. Goal is 95 percent for every font.">
 <style>
   .surface{fill:#fcfcfb}
   .ink{fill:#0b0b0b}
@@ -18,56 +18,56 @@
     .goal{stroke:#7c7a73}
   }
 </style>
-<rect class="surface" width="760" height="386" rx="6"/>
-<text class="ink" x="20" y="27" font-size="15" font-weight="600">Accuracy by handwriting font — fonts never seen in training</text>
-<text class="ink2" x="20" y="45" font-size="11.5">Jamo-level similarity, 400 lines per font. What has to clear the bar is not the mean but the lowest font.</text>
-<rect class="s1" x="516" y="18" width="10" height="10" rx="2"/>
-<text class="ink2" x="531" y="27" font-size="11.5">single (v83)</text>
-<rect class="s2" x="626" y="18" width="10" height="10" rx="2"/>
-<text class="ink2" x="641" y="27" font-size="11.5">3 models (ensemble)</text>
-<line class="grid" x1="165.0" y1="60" x2="165.0" y2="296"/>
-<line class="grid" x1="300.0" y1="60" x2="300.0" y2="296"/>
-<line class="grid" x1="435.0" y1="60" x2="435.0" y2="296"/>
-<line class="grid" x1="570.0" y1="60" x2="570.0" y2="296"/>
-<line class="grid" x1="705.0" y1="60" x2="705.0" y2="296"/>
-<line class="goal" x1="570.0" y1="58" x2="570.0" y2="296"/>
-<text class="ink2" x="570.0" y="52" font-size="11" text-anchor="middle" font-weight="600">95% goal</text>
-<text class="ink" x="155" y="86" font-size="12.5" text-anchor="end" font-weight="700">EastSeaDokdo</text>
-<path class="s1" d="M165,68 H418.7 Q422.7,68 422.7,72 V77 Q422.7,81 418.7,81 H165 Z"/>
-<text class="ink" x="429.7" y="78" font-size="11.5" font-weight="700">89.5%</text>
-<path class="s2" d="M165,83 H439.4 Q443.4,83 443.4,87 V92 Q443.4,96 439.4,96 H165 Z"/>
-<text class="ink" x="450.4" y="93" font-size="11.5" font-weight="700">90.3%</text>
-<text class="ink" x="155" y="128" font-size="12.5" text-anchor="end" font-weight="700">KirangHaerang</text>
-<path class="s1" d="M165,110 H545.0 Q549.0,110 549.0,114 V119 Q549.0,123 545.0,123 H165 Z"/>
-<text class="ink" x="556.0" y="120" font-size="11.5" font-weight="700">94.2%</text>
-<path class="s2" d="M165,125 H547.6 Q551.6,125 551.6,129 V134 Q551.6,138 547.6,138 H165 Z"/>
-<text class="ink" x="558.6" y="135" font-size="11.5" font-weight="700">94.3%</text>
-<text class="ink" x="155" y="170" font-size="12.5" text-anchor="end">NanumPenScript</text>
-<path class="s1" d="M165,152 H567.4 Q571.4,152 571.4,156 V161 Q571.4,165 567.4,165 H165 Z"/>
-<text class="ink2" x="578.4" y="162" font-size="11.5">95.1%</text>
-<path class="s2" d="M165,167 H572.0 Q576.0,167 576.0,171 V176 Q576.0,180 572.0,180 H165 Z"/>
-<text class="ink2" x="583.0" y="177" font-size="11.5">95.2%</text>
-<text class="ink" x="155" y="212" font-size="12.5" text-anchor="end">HiMelody</text>
-<path class="s1" d="M165,194 H575.6 Q579.6,194 579.6,198 V203 Q579.6,207 575.6,207 H165 Z"/>
-<text class="ink2" x="586.6" y="204" font-size="11.5">95.4%</text>
-<path class="s2" d="M165,209 H575.6 Q579.6,209 579.6,213 V218 Q579.6,222 575.6,222 H165 Z"/>
-<text class="ink2" x="586.6" y="219" font-size="11.5">95.4%</text>
-<text class="ink" x="155" y="254" font-size="12.5" text-anchor="end">GamjaFlower</text>
-<path class="s1" d="M165,236 H648.2 Q652.2,236 652.2,240 V245 Q652.2,249 648.2,249 H165 Z"/>
-<text class="ink2" x="659.2" y="246" font-size="11.5">98.0%</text>
-<path class="s2" d="M165,251 H643.4 Q647.4,251 647.4,255 V260 Q647.4,264 643.4,264 H165 Z"/>
-<text class="ink2" x="654.4" y="261" font-size="11.5">97.9%</text>
-<text class="ink" x="155" y="296" font-size="12.5" text-anchor="end">SingleDay</text>
-<path class="s1" d="M165,278 H673.8 Q677.8,278 677.8,282 V287 Q677.8,291 673.8,291 H165 Z"/>
-<text class="ink2" x="684.8" y="288" font-size="11.5">99.0%</text>
-<path class="s2" d="M165,293 H675.4 Q679.4,293 679.4,297 V302 Q679.4,306 675.4,306 H165 Z"/>
-<text class="ink2" x="686.4" y="303" font-size="11.5">99.1%</text>
-<line class="grid" x1="165" y1="296" x2="705" y2="296"/>
-<text class="ink2" x="165.0" y="312" font-size="11" text-anchor="middle">80%</text>
-<text class="ink2" x="300.0" y="312" font-size="11" text-anchor="middle">85%</text>
-<text class="ink2" x="435.0" y="312" font-size="11" text-anchor="middle">90%</text>
-<text class="ink2" x="570.0" y="312" font-size="11" text-anchor="middle">95%</text>
-<text class="ink2" x="705.0" y="312" font-size="11" text-anchor="middle">100%</text>
-<text class="ink2" x="20" y="336" font-size="11">The axis starts at 80%, not 0 — the spread between fonts would be invisible otherwise.</text>
-<text class="ink2" x="20" y="352" font-size="11">Six OFL font families, none used in training. Produced by tools/verify.py on 2026-09-22 11:22.</text>
+<rect class="surface" width="820" height="468" rx="6"/>
+<text class="ink" x="20" y="32" font-size="19" font-weight="600">Accuracy by handwriting font — fonts never seen in training</text>
+<text class="ink2" x="20" y="55" font-size="13.5">Jamo-level similarity, 958~963 lines per font. What has to clear the bar is not the mean but the lowest font.</text>
+<rect class="s1" x="20" y="66" width="12" height="12" rx="3"/>
+<text class="ink2" x="38" y="77" font-size="13.5">single model (v83)</text>
+<rect class="s2" x="195" y="66" width="12" height="12" rx="3"/>
+<text class="ink2" x="213" y="77" font-size="13.5">3 models (ensemble)</text>
+<line class="grid" x1="190.0" y1="80" x2="190.0" y2="376"/>
+<line class="grid" x1="325.0" y1="80" x2="325.0" y2="376"/>
+<line class="grid" x1="460.0" y1="80" x2="460.0" y2="376"/>
+<line class="grid" x1="595.0" y1="80" x2="595.0" y2="376"/>
+<line class="grid" x1="730.0" y1="80" x2="730.0" y2="376"/>
+<line class="goal" x1="595.0" y1="80" x2="595.0" y2="376"/>
+<text class="ink2" x="595.0" y="76" font-size="13" text-anchor="middle" font-weight="600">95% goal</text>
+<text class="ink" x="178" y="106" font-size="14.5" text-anchor="end" font-weight="700">EastSeaDokdo</text>
+<path class="s1" d="M190,84 H457.9 Q461.9,84 461.9,88 V96 Q461.9,100 457.9,100 H190 Z"/>
+<text class="ink" x="468.9" y="97" font-size="13.5" font-weight="700">90.1%</text>
+<path class="s2" d="M190,103 H474.2 Q478.2,103 478.2,107 V115 Q478.2,119 474.2,119 H190 Z"/>
+<text class="ink" x="485.2" y="116" font-size="13.5" font-weight="700">90.7%</text>
+<text class="ink" x="178" y="156" font-size="14.5" text-anchor="end" font-weight="700">KirangHaerang</text>
+<path class="s1" d="M190,134 H581.7 Q585.7,134 585.7,138 V146 Q585.7,150 581.7,150 H190 Z"/>
+<text class="ink" x="592.7" y="147" font-size="13.5" font-weight="700">94.7%</text>
+<path class="s2" d="M190,153 H583.2 Q587.2,153 587.2,157 V165 Q587.2,169 583.2,169 H190 Z"/>
+<text class="ink" x="594.2" y="166" font-size="13.5" font-weight="700">94.7%</text>
+<text class="ink" x="178" y="206" font-size="14.5" text-anchor="end">HiMelody</text>
+<path class="s1" d="M190,184 H601.7 Q605.7,184 605.7,188 V196 Q605.7,200 601.7,200 H190 Z"/>
+<text class="ink2" x="612.7" y="197" font-size="13.5">95.4%</text>
+<path class="s2" d="M190,203 H601.0 Q605.0,203 605.0,207 V215 Q605.0,219 601.0,219 H190 Z"/>
+<text class="ink2" x="612.0" y="216" font-size="13.5">95.4%</text>
+<text class="ink" x="178" y="256" font-size="14.5" text-anchor="end">NanumPenScript</text>
+<path class="s1" d="M190,234 H609.6 Q613.6,234 613.6,238 V246 Q613.6,250 609.6,250 H190 Z"/>
+<text class="ink2" x="620.6" y="247" font-size="13.5">95.7%</text>
+<path class="s2" d="M190,253 H614.8 Q618.8,253 618.8,257 V265 Q618.8,269 614.8,269 H190 Z"/>
+<text class="ink2" x="625.8" y="266" font-size="13.5">95.9%</text>
+<text class="ink" x="178" y="306" font-size="14.5" text-anchor="end">GamjaFlower</text>
+<path class="s1" d="M190,284 H670.2 Q674.2,284 674.2,288 V296 Q674.2,300 670.2,300 H190 Z"/>
+<text class="ink2" x="681.2" y="297" font-size="13.5">97.9%</text>
+<path class="s2" d="M190,303 H671.8 Q675.8,303 675.8,307 V315 Q675.8,319 671.8,319 H190 Z"/>
+<text class="ink2" x="682.8" y="316" font-size="13.5">98.0%</text>
+<text class="ink" x="178" y="356" font-size="14.5" text-anchor="end">SingleDay</text>
+<path class="s1" d="M190,334 H697.4 Q701.4,334 701.4,338 V346 Q701.4,350 697.4,350 H190 Z"/>
+<text class="ink2" x="708.4" y="347" font-size="13.5">98.9%</text>
+<path class="s2" d="M190,353 H696.4 Q700.4,353 700.4,357 V365 Q700.4,369 696.4,369 H190 Z"/>
+<text class="ink2" x="707.4" y="366" font-size="13.5">98.9%</text>
+<line class="grid" x1="190" y1="376" x2="730" y2="376"/>
+<text class="ink2" x="190.0" y="394" font-size="13" text-anchor="middle">80%</text>
+<text class="ink2" x="325.0" y="394" font-size="13" text-anchor="middle">85%</text>
+<text class="ink2" x="460.0" y="394" font-size="13" text-anchor="middle">90%</text>
+<text class="ink2" x="595.0" y="394" font-size="13" text-anchor="middle">95%</text>
+<text class="ink2" x="730.0" y="394" font-size="13" text-anchor="middle">100%</text>
+<text class="ink2" x="20" y="422" font-size="13">The axis starts at 80%, not 0 — the spread between fonts would be invisible otherwise.</text>
+<text class="ink2" x="20" y="442" font-size="13">Six OFL font families, none used in training. Produced by tools/verify.py on 2026-10-06 21:42.</text>
 </svg>

@@ -15,6 +15,7 @@ You may obtain a copy of the License at
 - 학습 이미지는 아래 글꼴로 그려 만들었습니다.
     · 나눔손글씨 109벌 (NAVER Corporation / CLOVA AI OCR Team)
     · 한글 손글씨 글꼴 14벌 (google/fonts, SIL Open Font License 1.1)
+    · 그 밖의 한글 손글씨 글꼴 329벌 (만든 곳과 약관은 벌마다 PROVENANCE.md 2절)
   **글꼴 파일은 이 저장소에 들어 있지 않으며 재배포하지 않습니다.**
   가중치는 글자 모양의 저작물이 아니라 그림에서 배운 값입니다.
   자세한 내용은 PROVENANCE.md 를 보십시오.

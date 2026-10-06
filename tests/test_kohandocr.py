@@ -306,6 +306,55 @@ def test_학습의_지운_자국_비율은_시험지를_안_바꾼다(fonts):
             if plain is not None:
                 assert plain.tobytes() == said.tobytes(), knob
 
+
+def test_뜻_없는_줄과_글꼴_몰기는_시험지를_안_바꾼다(fonts):
+    """고리가 막힐 때 `free`(뜻 없는 줄 더)와 `hard`(못 읽는 글꼴 몰기)를 켠다.
+
+    둘 다 학습 자료만 바꿔야 한다. 시험지가 이 값을 받거나, 몰기를 안 켠
+    `Fonts.pick` 이 예전과 다른 난수를 뽑으면 자가 흔들린다.
+    """
+    import inspect
+
+    sys.path.insert(0, str(ROOT / "tools"))
+    import holdout
+
+    body = inspect.getsource(holdout.sheet)
+    for word in ("free", "hard", "lean", "tangle"):
+        assert word not in body, word
+    assert fonts._lean is None
+    # 엉킨 지운 자국(`tangle`)을 끈 채로는 지운 자국이 든 줄도 한 장도 안 바뀐다.
+    for seed in range(12):
+        plain = synth.render("부서 : 강원도팀", fonts, random.Random(seed), strike=0.999)
+        said = synth.render("부서 : 강원도팀", fonts, random.Random(seed), strike=0.999,
+                            tangle=0.0)
+        assert (plain is None) == (said is None)
+        if plain is not None:
+            assert plain.tobytes() == said.tobytes()
+    # 잰 것이 없으면 몰기를 켜도 고르게 뽑는다 — 뽑는 차례가 그대로여야 한다.
+    other = synth.Fonts(FONTS)
+    assert other.lean({}, 0.5) == 0 and other._lean is None
+    a, b = random.Random(5), random.Random(5)
+    for _ in range(50):
+        assert fonts.pick(a)[0].path == other.pick(b)[0].path
+
+
+def test_글꼴_몰기는_못_읽는_벌을_더_뽑는다(fonts):
+    other = synth.Fonts(FONTS)
+    names = [f.name for f in other.files]
+    worst = names[0]
+    scores = {name: 99.0 for name in names}
+    scores[worst] = 40.0
+    assert other.lean(scores, 0.5) == len(names)
+    rng = random.Random(3)
+    picks = [other.paths.index(other.pick(rng)[0].path) for _ in range(2000)]
+    share = picks.count(0) / len(picks)
+    # 고르게면 1/n. 몰기를 켜면 뽑기의 절반 가운데 틀린 몫의 비율만큼 간다.
+    errs = 60.0 + 1.0 * (len(names) - 1)
+    want = 0.5 / len(names) + 0.5 * 60.0 / errs
+    assert share > 3 / len(names)
+    assert abs(share - want) < 0.05
+
+
 def test_가운데_답은_같은_답이_겹칠수록_세진다():
     """값이 같은 답끼리 서로를 빼면 안 된다.
 
@@ -320,3 +369,117 @@ def test_가운데_답은_같은_답이_겹칠수록_세진다():
     apart = ["".join("가나다"), "".join("가나다"), "".join("가나라")]
     assert decode.middle(same)[0] == "가나다"
     assert decode.middle(same) == decode.middle(apart)
+
+
+def test_무게_지수_평균은_저장할_때만_입히고_학습_무게는_그대로_둔다():
+    import torch
+    from kohandocr.train import Shadow
+
+    net = torch.nn.Linear(3, 2)
+    start = net.weight.detach().clone()
+    shadow = Shadow(net, 0.9)
+    with torch.no_grad():
+        net.weight.add_(1.0)
+    for _ in range(3):
+        shadow.update(net)
+    moved = shadow.held["weight"]
+    assert torch.all(moved > start) and torch.all(moved < start + 1.0)   # 사이 어딘가
+    trained = net.weight.detach().clone()
+    with shadow.worn(net):
+        assert torch.allclose(net.weight, moved)
+    assert torch.equal(net.weight, trained)                              # 나오면 돌린다
+
+
+def test_증류는_선생과_같으면_0_이고_정답_자리만_센다():
+    import torch
+    from kohandocr.train import distill_loss
+
+    torch.manual_seed(0)
+    logits = torch.randn(2, 5, 7)
+    labels = torch.tensor([[1, 2, 3, -100, -100], [4, 5, -100, -100, -100]])
+    same = torch.softmax(logits / 2.0, -1)
+    assert distill_loss(logits, same, labels, 2.0).item() < 1e-6       # 선생과 같으면 0
+    other = torch.softmax(torch.randn(2, 5, 7), -1)
+    base = distill_loss(logits, other, labels, 2.0).item()
+    assert base > 0
+    noisy = other.clone()
+    noisy[0, 3:] = torch.softmax(torch.randn(2, 7), -1)                  # 정답 없는 자리만 바꾼다
+    assert abs(distill_loss(logits, noisy, labels, 2.0).item() - base) < 1e-6
+
+
+def test_SAM_은_반경만큼_밀었다가_그대로_되돌린다():
+    import torch
+    from kohandocr.train import lean, unlean
+
+    torch.manual_seed(0)
+    net = torch.nn.Linear(4, 3)
+    net(torch.randn(5, 4)).pow(2).sum().backward()
+    before = [p.detach().clone() for p in net.parameters()]
+    pushed = lean(list(net.parameters()), 0.05)
+    moved = torch.sqrt(sum(((p - b) ** 2).sum() for p, b in zip(net.parameters(), before)))
+    assert abs(moved.item() - 0.05) < 1e-5                               # 꼭 반경만큼
+    unlean(pushed)
+    assert all(torch.allclose(p, b, atol=1e-7) for p, b in zip(net.parameters(), before))
+
+
+def test_디코더_입력_흐리기는_끄면_원래_밀기와_같고_켜도_정답은_안_바꾼다(vocab):
+    """`train.blur_inputs` 가 끈 채로 transformers 의 밀기와 **글자 하나까지** 같은가.
+
+    같지 않으면 '배우는 방식' 을 끈 판도 예전과 다르게 배운다. 켰을 때는 앞 글자만
+    흐리고 시작 토큰·빈자리는 그대로 두며, 특수 토큰을 지어 넣지 않는다.
+    """
+    import torch
+    from transformers.models.vision_encoder_decoder.modeling_vision_encoder_decoder import (
+        shift_tokens_right)
+    from kohandocr import train
+    from kohandocr.vocab import SPECIAL
+
+    rows = [vocab.encode(t) for t in ("가나다 12", "부서 : 강원도팀", "AI")]
+    labels = torch.full((len(rows), max(map(len, rows))), -100, dtype=torch.long)
+    for i, row in enumerate(rows):
+        labels[i, :len(row)] = torch.tensor(row)
+    plain = train.blur_inputs(labels, vocab.bos, vocab.pad, 0.0, len(SPECIAL), len(vocab))
+    assert torch.equal(plain, shift_tokens_right(labels, vocab.pad, vocab.bos))
+
+    many = labels.repeat(200, 1)
+    gen = torch.Generator().manual_seed(0)
+    hazy = train.blur_inputs(many, vocab.bos, vocab.pad, 0.3, len(SPECIAL), len(vocab), gen)
+    base = plain.repeat(200, 1)
+    assert (hazy[:, 0] == vocab.bos).all()
+    assert (hazy[base == vocab.pad] == vocab.pad).all()
+    moved = hazy != base
+    assert moved.any()
+    assert (hazy[moved] >= len(SPECIAL)).all()
+
+
+def test_합성이_그리는_글자는_어휘에_다_있다(vocab):
+    """그림에는 있는데 이름표에는 없는 글자가 생기면 안 된다.
+
+    `Vocab.encode` 는 어휘 밖 글자를 **말없이 버린다.** 그러니 corpus 에 글자를
+    하나 더 넣고 `vocab.py` 를 안 고치면, 그 글자가 그려진 그림에 그 글자가
+    빠진 이름표가 붙어 학습된다. 아무 데서도 안 터진다.
+
+    반대 방향(어휘의 모든 토큰이 corpus 에 나오나)은 위에 따로 있다.
+    """
+    rng = random.Random(11)
+    for _ in range(300):
+        text = corpus.decorate(corpus.line(rng), rng)
+        drawn = "".join(ch for ch in text if ch not in corpus.UNDRAWABLE)
+        missing = [ch for ch in drawn if not vocab.covers(ch)]
+        assert not missing, "%r 의 %r 가 어휘에 없다" % (text, missing)
+
+
+def test_잉크_문턱이_두_벌인데_같은_값이어야_한다():
+    """`page.py` 는 홀로 서도록 아무것도 import 하지 않는다(그래서 200 이
+    박혀 있다). `cell.INK_EDGE` 와
+    갈라지면 **자르는 쪽과 읽는 쪽이 서로 다른 밝기를 잉크로 본다.**
+    갈라져도 아무 데서도 안 터지므로 여기서 지킨다.
+    """
+    from kohandocr import cell, page
+
+    body = inspect.getsource(page)
+    spot = [one for one in body.split("\n") if "255 if p <" in one]
+    assert spot, "page.py 에서 잉크 문턱 줄을 못 찾았다"
+    assert all(str(cell.INK_EDGE) in one for one in spot), (
+        "page.py 의 잉크 문턱이 cell.INK_EDGE(%d) 와 다르다: %r"
+        % (cell.INK_EDGE, spot))

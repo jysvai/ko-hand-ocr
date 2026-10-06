@@ -16,7 +16,9 @@ GPU 에서 한다. 어차피 GPU 에서는 공짜에 가깝다.
 
 from __future__ import annotations
 
+import json
 import random
+from pathlib import Path
 
 import torch
 from torch.utils.data import IterableDataset, get_worker_info
@@ -32,7 +34,8 @@ class Lines(IterableDataset):
     def __init__(self, fonts_dir, vocab, cell: tuple[int, int] = CELL,
                  letters: int = 64, seed: int = 0, length: int = 100_000,
                  strike: float | None = None, warp: float | None = None,
-                 digits: float = 0.0) -> None:
+                 digits: float = 0.0, free: float = 0.0, hard: float = 0.0,
+                 hard_from: str = "", tangle: float = 0.0) -> None:
         self.fonts_dir = fonts_dir
         self.vocab = vocab
         self.cell = cell
@@ -45,6 +48,17 @@ class Lines(IterableDataset):
         self.warp = warp                # 글자 속 획을 휠 줄 비율. None 이면 synth.WARP(끔)
         # 날짜가 아닌 숫자 줄(`corpus.digit_line`)로 바꿀 비율. 0 이면 난수도 안 뽑는다.
         self.digits = digits
+        # 뜻 없는 줄(`corpus.random_line`)로 더 바꿀 비율. 0 이면 난수도 안 뽑는다.
+        # 모델이 흐린 칸을 **학습 글월의 틀**로 채우는 것을 누른다('사번' -> '신청인',
+        # 'Link 통지서' -> 'Auto 통지서'). `corpus.MIX` 를 고치면 시험지가 바뀌므로
+        # 여기서 따로 섞는다.
+        self.free = free
+        # 못 읽는 글꼴을 더 자주 뽑을 몫(`synth.Fonts.lean`)과 그 점수 파일
+        # (`tools/hardfonts.py` 가 쓴다). 0 이면 예전처럼 고르게 뽑는다.
+        self.hard = hard
+        self.hard_from = hard_from
+        # 지운 자국 가운데 제멋대로 엉킨 고리(`synth._tangle`)로 그릴 몫. 0 이면 끔.
+        self.tangle = tangle
         self._fonts: synth.Fonts | None = None
 
     def __len__(self) -> int:
@@ -60,6 +74,9 @@ class Lines(IterableDataset):
             # 재게 된다(`synth.FONT_TEST` 머리말). **수는 여기 안 적는다** —
             # 글꼴은 늘어나고 적어 둔 수는 안 늘어난다.
             self._fonts = synth.Fonts(self.fonts_dir, part="train")
+            if self.hard and self.hard_from:
+                said = json.loads(Path(self.hard_from).read_text(encoding="utf-8"))
+                self._fonts.lean(said["fonts"], self.hard)
         return self._fonts
 
     def __iter__(self):
@@ -80,9 +97,13 @@ class Lines(IterableDataset):
                 raise RuntimeError(
                     "합성이 만 번을 잇달아 실패했다 (글꼴 %d벌, 일꾼 %d). "
                     "글꼴 폴더나 corpus 를 보라." % (len(fonts), worker))
-            text = corpus.decorate(
-                corpus.digit_line(rng) if self.digits and rng.random() < self.digits
-                else corpus.line(rng), rng)
+            if self.digits and rng.random() < self.digits:
+                text = corpus.digit_line(rng)
+            elif self.free and rng.random() < self.free:
+                text = corpus.random_line(rng)
+            else:
+                text = corpus.line(rng)
+            text = corpus.decorate(text, rng)
             if not text or (corpus.UNDRAWABLE & set(text)):
                 misses += 1
                 continue
@@ -90,7 +111,8 @@ class Lines(IterableDataset):
             if len(ids) > self.letters:
                 misses += 1
                 continue
-            page = synth.render(text, fonts, rng, strike=self.strike, warp=self.warp)
+            page = synth.render(text, fonts, rng, strike=self.strike, warp=self.warp,
+                                tangle=self.tangle)
             if page is None:
                 misses += 1
                 continue

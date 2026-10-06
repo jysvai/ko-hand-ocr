@@ -22,6 +22,7 @@
 from __future__ import annotations
 
 import base64
+import bisect
 import hashlib
 import json
 import math
@@ -501,6 +502,7 @@ class Fonts:
         self._gap: dict = {}
         self._know: dict = {}
         self._cover = self._read_cover()
+        self._lean: list[float] | None = None      # `lean` 이 채운다. None 이면 고르게
         # '다 담은 글꼴'은 마지막에 기댈 자리다. 흔치 않은 글자 몇으로 가른다.
         self.full = [i for i in range(len(self.files))
                      if all(self.has(i, c) for c in "힣뷁쫑햏똠")]
@@ -603,6 +605,39 @@ class Fonts:
                 seen[char] = (mask.size, bytes(mask)) != self._missing(which)
         return seen[char]
 
+    def lean(self, scores: dict[str, float], share: float) -> int:
+        """못 읽는 글꼴을 더 자주 뽑는다. **학습에만 쓴다**(`data.Lines` 의 `hard`).
+
+        `scores` 는 글꼴 파일 이름 -> 그 글꼴을 읽은 점수(%)다
+        (`tools/hardfonts.py` 가 판 하나로 잰다). 뽑을 몫은
+        `(1 - share)` 를 고르게 나누고 `share` 를 **틀린 몫(100 - 점수)에 비례해**
+        나눈다. 잰 적 없는 글꼴은 틀린 몫의 가운데값으로 친다 — 0 으로 치면 새로
+        넣은 글꼴이 영영 덜 뽑힌다.
+
+        왜 있나(2026-09-25). v59~v83 스물다섯 바퀴 동안 가장 낮은 하나(동해독도)가
+        90.1~90.2% 에 붙어 있었다. 그동안 바꾼 것은 이어받는 자리·학습률뿐이고
+        글꼴은 **늘 고르게** 뽑았다. 450벌 가운데 이미 잘 읽는 벌에 걸음 대부분을
+        쓰고 있었다.
+
+        시험지는 이것을 안 부른다. 안 부르면 `pick` 은 예전과 **같은 난수를 같은
+        차례로** 뽑는다(검사가 있다). 맞춘 글꼴 수를 돌려준다.
+        """
+        errs = {name: max(0.0, 100.0 - float(value)) for name, value in scores.items()}
+        known = sorted(errs[f.name] for f in self.files if f.name in errs)
+        if not known or share <= 0:
+            self._lean = None
+            return 0
+        middle = known[len(known) // 2]
+        err = [errs.get(f.name, middle) for f in self.files]
+        total = sum(err) or 1.0
+        flat = (1.0 - share) / len(self.files)
+        run, cum = 0.0, []
+        for one in err:
+            run += flat + share * one / total
+            cum.append(run)
+        self._lean = cum
+        return len(known)
+
     def pick(self, rng: random.Random,
              text: str = "") -> tuple[ImageFont.FreeTypeFont, float]:
         """글꼴 하나와 **그 글꼴의 원래 획 굵기**(글자 높이 대비)를 함께 준다.
@@ -615,7 +650,8 @@ class Fonts:
         """
         want = {c for c in text if "가" <= c <= "힣"}
         for _ in range(6):
-            which = rng.randrange(len(self.files))
+            which = (rng.randrange(len(self.files)) if self._lean is None
+                     else bisect.bisect(self._lean, rng.random() * self._lean[-1]))
             if not want or all(self.has(which, c) for c in want):
                 return self._font(which, rng.choice(self.sizes)), self.weights[which]
         # 여섯 번을 골라도 못 담으면 **그 글월을 실제로 담은 글꼴**에서 고른다.
@@ -847,8 +883,43 @@ def _compose(text: str, font: ImageFont.FreeTypeFont, rng: random.Random):
     return (canvas, spans, wide) if placed else None
 
 
-def _strike(canvas: Image.Image, box: tuple[int, int, int, int], size: int,
+def _tangle(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], size: int,
             rng: random.Random) -> None:
+    """펜을 떼지 않고 제멋대로 말아 돌린 자국. 학습에만 쓴다(`render` 의 `tangle`).
+
+    `_strike` 의 '동그랗게 말아 뭉갠 것' 은 용수철처럼 **고르게** 돈다. 그런데
+    사진의 지운 자국은 그렇지 않다(2026-09-25, hand-06·hand-10 칸을 잘라 봄) —
+    크기가 제각각인 고리가 아무 데서나 겹치고, 굵기는 글씨와 같은 펜이다. 그 덩이를
+    모델이 'Core'·'Team'·'조직' 으로 읽었다. 방향을 조금씩 틀며 걷는 펜으로 그린다.
+    """
+    left, top, right, low = box
+    tall = low - top
+    pen = max(2, int(size * rng.uniform(0.028, 0.060)))
+    step = tall * rng.uniform(0.06, 0.12)
+    x, y = rng.uniform(left, right), rng.uniform(top, low)
+    heading = rng.uniform(0, math.tau)
+    turn = rng.choice((-1, 1)) * rng.uniform(0.25, 0.6)     # 걸음마다 트는 각(라디안)
+    points = [(x, y)]
+    for _ in range(int((1 + (right - left) / max(tall, 1)) * rng.randint(35, 75))):
+        turn += rng.gauss(0, 0.08)
+        if rng.random() < 0.04:
+            turn = -turn                                    # 도는 방향을 가끔 바꾼다
+        turn = math.copysign(min(0.9, max(0.1, abs(turn))), turn)
+        heading += turn
+        x += math.cos(heading) * step
+        y += math.sin(heading) * step
+        if not left <= x <= right:                          # 칸 밖으로 나가면 되돌아온다
+            heading = math.pi - heading
+            x = min(max(x, left), right)
+        if not top <= y <= low:
+            heading = -heading
+            y = min(max(y, top), low)
+        points.append((x, y))
+    draw.line(points, fill=255, width=pen, joint="curve")
+
+
+def _strike(canvas: Image.Image, box: tuple[int, int, int, int], size: int,
+            rng: random.Random, tangle: float = 0.0) -> None:
     """이미 그려 놓은 칸 위에 지운 자국을 덧그린다. 사람이 실제로 쓰는 세 꼴.
 
     잉크가 밝은 판이므로 밝게 긋는다. 굵기는 글자 획보다 조금 두껍게 —
@@ -865,6 +936,10 @@ def _strike(canvas: Image.Image, box: tuple[int, int, int, int], size: int,
     top -= int(tall * 0.10)                           # 글자 밖으로 조금 넘겨 긋는다
     low += int(tall * 0.10)
     wide = max(2, int(size * rng.uniform(0.045, 0.095)))
+    # 끈 채로는 난수를 안 뽑는다. 뽑기만 해도 뒤의 꼴이 다 바뀌어 시험지가 흔들린다.
+    if tangle and rng.random() < tangle:
+        _tangle(draw, (left, top, right, low), size, rng)
+        return
     shape = rng.random()
     if shape < 0.42:                                  # 지그재그로 마구 그은 것
         # 한 번만 그으면 밑 글자가 그대로 읽힌다. 실제 사진의 자국은 여러 번
@@ -1113,7 +1188,8 @@ def _bleed(sheet: Image.Image, ink: Image.Image, rng: random.Random) -> Image.Im
 
 
 def render(text: str, fonts: Fonts, rng: random.Random,
-           strike: float | None = None, warp: float | None = None):
+           strike: float | None = None, warp: float | None = None,
+           tangle: float = 0.0):
     """글월 한 줄 -> 흑백 이미지. 못 그리면 None.
 
     `strike` 는 지운 자국을 넣을 비율이다. 안 주면 `STRIKE`. **학습만 바꾼다** —
@@ -1122,6 +1198,9 @@ def render(text: str, fonts: Fonts, rng: random.Random,
 
     `warp` 는 글자 속 획을 휠 줄 비율이다(`WARP`). 같은 까닭으로 학습만 바꾼다.
     0 이면 **난수를 아예 안 뽑는다** — 뽑기만 해도 뒤의 그림이 다 바뀐다.
+
+    `tangle` 은 지운 자국 가운데 제멋대로 엉킨 고리(`_tangle`)로 그릴 몫이다.
+    0 이면 난수를 안 뽑는다. 역시 학습만 바꾼다.
 
     실제 경로와 순서를 맞춘다. 앱은 **여백이 넓은 판 전체를 표백한 뒤** 줄을 잘라낸다.
     바싹 자른 조각을 표백하면 흐림판이 글자로 물들어 획이 도로 하얘진다(실측함).
@@ -1203,7 +1282,7 @@ def render(text: str, fonts: Fonts, rng: random.Random,
                 left, right = narrow
             band = ink.crop((left, 0, right, ink.height)).getbbox()
             if band:
-                _strike(ink, (left, band[1], right, band[3]), size, rng)
+                _strike(ink, (left, band[1], right, band[3]), size, rng, tangle)
     # 변형은 반드시 **자른 뒤에** 한다. `_compose` 의 판은 글자보다 서너 배 크고,
     # 그 위에서 기울이고 흔들면 빈 자리를 옮기느라 시간의 절반을 쓴다(실측 43%).
     box = ink.getbbox()

@@ -21,6 +21,12 @@ A 41M model trained from scratch on synthetic data — no handwriting dataset, n
 photo  ->  line cutting  ->  ko-hand-ocr  ->  "부서 : 포테토뭉부서"
 ```
 
+![ko-hand-ocr scoreboard](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-board.en.svg)
+
+The **single model** reads with one 41M model. The **ensemble** runs three models and picks
+the answer they agree on — more accurate, seven times slower. Every number above comes
+from `tools/verify.py` at about 960 lines per font.
+
 ---
 
 ## At a glance
@@ -31,11 +37,11 @@ photo  ->  line cutting  ->  ko-hand-ocr  ->  "부서 : 포테토뭉부서"
 | **Model** | ViT-Small encoder (ImageNet, Apache-2.0) + 8-layer TrOCR decoder trained from scratch |
 | **Vocabulary** | 229 jamo tokens — not 11,172 syllables, so unseen characters are still writable |
 | **Parameters** | **41M** — one fifth of `ko-trocr` (213.7M) |
-| **Weights** | **156 MB** single · 450 MB three-way ensemble *(downloaded separately)* |
+| **Weights** | **156 MB** single model · 450 MB ensemble (3 models) *(downloaded separately)* |
 | **Package** | 98 KB — the code only |
 | **Speed** | **0.25 s per line** · 1.31 s for a whole photo — **CPU only, no GPU** |
-| **Memory** | 1.07 GB single · 1.51 GB ensemble |
-| **Accuracy** | **95.2%** mean on six handwriting fonts never seen in training (95.4% ensemble) · worst font 89.5% (90.3% ensemble) |
+| **Memory** | 1.07 GB single model · 1.51 GB ensemble |
+| **Accuracy** | **95.5%** mean on six handwriting fonts never seen in training (95.6% ensemble) · worst font 90.1% (90.7% ensemble) · 11 handwriting photos 95.0% (96.6% ensemble) |
 | **Training data** | Synthetic — drawn on the fly from OFL fonts. Nothing is stored on disk |
 | **License** | Apache-2.0, weights included — **no dataset terms inherited** |
 | **Python** | 3.10+ · PyTorch 2.5+ |
@@ -47,7 +53,7 @@ photo  ->  line cutting  ->  ko-hand-ocr  ->  "부서 : 포테토뭉부서"
 - Reads a **whole photo**: finds the lines, cuts them, reads each one (`read_photo`)
 - Reads **pre-cut line images**, batched (`read`)
 - **Constrained decoding** — restrict the output to a candidate list, and report whether the free and constrained readings agree (`both`)
-- **Ensemble reading** — run several checkpoints and take the answer they agree on
+- **Ensemble reading** — run several models and take the answer they agree on
 - Runs **fully offline on CPU.** Nothing is sent anywhere
 
 **Does not**
@@ -86,21 +92,21 @@ every number below comes from the `runs/VS.json` it leaves behind.
 |  | Jamo similarity | Character error rate | Exact line match | Worst photo |
 |---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | **96.52%** | **8.61%** | **67.6%** | **90.28%** |
-| ko-hand-ocr single (41M) | 94.95% | 12.44% | 64.7% | 83.03% |
+| ko-hand-ocr single model (41M) | 94.95% | 12.44% | 64.7% | 83.03% |
 | ddobokki/ko-trocr (214M) | 78.50% | 39.23% | 26.5% | 58.56% |
 
 #### Six unseen handwriting fonts · 670 lines, 4708 characters
 |  | Jamo similarity | Character error rate | Exact line match | Worst font |
 |---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | **95.65%** | **8.28%** | **73.0%** | **89.83%** |
-| ko-hand-ocr single (41M) | 95.20% | 8.81% | 71.9% | 88.50% |
+| ko-hand-ocr single model (41M) | 95.20% | 8.81% | 71.9% | 88.50% |
 | ddobokki/ko-trocr (214M) | 77.62% | 41.67% | 29.4% | 65.24% |
 
 #### Breadth — 24 more fonts · 648 lines, 3768 characters
 |  | Jamo similarity | Character error rate | Exact line match | Worst font |
 |---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | **97.71%** | **3.42%** | **85.5%** | **92.46%** |
-| ko-hand-ocr single (41M) | 96.87% | 4.33% | 84.3% | 89.81% |
+| ko-hand-ocr single model (41M) | 96.87% | 4.33% | 84.3% | 89.81% |
 | ddobokki/ko-trocr (214M) | 79.94% | 32.38% | 42.0% | 46.52% |
 
 ![All 480 fonts](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-fonts.svg)
@@ -109,10 +115,10 @@ every number below comes from the `runs/VS.json` it leaves behind.
 |  | held out (6)<br>6 | breadth (24)<br>24 | seen in training<br>450 | All<br>480 | fonts ≥ 95% | fonts < 80% |
 |---|---|---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | 99.15% | 99.00% | 98.22% | **98.27%** | 436 | 5 |
-| ko-hand-ocr single (41M) | 98.59% | 98.51% | 97.96% | **98.00%** | 429 | 4 |
+| ko-hand-ocr single model (41M) | 98.59% | 98.51% | 97.96% | **98.00%** | 429 | 4 |
 | ddobokki/ko-trocr (214M) | 85.29% | 83.29% | 82.48% | **82.56%** | 46 | 158 |
 
-- **A single 41M checkpoint already beats the 214M one.** On the six unseen
+- **The 41M single model already beats the 214M one.** On the six unseen
   fonts, 95.20% against 77.62%.
 - **Neither model has ever seen the eleven photos.** That is the cleanest
   ground here: 96.52% against 78.50%, with 67.6% of lines read exactly right
@@ -126,9 +132,9 @@ every number below comes from the `runs/VS.json` it leaves behind.
   in 0.3.0). Six fonts would never have shown that. With only 12 lines per
   font a single font's score swings hard, so read the herd totals and the
   distribution, not one row.
-- **The single checkpoint has a lower photo floor than 0.3.0.** Its worst
+- **The single model has a lower photo floor than 0.3.0.** Its worst
   photo is hand-06 at 83.03% — one line (`전자금융TF서약`) of a three-line
-  photo. In the ensemble another checkpoint carries it and it stays at 90.28%.
+  photo. In the ensemble another model carries it and it stays at 90.28%.
 
 ### Where the gap opens
 
@@ -138,7 +144,7 @@ every number below comes from the `runs/VS.json` it leaves behind.
 |  | Latin mixed in<br>66 lines | form label<br>60 lines | digits mixed in<br>84 lines | Hangul word / name<br>304 lines | Hangul sentence<br>156 lines |
 |---|---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | 14.1% | 8.3% | 9.6% | 4.7% | 8.1% |
-| ko-hand-ocr single (41M) | 15.3% | 8.6% | 9.1% | 5.7% | 8.7% |
+| ko-hand-ocr single model (41M) | 15.3% | 8.6% | 9.1% | 5.7% | 8.7% |
 | ddobokki/ko-trocr (214M) | 59.5% | 30.3% | 49.4% | 25.0% | 46.1% |
 
 ![CER by line length](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-span.svg)
@@ -147,7 +153,7 @@ every number below comes from the `runs/VS.json` it leaves behind.
 |  | 1-5 chars<br>286 lines | 6-10 chars<br>270 lines | 11-20 chars<br>108 lines | 21+ chars<br>6 lines |
 |---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | 6.1% | 8.4% | 8.3% | 17.6% |
-| ko-hand-ocr single (41M) | 6.9% | 9.0% | 8.5% | 18.1% |
+| ko-hand-ocr single model (41M) | 6.9% | 9.0% | 8.5% | 18.1% |
 | ddobokki/ko-trocr (214M) | 30.7% | 35.0% | 50.7% | 92.1% |
 
 - **Latin abbreviations split them.** 59.5% against 14.1% — 4.2 times. The
@@ -165,20 +171,20 @@ every number below comes from the `runs/VS.json` it leaves behind.
 |  | Parameters | Download | lines/s (GPU) | lines/s (CPU) | 30-line page (GPU) | 30-line page (CPU) | Peak VRAM |
 |---|---|---|---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | 118M | 450MB | 6.6 | 0.6 | 4.93s | 52.0s | 1772MB |
-| ko-hand-ocr single (41M) | 41M | 156MB | **37.2** | **3.8** | **1.21s** | **8.3s** | **1052MB** |
+| ko-hand-ocr single model (41M) | 41M | 156MB | **37.2** | **3.8** | **1.21s** | **8.3s** | **1052MB** |
 | ddobokki/ko-trocr (214M) | 214M | 408MB | 4.7 | 0.5 | 6.80s | 60.2s | 2744MB |
 
 - **The ensemble is ahead on GPU too** (6.6 against 4.7 lines/s, 1.4×) — and
-  that is while running three checkpoints times three shakes, **nine decodes
-  per cell**. A single checkpoint runs at 37.2 lines/s, 7.9× ko-trocr. GPU
+  that is while running three models times three shakes, **nine decodes
+  per cell**. The single model runs at 37.2 lines/s, 7.9× ko-trocr. GPU
   figures ride on the laptop GPU's state that day — in 0.3.0 ko-trocr came out
   at 6.0 lines/s — so **read the ratio measured at the same moment.**
-- **On CPU they part further.** A single checkpoint does 3.8 lines/s against
+- **On CPU they part further.** The single model does 3.8 lines/s against
   0.5 — **7.6×**. A thirty-line page takes 8.3s against 60.2s. **Whether it
   fits on an office PC with no GPU is decided here.** Going to an 8-layer
-  decoder shrank this ratio (the 6-layer single was 12.5×).
+  decoder shrank this ratio (the 6-layer single model was 12.5×).
 - **Batch size is measured, not guessed.** 16 lines is cheapest for our
-  ensemble, 32 for our single checkpoint, 8 for ko-trocr — its 384×384 encoder
+  ensemble, 32 for our single model, 8 for ko-trocr — its 384×384 encoder
   gets *more* expensive per line as you batch.
   A batch that does not fit this card is not timed at all — ko-trocr's 32-line
   batch is one, and the tool's own reason reads: "앞 묶음 4642MB 의 두 배가
@@ -193,7 +199,7 @@ every number below comes from the `runs/VS.json` it leaves behind.
 | Length cap | ko-trocr ships `max_length: 16` (character tokenizer). It was raised to 64 | ko-trocr |
 | Line cutting | ko-trocr has none. Ours was lent to it | ko-trocr |
 | Design intent | ko-trocr was trained on AI Hub's "Korean character OCR" and "public administrative document OCR" sets. **It was not built for handwriting alone** | — |
-| Number of checkpoints | Our ensemble is three checkpoints (one 36M + two 41M, 118M). For a size-matched view read the "single" row | ko-hand-ocr |
+| Number of models | Our ensemble is three models (one 36M + two 41M, 118M). For a size-matched view read the "single model" row | ko-hand-ocr |
 | Training fonts | 450 of the 480 fonts are ones **we have seen**. That is why the herds are reported apart | ko-hand-ocr |
 
 **None of this says ko-trocr is a bad model.** A model built to read printed
@@ -220,8 +226,8 @@ to [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.0).
 
 | Download | Size | What it is |
 |---|---|---|
-| `ko-hand-ocr-v83.zip` | 145MB | **A single checkpoint.** Enough for most uses. 0.25 s/line |
-| `ko-hand-ocr-ensemble.zip` | 417MB | Three checkpoints. Raises the floor, 7x slower |
+| `ko-hand-ocr-v83.zip` | 145MB | **Single model.** Enough for most uses. 0.25 s/line |
+| `ko-hand-ocr-ensemble.zip` | 417MB | Ensemble (3 models). Raises the floor, 7x slower |
 
 ```bash
 curl -LO https://github.com/jysvai/ko-hand-ocr/releases/download/v0.4.0/ko-hand-ocr-v83.zip
@@ -254,11 +260,11 @@ model *must* return something from the list. If the true answer is not in the li
 get a confident wrong answer and nothing looks off. When `agrees` is false, hand it
 to a human.
 
-### Reading with several checkpoints
+### Ensemble reading (several models)
 
-Different checkpoints fail on different cells. Train a little longer on the same data
+Different models fail on different cells. Train a little longer on the same data
 and some cells survive while others die — which tells you those cells were being read
-by a thin margin. So keep several checkpoints and take **the answer they agree on**.
+by a thin margin. So keep several models and take **the answer they agree on**.
 
 ```
 unzipped/
@@ -302,17 +308,21 @@ fast. Training both at the same rate destroys what the encoder knew.
 ## Accuracy
 
 Measured two ways. **Both matter.** All figures below come from
-`python tools/verify.py` (about 383 lines per font, 11 photos).
+`python tools/verify.py` (about 960 lines per font, 11 photos).
 
-| | unseen fonts (mean) | worst font | 11 handwriting photos | worst photo |
-|---|---|---|---|---|
-| single (v83) | 95.2% | 89.5% | 95.0% | 83.0% |
-| three | **95.4%** | **90.3%** | **96.6%** | **90.3%** |
-| *0.3.0 single (v62)* | *94.6%* | *88.5%* | *95.4%* | *90.3%* |
-| *0.3.0 three* | *95.3%* | *90.3%* | *95.8%* | *90.3%* |
+| | unseen fonts (mean) | worst font | 11 handwriting photos | worst photo | items over 95% |
+|---|---|---|---|---|---|
+| single model (v83) | 95.5% | 90.1% | 95.0% | 83.0% | 10 / 17 |
+| ensemble (3 models) | **95.6%** | **90.7%** | **96.6%** | **90.3%** | **12 / 17** |
+| *0.3.0 single model (v62)* | *94.6%* | *88.5%* | *95.4%* | *90.3%* | |
+| *0.3.0 ensemble* | *95.3%* | *90.3%* | *95.8%* | *90.3%* | *10 / 17* |
 
-**What changed since 0.3.0.** The single checkpoint moved from 94.6 to 95.2% on the
-font mean and from 88.5 to 89.5% on the worst font. In exchange **its photo floor
+Re-measured on 2026-10-06 with a finer ruler (about 380 -> 960 lines per font); the
+models are the v0.4.0 ones, unchanged. The italic 0.3.0 rows used the old 380-line
+ruler, so part of each difference is the ruler.
+
+**What changed since 0.3.0.** The single model moved from 94.6 to 95.5% on the
+font mean and from 88.5 to 90.1% on the worst font. In exchange **its photo floor
 dropped** (hand-06 90.3 -> 83.0%, one line of a three-line photo). The ensemble holds
 the floor and moves the photo mean from 95.8 to 96.6%. Of the 17 items (6 fonts + 11
 photos), the ensemble clears 95% on 12, up from 10.
@@ -324,31 +334,31 @@ taken by the author, so it swings ±5%p. The figure closer to what you would see
 someone else's handwriting is the **unseen-fonts** column — tested only on six font
 families never used in training, where the swing is half as wide (±2-3%p).
 
-**What several checkpoints buy is the floor, not the mean.** The mean moves a little
-(95.4 vs 95.2), but the worst font goes from 89.5% to 90.3%, and a photo one
-checkpoint dropped to 83.0% (hand-06) comes back at 90.3%. Where one checkpoint reads
+**What the ensemble buys is the floor, not the mean.** The mean moves a little
+(95.6 vs 95.5), but the worst font goes from 90.1% to 90.7%, and a photo the single
+model dropped to 83.0% (hand-06) comes back at 90.3%. Where one model reads
 a cell by a hair, another carries it.
 
-**Not every page improves, though.** A page one checkpoint read at 100% can come
-down to 96.7% (hand-08) — when two checkpoints agree on the wrong answer, the one
-that was right is outvoted. And it is seven times slower. Use three checkpoints where
-a single page reaching a human is costly, one where you need to sweep a lot of pages.
+**Not every page improves, though.** A page the single model read at 100% can come
+down to 96.7% (hand-08) — when two models agree on the wrong answer, the one
+that was right is outvoted. And it is seven times slower. Use the ensemble where
+a single page reaching a human is costly, the single model where you need to sweep a lot of pages.
 
-### Per font (400 lines each)
+### Per font (about 960 lines each)
 
 ![Accuracy by handwriting font](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-accuracy.svg)
 
 Look only at the average and **the font that collapses is hidden.** The real spread
-is 10%p.
+is close to 9%p.
 
-| Font | single (v83) | three |
+| Font | single model (v83) | ensemble |
 |---|---|---|
-| **EastSeaDokdo (동해독도)** | **89.5%** | **90.3%** |
-| KirangHaerang (기랑해랑) | 94.2% | 94.3% |
-| NanumPenScript (나눔펜스크립트) | 95.1% | 95.2% |
+| **EastSeaDokdo (동해독도)** | **90.1%** | **90.7%** |
+| KirangHaerang (기랑해랑) | 94.7% | 94.7% |
 | HiMelody (하이멜로디) | 95.4% | 95.4% |
-| GamjaFlower (감자꽃) | 98.0% | 97.9% |
-| SingleDay (싱글데이) | 99.0% | 99.1% |
+| NanumPenScript (나눔펜스크립트) | 95.7% | 95.9% |
+| GamjaFlower (감자꽃) | 97.9% | 98.0% |
+| SingleDay (싱글데이) | 98.9% | 98.9% |
 
 What has to clear the bar is not the mean but **the lowest font.** Once all six passed
 90% (2026-09-18) the goal was raised to 95%. Four are over it now; EastSeaDokdo and
@@ -394,12 +404,12 @@ lines, cutting is more than half the cost.
 
 | | cut | read | one photo (3.2 lines) | per line | 30-line page |
 |---|---|---|---|---|---|
-| single, beam 5 | 0.52s | 0.79s | 1.31s | 0.25s | 8.0s |
-| single, greedy | 0.51s | 0.36s | 0.86s | 0.11s | 3.9s |
-| three, beam 5 | 0.51s | 5.81s | 6.32s | 1.83s | 55.3s |
+| single model, beam 5 | 0.52s | 0.79s | 1.31s | 0.25s | 8.0s |
+| single model, greedy | 0.51s | 0.36s | 0.86s | 0.11s | 3.9s |
+| ensemble, beam 5 | 0.51s | 5.81s | 6.32s | 1.83s | 55.3s |
 
-Memory, as the peak while reading the 11 photos, is about 1.07GB for one checkpoint
-and about 1.51GB for three. Measured on 2026-09-22.
+Memory, as the peak while reading the 11 photos, is about 1.07GB for the single model
+and about 1.51GB for the ensemble. Measured on 2026-09-22.
 
 **Eight layers are not free.** Re-measuring 0.3.0's 6-layer v62 the same day with the
 same harness gives 0.18 s per line (beam 5), 0.09 s (greedy) and 1.03GB. The 8-layer
@@ -464,8 +474,8 @@ Fonts are looked up in this order. **No path is hard-coded.**
 2. the `KOHAND_FONTS` environment variable
 3. `~/.cache/ko-hand-ocr/fonts`
 
-Without `--layers` you get a 4-layer decoder. The single checkpoint that ships has
-8 layers (the ensemble mixes in one 6-layer checkpoint). At 4 layers, thirteen rounds
+Without `--layers` you get a 4-layer decoder. The single model that ships has
+8 layers (the ensemble mixes in one 6-layer model). At 4 layers, thirteen rounds
 of changing the recipe left the font mean stuck between 92.8 and 93.4%, and 6 layers
 was the first to clear that band. At 6 layers the lowest item then sat at 90.1% for
 thirteen rounds; the ensemble only started changing again with 8 layers plus

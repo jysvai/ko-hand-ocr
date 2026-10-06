@@ -63,6 +63,28 @@ param(
   [double]$Warp = 0,
   # 날짜가 아닌 숫자 줄(kohandocr/corpus.py 의 digit_line)로 바꿀 비율. 0 이면 끔.
   [double]$Digits = 0,
+  # 뜻 없는 줄(kohandocr/corpus.py 의 random_line)로 더 바꿀 비율. 0 이면 끔.
+  [double]$Free = 0,
+  # 못 읽는 글꼴을 더 자주 뽑을 몫(kohandocr/synth.py 의 Fonts.lean). 0 이면 고르게.
+  # -HardFrom 에 tools/hardfonts.py 가 쓴 점수 파일을 같이 준다.
+  [double]$Hard = 0,
+  [string]$HardFrom = "",
+  # 지운 자국 가운데 제멋대로 엉킨 고리(kohandocr/synth.py 의 _tangle)로 그릴 몫. 0 이면 끔.
+  [double]$Tangle = 0,
+  # 배우는 방식(kohandocr/train.py). 자료는 안 바꾼다. 0 이면 끔.
+  #   Noise   디코더에 먹이는 앞 글자 가운데 엉뚱한 글자로 바꿀 몫
+  #   Smooth  라벨 스무딩
+  #   Freeze  1 이면 디코더를 얼리고 인코더만 배운다
+  #   Dropout 학습 중에만 디코더 드롭아웃을 이 값으로
+  #   Ema     무게를 걸음마다 지수 평균한 것으로 저장한다(감쇠, 예: 0.999)
+  [double]$Noise = 0,
+  [double]$Smooth = 0,
+  [int]$Freeze = 0,
+  [double]$Dropout = 0,
+  [double]$Ema = 0,
+  # 위에 이름이 없는 학습 인자를 그대로 넘긴다(예: "--sam 0.05"). 고리가 새
+  # 방법을 고리를 안 세우고 먹이려고 쓴다(loop.passthrough).
+  [string]$Extra = "",
   # 경로를 코드에 박지 않는다. 만든 사람의 PC 경로가 박혀 있으면 공개했을 때
   # 남의 PC 에서 안 돌고 계정 이름도 같이 나간다.
   #   글꼴  : $env:KOHAND_FONTS  없으면 ~/.cache/ko-hand-ocr/fonts
@@ -136,6 +158,15 @@ if ($Layers) { $args += @("--layers", $Layers) }
 if ($Strike) { $args += @("--strike", $Strike) }
 if ($Warp)   { $args += @("--warp", $Warp) }
 if ($Digits) { $args += @("--digits", $Digits) }
+if ($Free)   { $args += @("--free", $Free) }
+if ($Hard)   { $args += @("--hard", $Hard, "--hard-from", $HardFrom) }
+if ($Tangle) { $args += @("--tangle", $Tangle) }
+if ($Noise)  { $args += @("--noise", $Noise) }
+if ($Smooth) { $args += @("--smooth", $Smooth) }
+if ($Freeze) { $args += @("--freeze-decoder") }
+if ($Dropout) { $args += @("--dropout", $Dropout) }
+if ($Ema)    { $args += @("--ema", $Ema) }
+if ($Extra)  { $args += @($Extra -split '\s+' | Where-Object { $_ }) }
 # 값에 공백이 있으면 감싼다. 위 프로브와 같은 함정이다 — 글꼴 폴더 이름에
 # 빈칸이 하나만 있어도 Start-Process 가 두 인자로 쪼개서 엉뚱한 곳을 뒤진다.
 $args = $args | ForEach-Object { if ("$_" -match '\s') { '"' + $_ + '"' } else { $_ } }
