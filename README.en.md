@@ -10,6 +10,7 @@ A 41M model trained from scratch on synthetic data — no handwriting dataset, n
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://github.com/jysvai/ko-hand-ocr)
 [![Params](https://img.shields.io/badge/params-41M-1baf7a)](https://github.com/jysvai/ko-hand-ocr)
 [![Weights](https://img.shields.io/badge/weights-156MB-1baf7a)](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.1)
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-localdeel%2Fko--hand--ocr-ffd21e)](https://huggingface.co/localdeel/ko-hand-ocr)
 [![CPU](https://img.shields.io/badge/runs%20on-CPU%20only-eda100)](https://github.com/jysvai/ko-hand-ocr)
 [![Data](https://img.shields.io/badge/training%20data-synthetic-e87ba4)](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
 
@@ -40,8 +41,9 @@ more accurate, seven times slower.
 | **Model** | ViT-Small encoder (ImageNet, Apache-2.0) + 8-layer TrOCR decoder trained from scratch |
 | **Vocabulary** | 229 jamo tokens — not 11,172 syllables, so unseen characters are still writable |
 | **Parameters** | **41M** — one fifth of `ko-trocr` (213.7M) |
-| **Weights** | **156 MB** single model · 450 MB ensemble (3 models) *(downloaded separately)* |
-| **Package** | 98 KB — the code only |
+| **Weights** | **156 MB** single model · 450 MB ensemble (3 models) *(downloaded separately — GitHub Releases · [Hugging Face](https://huggingface.co/localdeel/ko-hand-ocr))* |
+| **Package** | 119 KB — the code only |
+| **Plugs into** | a server that speaks the OpenAI and Ollama APIs (`ko-hand-ocr-serve`) · an MCP tool for LM Studio (`ko-hand-ocr-mcp`) |
 | **Speed** | **0.18 s per line** · 1.04 s for a whole photo — **CPU only, no GPU** |
 | **Memory** | 1.07 GB single model · 1.51 GB ensemble |
 | **Accuracy** | **95.6%** mean on six handwriting fonts never seen in training (95.6% ensemble) · worst font 90.4% (90.7% ensemble) · 11 handwriting photos 94.9% (96.6% ensemble) · 11 of 17 items over 95% (ensemble 12) |
@@ -59,6 +61,7 @@ more accurate, seven times slower.
 - **Constrained decoding** — restrict the output to a candidate list, and report whether the free and constrained readings agree (`both`)
 - **Ensemble reading** — run several models and take the answer they agree on
 - Runs **fully offline on CPU.** Nothing is sent anywhere
+- **Plugs into LM Studio, Ollama and vLLM tooling** — a server speaking their API, and an MCP tool ("Use it with LM Studio, Ollama and vLLM" below)
 
 **Does not**
 
@@ -300,10 +303,11 @@ pip install ko-hand-ocr
 
 Weights ship separately — they are too large for the repository, so they are attached
 to [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.1).
+**The same files are on [Hugging Face](https://huggingface.co/localdeel/ko-hand-ocr)** — the server and the MCP tool below fetch them from there.
 
 > Weights are versioned separately from the package. The current weights are on the
-> **v0.4.1** release (the package on PyPI stays 0.4.0 — 0.4.1 changes the single-model
-> weights and the training tools only). Earlier weights stay where they are — the
+> **v0.4.1** release (the package on PyPI is 0.5.0 — 0.5.0 adds the server and the MCP
+> tool below; the reading code and the weights are unchanged). Earlier weights stay where they are — the
 > previous single model (v83) is on v0.4.0, and **the 6-layer v62 on
 > v0.3.0** is faster (about 40% when measured the same day) and has a higher photo
 > floor (worst photo 90.3%); the 4-layer weights on v0.2.0 are faster still.
@@ -363,6 +367,70 @@ If `also/` is present, `Reader` uses it automatically. The call site does not ch
 Combining by confidence was measured and **it did not work** — the model is sometimes
 more confident about a wrong answer. So selection is by **how much the outputs agree**,
 not by confidence.
+
+## Use it with LM Studio, Ollama and vLLM
+
+**It cannot be loaded into them as a model.** All three are engines for LLMs that continue text:
+LM Studio and Ollama run llama.cpp GGUF files, and vLLM runs the architectures it knows. This
+model is a TrOCR-style image encoder with a cross-attention decoder, plus its own jamo
+vocabulary and line cutter, so it neither converts to GGUF nor fits vLLM's list. Instead the
+package ships **a server that speaks the same APIs** and **an MCP tool**.
+
+```bash
+pip install "ko-hand-ocr[mcp]"      # drop [mcp] if you only need the server
+```
+
+### Server — the OpenAI and Ollama APIs
+
+```bash
+ko-hand-ocr-serve                   # fetches the single model (156MB) from Hugging Face, serves 127.0.0.1:8765
+ko-hand-ocr-serve --ensemble        # the ensemble (450MB)
+```
+
+| Caller | How |
+|---|---|
+| `openai` client, code written for vLLM | set `base_url="http://127.0.0.1:8765/v1"`; send the image as base64 in `image_url` |
+| `ollama` CLI | set `OLLAMA_HOST=127.0.0.1:8765`, then `ollama run ko-hand-ocr "C:\scan.jpg"` · `ollama list` |
+| curl | `curl --data-binary @scan.jpg http://127.0.0.1:8765/read` |
+
+```python
+import base64
+from openai import OpenAI
+
+client = OpenAI(base_url="http://127.0.0.1:8765/v1", api_key="none")
+picture = "data:image/jpeg;base64," + base64.b64encode(open("scan.jpg", "rb").read()).decode()
+reply = client.chat.completions.create(model="ko-hand-ocr", messages=[
+    {"role": "user", "content": [{"type": "image_url", "image_url": {"url": picture}}]}])
+print(reply.choices[0].message.content)     # one line per handwritten line
+```
+
+- **Text in the prompt is ignored.** The image is cut into lines and each line comes back as one
+  line of text. It cannot summarise or tidy up — that is the chat model's job (MCP, below).
+- **Image URLs (`http://…`) are not fetched.** Send base64. Nothing leaves the machine.
+- By default it listens on this PC only (`127.0.0.1`). There is no password, so use
+  `--host 0.0.0.0` only on a network you trust.
+
+### LM Studio — as an MCP tool
+
+Since 0.3.17, chat models in LM Studio can call outside tools (MCP). In `~/.lmstudio/mcp.json`:
+
+```json
+{"mcpServers": {"ko-hand-ocr": {"command": "ko-hand-ocr-mcp"}}}
+```
+
+If `ko-hand-ocr-mcp` is not on PATH, give the full path (`Scripts\ko-hand-ocr-mcp.exe` in the
+virtual environment). Then ask a chat model that can call tools to "read C:\scan.jpg and put it in
+a table": it calls `read_handwriting` for the text and does the tidying itself. **This model
+recognises the characters; the chat model organises them.** An image pasted into the chat window
+goes to the chat model, not the tool, so pass a file path. The first call downloads the model
+(156MB, 20–30 s here); after that a photo takes about a second.
+
+**What was checked and what was not.** The `ollama` CLI 0.34 (`list`, `show`, `run`), the official
+`openai` client (whole and streamed replies) and an MCP SDK 2.3 client were all run against it. A full
+run inside the LM Studio chat window or Open WebUI has not been done yet.
+
+Putting it inside vLLM itself would mean writing the architecture as a plugin. For a 41M model a GPU
+server buys little, so that was not done — the server above exposes the same OpenAI address vLLM does.
 
 ## How it is built
 

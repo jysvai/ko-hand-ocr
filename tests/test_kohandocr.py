@@ -483,3 +483,98 @@ def test_잉크_문턱이_두_벌인데_같은_값이어야_한다():
     assert all(str(cell.INK_EDGE) in one for one in spot), (
         "page.py 의 잉크 문턱이 cell.INK_EDGE(%d) 와 다르다: %r"
         % (cell.INK_EDGE, spot))
+
+
+def test_서버는_마지막_사용자_말의_그림만_꺼내고_주소는_받으러_가지_않는다():
+    """채팅 화면은 앞서 주고받은 말을 통째로 다시 보낸다. 앞 그림까지 읽으면 새 그림을
+    보낼 때마다 옛 그림의 답이 앞에 붙는다. 그리고 그림 주소를 주면 받으러 가지 않는다
+    — 이 판독기는 아무 데도 나가지 않는다는 것이 README 에 적힌 약속이다.
+    """
+    import base64
+
+    from kohandocr import serve
+
+    old, new = base64.b64encode(b"old").decode(), base64.b64encode(b"new").decode()
+    asked = [
+        {"role": "user", "content": [{"type": "image_url",
+                                      "image_url": {"url": "data:image/png;base64," + old}}]},
+        {"role": "assistant", "content": "옛 답"},
+        {"role": "user", "content": [{"type": "text", "text": "이것도"},
+                                     {"type": "image_url",
+                                      "image_url": {"url": "data:image/png;base64," + new}}]},
+    ]
+    assert serve.openai_images(asked) == [b"new"]
+    assert serve.openai_images([{"role": "user", "content": "글만"}]) == []
+    assert serve.ollama_images([{"role": "user", "images": [old]},
+                                {"role": "user", "content": "", "images": [new]}]) == [b"new"]
+    for bad in ("https://example.com/a.jpg", "data:image/png,raw", "", None):
+        with pytest.raises(serve.Unreadable):
+            serve.decode_image(bad)
+
+
+def test_서버가_OpenAI_와_Ollama_꼴로_대답한다():
+    """손님(Open WebUI, `ollama` CLI, `openai` 클라이언트)은 꼴이 조금만 어긋나도
+    말없이 못 읽는다. 실제로 `ollama list` 는 지문이 비어 있으면 죽었고, `ollama run` 은
+    `HEAD /` 에 501 을 받으면 서버가 없다고 했다. 모델 없이 꼴만 본다.
+    """
+    import http.client
+    import json
+    import threading
+
+    from kohandocr import serve
+
+    class Fake:
+        name, size, digest, modified = "ko-hand-ocr", 1, "0" * 64, "2026-10-07T00:00:00Z"
+
+        def text(self, images):
+            return "\n".join("줄%d" % i for i in range(len(images))) if images else serve.HINT
+
+        def lines(self, data):
+            return ["줄0"]
+
+    server = serve.Server(("127.0.0.1", 0), serve.Handler)
+    server.engine = Fake()
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    port = server.server_address[1]
+
+    def call(method, path, body=None):
+        link = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
+        link.request(method, path, None if body is None else json.dumps(body))
+        answer = link.getresponse()
+        text = answer.read().decode("utf-8")
+        link.close()
+        return answer.status, answer.getheader("Content-Type") or "", text
+
+    picture = "data:image/png;base64,AAAA"
+    try:
+        assert call("HEAD", "/")[0] == 200
+        assert json.loads(call("GET", "/v1/models")[2])["data"][0]["id"] == "ko-hand-ocr"
+        tags = json.loads(call("GET", "/api/tags")[2])["models"][0]
+        assert len(tags["digest"]) >= 12 and tags["name"] == "ko-hand-ocr"
+        assert "vision" in json.loads(call("POST", "/api/show", {"model": "x"})[2])["capabilities"]
+
+        ask = {"messages": [{"role": "user", "content": [
+            {"type": "image_url", "image_url": {"url": picture}}]}]}
+        _, _, text = call("POST", "/v1/chat/completions", ask)
+        assert json.loads(text)["choices"][0]["message"]["content"] == "줄0"
+        _, kind, text = call("POST", "/v1/chat/completions", {**ask, "stream": True})
+        events = [row[6:] for row in text.split("\n\n") if row.startswith("data: ")]
+        assert kind.startswith("text/event-stream") and events[-1] == "[DONE]"
+        assert json.loads(events[0])["choices"][0]["delta"]["content"] == "줄0"
+        assert json.loads(events[-2])["choices"][0]["finish_reason"] == "stop"
+
+        talk = {"messages": [{"role": "user", "content": "", "images": ["AAAA"]}]}
+        _, kind, text = call("POST", "/api/chat", talk)        # `stream` 을 안 주면 흘린다
+        rows = [json.loads(row) for row in text.splitlines()]
+        assert kind == "application/x-ndjson" and rows[-1]["done"] is True
+        assert "".join(r["message"]["content"] for r in rows) == "줄0"
+        reply = json.loads(call("POST", "/api/generate", {"prompt": "읽어", "images": ["AAAA"],
+                                                           "stream": False})[2])
+        assert reply["response"] == "줄0" and reply["done"] is True
+
+        status, _, text = call("POST", "/v1/chat/completions", {"messages": [{"role": "user", "content": [
+            {"type": "image_url", "image_url": {"url": "https://example.com/a.jpg"}}]}]})
+        assert status == 400 and "받으러 가지 않는다" in json.loads(text)["error"]["message"]
+    finally:
+        server.shutdown()
+        server.server_close()

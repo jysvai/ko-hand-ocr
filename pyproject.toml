@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ko-hand-ocr"
-version = "0.4.0"
+version = "0.5.0"
 description = "Korean handwriting OCR - reads one line of handwritten Korean/English. 41M params, CPU-only, no dataset terms inherited."
 readme = "README.en.md"
 license = "Apache-2.0"
@@ -16,10 +16,20 @@ dependencies = [
     "torch>=2.5",
     "transformers>=4.45",
     "Pillow>=10.0",
+    # 가중치를 허깅페이스에서 받는다(`serve.fetch`). transformers 가 이미 끌고 오지만
+    # 직접 부르니 직접 적는다.
+    "huggingface_hub>=0.24",
 ]
 
 [project.optional-dependencies]
 train = ["numpy>=1.26"]
+# LM Studio 같은 채팅 앱에 도구로 붙일 때(`ko-hand-ocr-mcp`).
+mcp = ["mcp>=1.2"]
+
+[project.scripts]
+# OpenAI·Ollama 와 같은 말을 하는 서버. 모델은 허깅페이스에서 받는다.
+ko-hand-ocr-serve = "kohandocr.serve:main"
+ko-hand-ocr-mcp = "kohandocr.mcp_server:main"
 
 [project.urls]
 Source = "https://github.com/jysvai/ko-hand-ocr"

@@ -10,6 +10,7 @@
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://github.com/jysvai/ko-hand-ocr)
 [![Params](https://img.shields.io/badge/params-41M-1baf7a)](https://github.com/jysvai/ko-hand-ocr)
 [![Weights](https://img.shields.io/badge/weights-156MB-1baf7a)](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.1)
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-localdeel%2Fko--hand--ocr-ffd21e)](https://huggingface.co/localdeel/ko-hand-ocr)
 [![CPU](https://img.shields.io/badge/%EB%8F%8C%EC%95%84%EA%B0%80%EB%8A%94%20%EA%B3%B3-CPU%20%EB%A7%8C%EC%9C%BC%EB%A1%9C-eda100)](https://github.com/jysvai/ko-hand-ocr)
 [![Data](https://img.shields.io/badge/%ED%95%99%EC%8A%B5%20%EC%9E%90%EB%A3%8C-%ED%95%A9%EC%84%B1-e87ba4)](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
 
@@ -39,8 +40,9 @@
 | **모델** | ViT-Small 인코더(ImageNet, Apache-2.0) + 8층 TrOCR 디코더(처음부터 학습) |
 | **어휘** | 자모 229개 — 음절 11,172자를 외우지 않는다. 못 본 글자도 쓴다 |
 | **파라미터** | **41M** — `ko-trocr`(213.7M)의 1/5 |
-| **가중치** | **156MB** 단일 모델 · 450MB 앙상블(모델 3개) *(따로 받는다)* |
-| **꾸러미** | 98KB — 코드만 |
+| **가중치** | **156MB** 단일 모델 · 450MB 앙상블(모델 3개) *(따로 받는다 — GitHub Releases · [허깅페이스](https://huggingface.co/localdeel/ko-hand-ocr))* |
+| **꾸러미** | 119KB — 코드만 |
+| **붙이기** | OpenAI·Ollama 와 같은 말을 하는 서버(`ko-hand-ocr-serve`) · LM Studio 에 붙는 MCP 도구(`ko-hand-ocr-mcp`) |
 | **속도** | **줄당 0.18초** · 사진 한 장 1.04초 — **GPU 없이 CPU 만으로** |
 | **메모리** | 1.07GB 단일 모델 · 1.51GB 앙상블 |
 | **성적** | 학습에 안 쓴 글씨체 여섯 벌 평균 **95.6%** (앙상블 95.6%) · 가장 낮은 벌 90.4% (앙상블 90.7%) · 손글씨 사진 11장 평균 94.9% (앙상블 96.6%) · 17개 가운데 95% 넘김 11개 (앙상블 12개) |
@@ -58,6 +60,7 @@
 - **가둬서 읽기** — 후보 목록 안에서만 고르게 하고, 자유롭게 읽은 것과 맞는지 알려 준다 (`both`)
 - **앙상블로 읽기** — 모델을 여럿 두고 서로 닮은 답을 고른다
 - **아무 데도 보내지 않는다.** CPU 에서 완전히 혼자 돈다
+- **LM Studio·Ollama·vLLM 쪽 도구와 붙는다** — 같은 말을 하는 서버와 MCP 도구(아래 「LM Studio · Ollama · vLLM 과 같이 쓰기」)
 
 **안 된다**
 
@@ -287,10 +290,11 @@ pip install ko-hand-ocr
 
 무게(가중치)는 따로다. 크기가 커서 저장소에 안 넣고
 [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.1) 에 붙였다.
+**[허깅페이스](https://huggingface.co/localdeel/ko-hand-ocr)에도 같은 파일이 있다** — 아래 서버와 MCP 도구는 거기서 알아서 받는다.
 
 > 가중치는 꾸러미 버전과 따로 움직인다. 지금 가중치는 **v0.4.1** 릴리스에
-> 있다(꾸러미는 PyPI 0.4.0 그대로 — 0.4.1 에서 바뀐 것은 단일 모델 가중치와 학습
-> 도구다). 앞 것도 그대로 남겨 두었다 — v0.4.0 에는 앞 단일 모델(v83)이 있고,
+> 있다(꾸러미는 PyPI 0.5.0 — 0.5.0 에서 더한 것은 아래 서버와 MCP 도구이고, 읽는
+> 코드와 가중치는 그대로다). 앞 것도 그대로 남겨 두었다 — v0.4.0 에는 앞 단일 모델(v83)이 있고,
 > **v0.3.0 의 6층 단일 모델(v62)** 은 더 빠르고
 > (같은 날 재면 40% 쯤) 사진 바닥이 높다(가장 나쁜 장 90.3%). v0.2.0 의 4층 모델은
 > 더 빠르다.
@@ -348,6 +352,67 @@ reader.both([cell_b], options=["포테토뭉부서", "감자밭", "김클로드"
 
 확신도로 합치는 것은 재 봤고 **안 됐다** — 틀린 답을 더 확신하는 일이 있어서다.
 그래서 확신도가 아니라 **서로 얼마나 닮았나**로 고른다.
+
+## LM Studio · Ollama · vLLM 과 같이 쓰기
+
+**모델로 올리지는 못한다.** 셋은 글을 이어 쓰는 LLM 을 돌리는 엔진이다. LM Studio·Ollama 는
+llama.cpp 의 GGUF 만, vLLM 은 자기가 아는 구조만 돌린다. 이 모델은 그림 인코더에 교차 주의
+디코더를 단 TrOCR 꼴이고 자모 어휘와 줄 자르기가 따로 있어서, GGUF 로 바꿀 수도 그 목록에
+넣을 수도 없다. 대신 **그 엔진들과 같은 말(API)을 하는 서버**와 **MCP 도구**를 넣었다.
+
+```bash
+pip install "ko-hand-ocr[mcp]"      # 서버만 쓸 거면 [mcp] 는 빼도 된다
+```
+
+### 서버 — OpenAI·Ollama 와 같은 말
+
+```bash
+ko-hand-ocr-serve                   # 허깅페이스에서 단일 모델(156MB)을 받아 127.0.0.1:8765 에 띄운다
+ko-hand-ocr-serve --ensemble        # 앙상블(450MB)
+```
+
+| 부르는 쪽 | 이렇게 |
+|---|---|
+| `openai` 클라이언트, vLLM 을 부르던 코드 | `base_url="http://127.0.0.1:8765/v1"` 로 바꾼다. 그림은 `image_url` 에 base64 로 |
+| `ollama` CLI | `OLLAMA_HOST=127.0.0.1:8765` 를 주고 `ollama run ko-hand-ocr "C:\scan.jpg"` · `ollama list` |
+| curl | `curl --data-binary @scan.jpg http://127.0.0.1:8765/read` |
+
+```python
+import base64
+from openai import OpenAI
+
+client = OpenAI(base_url="http://127.0.0.1:8765/v1", api_key="none")
+picture = "data:image/jpeg;base64," + base64.b64encode(open("scan.jpg", "rb").read()).decode()
+reply = client.chat.completions.create(model="ko-hand-ocr", messages=[
+    {"role": "user", "content": [{"type": "image_url", "image_url": {"url": picture}}]}])
+print(reply.choices[0].message.content)     # 줄마다 한 줄
+```
+
+- **글로 물은 것은 쓰지 않는다.** 그림을 줄로 잘라 읽고 줄마다 한 줄씩 돌려줄 뿐이다. 요약·정리는
+  못 한다 — 그건 채팅 모델 몫이다(아래 MCP).
+- **그림 주소(`http://…`)는 받으러 가지 않는다.** base64 로 실어 보낸다. 아무 데도 나가지 않는다.
+- 기본은 이 PC(`127.0.0.1`)에서만 열린다. 비밀번호가 없으니 `--host 0.0.0.0` 은 믿는 망에서만.
+
+### LM Studio — MCP 도구로
+
+LM Studio(0.3.17 부터)의 채팅 모델은 바깥 도구를 부를 수 있다(MCP). `~/.lmstudio/mcp.json` 에:
+
+```json
+{"mcpServers": {"ko-hand-ocr": {"command": "ko-hand-ocr-mcp"}}}
+```
+
+`ko-hand-ocr-mcp` 가 PATH 에 없으면 전체 경로를 적는다(가상환경의 `Scripts\ko-hand-ocr-mcp.exe`).
+그 뒤 도구를 부를 줄 아는 채팅 모델에게 "C:\scan.jpg 읽고 표로 정리해 줘" 라고 하면, 모델이
+`read_handwriting` 으로 글자를 받아 정리한다. **글자를 알아보는 것은 이 모델, 정리는 채팅
+모델**이다. 채팅 창에 붙인 그림은 도구에게 오지 않으므로 파일 경로로 준다. 처음 부를 때 모델을
+받는다(156MB, 이 PC 에서 20~30초). 그다음은 사진 한 장에 1초 안팎이다.
+
+**확인한 것과 안 한 것.** `ollama` CLI 0.34(`list`·`show`·`run`), 공식 `openai` 클라이언트(한
+번에·흘려 받기), MCP SDK 2.3 손님으로 불러 보았다. LM Studio 채팅 창과 Open WebUI 화면 안에서
+끝까지 해 본 것은 아직 아니다.
+
+vLLM 자체에 넣으려면 플러그인으로 모델 구조를 새로 써야 한다. 41M 모델이라 GPU 서버로 얻을 것이
+작아서 하지 않았다 — 위 서버가 vLLM 과 같은 OpenAI 주소를 낸다.
 
 ## 어떻게 생겼나
 
