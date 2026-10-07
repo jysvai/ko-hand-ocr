@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 532" width="820" height="532" role="img" aria-label="Character error rate by line length. Lower is better. 1~5자: ko-hand-ocr 앙상블 6 percent, ko-hand-ocr 단일 모델 7 percent, ddobokki/ko-trocr 31 percent. 6~10자: ko-hand-ocr 앙상블 8 percent, ko-hand-ocr 단일 모델 9 percent, ddobokki/ko-trocr 35 percent. 11~20자: ko-hand-ocr 앙상블 8 percent, ko-hand-ocr 단일 모델 9 percent, ddobokki/ko-trocr 51 percent. 21자 이상: ko-hand-ocr 앙상블 18 percent, ko-hand-ocr 단일 모델 18 percent, ddobokki/ko-trocr 92 percent.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 532" width="820" height="532" role="img" aria-label="Character error rate by line length. Lower is better. 1~5자: ko-hand-ocr 앙상블 6 percent, ko-hand-ocr 단일 모델 6 percent, ddobokki/ko-trocr 31 percent. 6~10자: ko-hand-ocr 앙상블 8 percent, ko-hand-ocr 단일 모델 9 percent, ddobokki/ko-trocr 35 percent. 11~20자: ko-hand-ocr 앙상블 8 percent, ko-hand-ocr 단일 모델 8 percent, ddobokki/ko-trocr 51 percent. 21자 이상: ko-hand-ocr 앙상블 18 percent, ko-hand-ocr 단일 모델 16 percent, ddobokki/ko-trocr 92 percent.">
 <style>
   .surface{fill:#fcfcfb}
   .ink{fill:#0b0b0b}
@@ -40,29 +40,29 @@
 <text class="ink2" x="216" y="143.5" font-size="14" text-anchor="end">1~5자</text>
 <path class="s0" d="M228,114.0 H255.1 Q258.6,114.0 258.6,117.5 V125.5 Q258.6,129.0 255.1,129.0 H228 Z"/>
 <text class="ink2" x="264.6" y="127.5" font-size="12.5">6.1%</text>
-<path class="s1" d="M228,132.0 H259.1 Q262.6,132.0 262.6,135.5 V143.5 Q262.6,147.0 259.1,147.0 H228 Z"/>
-<text class="ink2" x="268.6" y="145.5" font-size="12.5">6.9%</text>
+<path class="s1" d="M228,132.0 H257.1 Q260.6,132.0 260.6,135.5 V143.5 Q260.6,147.0 257.1,147.0 H228 Z"/>
+<text class="ink2" x="266.6" y="145.5" font-size="12.5">6.5%</text>
 <path class="s2" d="M228,150.0 H378.6 Q382.1,150.0 382.1,153.5 V161.5 Q382.1,165.0 378.6,165.0 H228 Z"/>
 <text class="ink2" x="388.1" y="163.5" font-size="12.5">30.7%</text>
 <text class="ink2" x="216" y="213.5" font-size="14" text-anchor="end">6~10자</text>
 <path class="s0" d="M228,184.0 H266.5 Q270.0,184.0 270.0,187.5 V195.5 Q270.0,199.0 266.5,199.0 H228 Z"/>
 <text class="ink2" x="276.0" y="197.5" font-size="12.5">8.4%</text>
-<path class="s1" d="M228,202.0 H269.7 Q273.2,202.0 273.2,205.5 V213.5 Q273.2,217.0 269.7,217.0 H228 Z"/>
-<text class="ink2" x="279.2" y="215.5" font-size="12.5">9.0%</text>
+<path class="s1" d="M228,202.0 H269.2 Q272.7,202.0 272.7,205.5 V213.5 Q272.7,217.0 269.2,217.0 H228 Z"/>
+<text class="ink2" x="278.7" y="215.5" font-size="12.5">8.9%</text>
 <path class="s2" d="M228,220.0 H400.3 Q403.8,220.0 403.8,223.5 V231.5 Q403.8,235.0 400.3,235.0 H228 Z"/>
 <text class="ink2" x="409.8" y="233.5" font-size="12.5">35.0%</text>
 <text class="ink2" x="216" y="283.5" font-size="14" text-anchor="end">11~20자</text>
 <path class="s0" d="M228,254.0 H266.2 Q269.7,254.0 269.7,257.5 V265.5 Q269.7,269.0 266.2,269.0 H228 Z"/>
 <text class="ink2" x="275.7" y="267.5" font-size="12.5">8.3%</text>
-<path class="s1" d="M228,272.0 H267.2 Q270.7,272.0 270.7,275.5 V283.5 Q270.7,287.0 267.2,287.0 H228 Z"/>
-<text class="ink2" x="276.7" y="285.5" font-size="12.5">8.5%</text>
+<path class="s1" d="M228,272.0 H265.1 Q268.6,272.0 268.6,275.5 V283.5 Q268.6,287.0 265.1,287.0 H228 Z"/>
+<text class="ink2" x="274.6" y="285.5" font-size="12.5">8.1%</text>
 <path class="s2" d="M228,290.0 H479.2 Q482.7,290.0 482.7,293.5 V301.5 Q482.7,305.0 479.2,305.0 H228 Z"/>
 <text class="ink2" x="488.7" y="303.5" font-size="12.5">50.7%</text>
 <text class="ink2" x="216" y="353.5" font-size="14" text-anchor="end">21자 이상</text>
 <path class="s0" d="M228,324.0 H312.8 Q316.3,324.0 316.3,327.5 V335.5 Q316.3,339.0 312.8,339.0 H228 Z"/>
 <text class="ink2" x="322.3" y="337.5" font-size="12.5">17.6%</text>
-<path class="s1" d="M228,342.0 H315.1 Q318.6,342.0 318.6,345.5 V353.5 Q318.6,357.0 315.1,357.0 H228 Z"/>
-<text class="ink2" x="324.6" y="355.5" font-size="12.5">18.1%</text>
+<path class="s1" d="M228,342.0 H303.5 Q307.0,342.0 307.0,345.5 V353.5 Q307.0,357.0 303.5,357.0 H228 Z"/>
+<text class="ink2" x="313.0" y="355.5" font-size="12.5">15.7%</text>
 <path class="s2" d="M228,360.0 H687.0 Q690.5,360.0 690.5,363.5 V371.5 Q690.5,375.0 687.0,375.0 H228 Z"/>
 <text class="ink2" x="696.5" y="373.5" font-size="12.5">92.1%</text>
 <line class="rule" x1="228" y1="388" x2="730" y2="388"/>
@@ -76,5 +76,5 @@
 <text class="ink3" x="20" y="464" font-size="12.5">CER 로는 1.0 이다.</text>
 <text class="ink3" x="20" y="482" font-size="12.5">줄마다 평균 내지 않고 글자를 다 모아 놓고 나눈다. 안 그러면 한 글자 줄과 서른 글자 줄이 같은 무게가 된다.</text>
 <text class="ink3" x="20" y="500" font-size="12.5">가로 눈금은 갈래별·길이별 두 장이 같다. 나란히 놓고 봐도 속지 않게.</text>
-<text class="ink3" x="20" y="518" font-size="12.5">잰 날 2026-09-22 12:30 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
+<text class="ink3" x="20" y="518" font-size="12.5">잰 날 2026-10-07 09:54 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
 </svg>

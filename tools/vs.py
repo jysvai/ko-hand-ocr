@@ -667,7 +667,9 @@ def main() -> None:
     # 「판 하나」로 잴 판. 안 주면 조합의 첫 식구다. **릴리스로 내보내는 판을
     # 준다** — 0.3.0 은 이것이 없어서 견줌표의 판 하나는 v55-2500 을 쟀는데
     # 내보낸 판 하나는 v62 였다. 표의 숫자가 받는 판의 숫자가 아니었다.
-    ap.add_argument("--one", default="", help="판 하나로 잴 판 폴더 (예: runs/v81)")
+    ap.add_argument("--one", default="", help="단일 모델로 잴 폴더 (예: runs/v81)")
+    ap.add_argument("--team", nargs="*", default=[],
+                    help="앙상블로 잴 폴더들. 안 주면 runs/ENSEMBLE.json")
     args = ap.parse_args()
 
     others = B.busy()
@@ -679,8 +681,11 @@ def main() -> None:
     font_dir = str(synth.font_folder(args.font_dir))
     truth = json.loads((APP / "data/eval/labels.json").read_text(encoding="utf-8"))
     jpgs = sorted((APP / "data/eval/samples").glob("hand-*.jpg"))
-    team = [m.replace("\\", "/")
-            for m in json.loads(BOOK.read_text(encoding="utf-8"))["members"]]
+    # 앙상블. 안 주면 고리가 지금 고른 조합이다. **릴리스로 내보내는 앙상블을
+    # 준다** — 고리의 조합은 성긴 자로 고른 것이라 내보낸 것과 다를 수 있다
+    # (2026-10-07: 고리는 v90-10000 을, 내보낸 앙상블은 v73-5000 을 들고 있었다).
+    team = [m.replace("\\", "/") for m in (
+        args.team or json.loads(BOOK.read_text(encoding="utf-8"))["members"])]
 
     gear = (torch.cuda.get_device_name(0) if args.device.startswith("cuda")
             else "CPU")

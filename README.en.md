@@ -9,7 +9,7 @@ A 41M model trained from scratch on synthetic data — no handwriting dataset, n
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](https://github.com/jysvai/ko-hand-ocr/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://github.com/jysvai/ko-hand-ocr)
 [![Params](https://img.shields.io/badge/params-41M-1baf7a)](https://github.com/jysvai/ko-hand-ocr)
-[![Weights](https://img.shields.io/badge/weights-156MB-1baf7a)](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.0)
+[![Weights](https://img.shields.io/badge/weights-156MB-1baf7a)](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.1)
 [![CPU](https://img.shields.io/badge/runs%20on-CPU%20only-eda100)](https://github.com/jysvai/ko-hand-ocr)
 [![Data](https://img.shields.io/badge/training%20data-synthetic-e87ba4)](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
 
@@ -39,9 +39,9 @@ from `tools/verify.py` at about 960 lines per font.
 | **Parameters** | **41M** — one fifth of `ko-trocr` (213.7M) |
 | **Weights** | **156 MB** single model · 450 MB ensemble (3 models) *(downloaded separately)* |
 | **Package** | 98 KB — the code only |
-| **Speed** | **0.25 s per line** · 1.31 s for a whole photo — **CPU only, no GPU** |
+| **Speed** | **0.18 s per line** · 1.04 s for a whole photo — **CPU only, no GPU** |
 | **Memory** | 1.07 GB single model · 1.51 GB ensemble |
-| **Accuracy** | **95.5%** mean on six handwriting fonts never seen in training (95.6% ensemble) · worst font 90.1% (90.7% ensemble) · 11 handwriting photos 95.0% (96.6% ensemble) |
+| **Accuracy** | **95.6%** mean on six handwriting fonts never seen in training (95.6% ensemble) · worst font 90.4% (90.7% ensemble) · 11 handwriting photos 94.9% (96.6% ensemble) · 11 of 17 items over 95% (ensemble 12) |
 | **Training data** | Synthetic — drawn on the fly from OFL fonts. Nothing is stored on disk |
 | **License** | Apache-2.0, weights included — **no dataset terms inherited** |
 | **Python** | 3.10+ · PyTorch 2.5+ |
@@ -92,21 +92,21 @@ every number below comes from the `runs/VS.json` it leaves behind.
 |  | Jamo similarity | Character error rate | Exact line match | Worst photo |
 |---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | **96.52%** | **8.61%** | **67.6%** | **90.28%** |
-| ko-hand-ocr single model (41M) | 94.95% | 12.44% | 64.7% | 83.03% |
+| ko-hand-ocr single model (41M) | 94.24% | 13.40% | 61.8% | 83.03% |
 | ddobokki/ko-trocr (214M) | 78.50% | 39.23% | 26.5% | 58.56% |
 
 #### Six unseen handwriting fonts · 670 lines, 4708 characters
 |  | Jamo similarity | Character error rate | Exact line match | Worst font |
 |---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | **95.65%** | **8.28%** | **73.0%** | **89.83%** |
-| ko-hand-ocr single model (41M) | 95.20% | 8.81% | 71.9% | 88.50% |
+| ko-hand-ocr single model (41M) | 95.36% | 8.45% | 72.2% | 89.02% |
 | ddobokki/ko-trocr (214M) | 77.62% | 41.67% | 29.4% | 65.24% |
 
 #### Breadth — 24 more fonts · 648 lines, 3768 characters
 |  | Jamo similarity | Character error rate | Exact line match | Worst font |
 |---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | **97.71%** | **3.42%** | **85.5%** | **92.46%** |
-| ko-hand-ocr single model (41M) | 96.87% | 4.33% | 84.3% | 89.81% |
+| ko-hand-ocr single model (41M) | 97.20% | 3.98% | 84.7% | 89.14% |
 | ddobokki/ko-trocr (214M) | 79.94% | 32.38% | 42.0% | 46.52% |
 
 ![All 480 fonts](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-fonts.svg)
@@ -115,11 +115,11 @@ every number below comes from the `runs/VS.json` it leaves behind.
 |  | held out (6)<br>6 | breadth (24)<br>24 | seen in training<br>450 | All<br>480 | fonts ≥ 95% | fonts < 80% |
 |---|---|---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | 99.15% | 99.00% | 98.22% | **98.27%** | 436 | 5 |
-| ko-hand-ocr single model (41M) | 98.59% | 98.51% | 97.96% | **98.00%** | 429 | 4 |
+| ko-hand-ocr single model (41M) | 98.49% | 98.58% | 98.06% | **98.09%** | 434 | 4 |
 | ddobokki/ko-trocr (214M) | 85.29% | 83.29% | 82.48% | **82.56%** | 46 | 158 |
 
 - **The 41M single model already beats the 214M one.** On the six unseen
-  fonts, 95.20% against 77.62%.
+  fonts, 95.36% against 77.62%.
 - **Neither model has ever seen the eleven photos.** That is the cleanest
   ground here: 96.52% against 78.50%, with 67.6% of lines read exactly right
   against 26.5%.
@@ -135,6 +135,11 @@ every number below comes from the `runs/VS.json` it leaves behind.
 - **The single model has a lower photo floor than 0.3.0.** Its worst
   photo is hand-06 at 83.03% — one line (`전자금융TF서약`) of a three-line
   photo. In the ensemble another model carries it and it stays at 90.28%.
+- **The 0.4.1 single model gained on fonts only.** Against 0.4.0 (v83) it moves
+  from 95.20 to 95.36% on the six fonts, 96.87 to 97.20% on the twenty-four and
+  98.00 to 98.09% on all 480 — up on all three rulers. The photo row in this table
+  went from 94.95 to 94.24%: 22 -> 21 of 34 lines read exactly, **one line's
+  worth** (`tools/verify.py` gives 95.0 vs 94.9%).
 
 ### Where the gap opens
 
@@ -144,7 +149,7 @@ every number below comes from the `runs/VS.json` it leaves behind.
 |  | Latin mixed in<br>66 lines | form label<br>60 lines | digits mixed in<br>84 lines | Hangul word / name<br>304 lines | Hangul sentence<br>156 lines |
 |---|---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | 14.1% | 8.3% | 9.6% | 4.7% | 8.1% |
-| ko-hand-ocr single model (41M) | 15.3% | 8.6% | 9.1% | 5.7% | 8.7% |
+| ko-hand-ocr single model (41M) | 14.5% | 7.6% | 8.7% | 5.5% | 8.6% |
 | ddobokki/ko-trocr (214M) | 59.5% | 30.3% | 49.4% | 25.0% | 46.1% |
 
 ![CER by line length](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-span.svg)
@@ -153,7 +158,7 @@ every number below comes from the `runs/VS.json` it leaves behind.
 |  | 1-5 chars<br>286 lines | 6-10 chars<br>270 lines | 11-20 chars<br>108 lines | 21+ chars<br>6 lines |
 |---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | 6.1% | 8.4% | 8.3% | 17.6% |
-| ko-hand-ocr single model (41M) | 6.9% | 9.0% | 8.5% | 18.1% |
+| ko-hand-ocr single model (41M) | 6.5% | 8.9% | 8.1% | 15.7% |
 | ddobokki/ko-trocr (214M) | 30.7% | 35.0% | 50.7% | 92.1% |
 
 - **Latin abbreviations split them.** 59.5% against 14.1% — 4.2 times. The
@@ -170,17 +175,17 @@ every number below comes from the `runs/VS.json` it leaves behind.
 #### Speed and size
 |  | Parameters | Download | lines/s (GPU) | lines/s (CPU) | 30-line page (GPU) | 30-line page (CPU) | Peak VRAM |
 |---|---|---|---|---|---|---|---|
-| ko-hand-ocr ensemble (118M) | 118M | 450MB | 6.6 | 0.6 | 4.93s | 52.0s | 1772MB |
-| ko-hand-ocr single model (41M) | 41M | 156MB | **37.2** | **3.8** | **1.21s** | **8.3s** | **1052MB** |
-| ddobokki/ko-trocr (214M) | 214M | 408MB | 4.7 | 0.5 | 6.80s | 60.2s | 2744MB |
+| ko-hand-ocr ensemble (118M) | 118M | 450MB | 7.0 | 0.8 | 4.72s | 38.4s | 1772MB |
+| ko-hand-ocr single model (41M) | 41M | 156MB | **35.3** | **4.6** | **1.27s** | **6.9s** | **1052MB** |
+| ddobokki/ko-trocr (214M) | 214M | 408MB | 5.0 | 0.7 | 6.46s | 41.2s | 2744MB |
 
-- **The ensemble is ahead on GPU too** (6.6 against 4.7 lines/s, 1.4×) — and
+- **The ensemble is ahead on GPU too** (7.0 against 5.0 lines/s, 1.4×) — and
   that is while running three models times three shakes, **nine decodes
-  per cell**. The single model runs at 37.2 lines/s, 7.9× ko-trocr. GPU
+  per cell**. The single model runs at 35.3 lines/s, 7.1× ko-trocr. GPU
   figures ride on the laptop GPU's state that day — in 0.3.0 ko-trocr came out
   at 6.0 lines/s — so **read the ratio measured at the same moment.**
-- **On CPU they part further.** The single model does 3.8 lines/s against
-  0.5 — **7.6×**. A thirty-line page takes 8.3s against 60.2s. **Whether it
+- **On CPU they part further.** The single model does 4.6 lines/s against
+  0.7 — **6.3×**. A thirty-line page takes 6.9s against 41.2s. **Whether it
   fits on an office PC with no GPU is decided here.** Going to an 8-layer
   decoder shrank this ratio (the 6-layer single model was 12.5×).
 - **Batch size is measured, not guessed.** 16 lines is cheapest for our
@@ -208,7 +213,8 @@ this one does better. The other direction — whole printed documents — was no
 measured, and if it were, this model would probably lose.
 
 Measured on: NVIDIA GeForce RTX 5060 Laptop GPU · torch 2.14.0+cu130 ·
-2026-09-22 12:30.
+2026-10-07 09:54. Accuracy for the ensemble and ko-trocr matches 0.4.0 (2026-09-22) to
+the character — same models, same ruler. Speed differs because the machine differs by day.
 
 ## Install
 
@@ -217,20 +223,22 @@ pip install ko-hand-ocr
 ```
 
 Weights ship separately — they are too large for the repository, so they are attached
-to [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.0).
+to [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.1).
 
 > Weights are versioned separately from the package. The current weights are on the
-> **v0.4.0** release. Earlier weights stay where they are — **the 6-layer v62 on
-> v0.3.0** is faster (0.18 s per line) and has a higher photo floor (worst photo
-> 90.3%); the 4-layer weights on v0.2.0 are faster still (0.16 s per line).
+> **v0.4.1** release (the package on PyPI stays 0.4.0 — 0.4.1 changes the single-model
+> weights and the training tools only). Earlier weights stay where they are — the
+> previous single model (v83) is on v0.4.0, and **the 6-layer v62 on
+> v0.3.0** is faster (about 40% when measured the same day) and has a higher photo
+> floor (worst photo 90.3%); the 4-layer weights on v0.2.0 are faster still.
 
 | Download | Size | What it is |
 |---|---|---|
-| `ko-hand-ocr-v83.zip` | 145MB | **Single model.** Enough for most uses. 0.25 s/line |
+| `ko-hand-ocr-single.zip` | 144MB | **Single model.** Enough for most uses. 0.18 s/line |
 | `ko-hand-ocr-ensemble.zip` | 417MB | Ensemble (3 models). Raises the floor, 7x slower |
 
 ```bash
-curl -LO https://github.com/jysvai/ko-hand-ocr/releases/download/v0.4.0/ko-hand-ocr-v83.zip
+curl -LO https://github.com/jysvai/ko-hand-ocr/releases/download/v0.4.1/ko-hand-ocr-single.zip
 ```
 
 Pass the unzipped folder straight to `Reader()`. It must contain `config.json`,
@@ -241,7 +249,7 @@ Pass the unzipped folder straight to `Reader()`. It must contain `config.json`,
 ```python
 from kohandocr.reader import Reader
 
-reader = Reader("ko-hand-ocr-v83", device="cpu")   # the unzipped folder
+reader = Reader("ko-hand-ocr-single", device="cpu")   # the unzipped folder
 
 # A whole photo. Line cutting is included.
 reader.read_photo(open("scan.jpg", "rb").read())
@@ -312,16 +320,26 @@ Measured two ways. **Both matter.** All figures below come from
 
 | | unseen fonts (mean) | worst font | 11 handwriting photos | worst photo | items over 95% |
 |---|---|---|---|---|---|
-| single model (v83) | 95.5% | 90.1% | 95.0% | 83.0% | 10 / 17 |
-| ensemble (3 models) | **95.6%** | **90.7%** | **96.6%** | **90.3%** | **12 / 17** |
+| single model (0.4.1) | 95.6% | 90.4% | 94.9% | 84.2% | 11 / 17 |
+| ensemble (3 models) | 95.6% | **90.7%** | **96.6%** | **90.3%** | **12 / 17** |
+| *0.4.0 single model (v83)* | *95.5%* | *90.1%* | *95.0%* | *83.0%* | *10 / 17* |
 | *0.3.0 single model (v62)* | *94.6%* | *88.5%* | *95.4%* | *90.3%* | |
 | *0.3.0 ensemble* | *95.3%* | *90.3%* | *95.8%* | *90.3%* | *10 / 17* |
 
-Re-measured on 2026-10-06 with a finer ruler (about 380 -> 960 lines per font); the
-models are the v0.4.0 ones, unchanged. The italic 0.3.0 rows used the old 380-line
-ruler, so part of each difference is the ruler.
+Fonts are measured at about 960 lines each (0.4.0 shipped with 380). Italic rows are
+earlier releases: the 0.4.0 single model was re-measured with the same 960-line ruler,
+while the 0.3.0 rows used the old 380-line ruler, so part of those differences is the ruler.
 
-**What changed since 0.3.0.** The single model moved from 94.6 to 95.5% on the
+**0.4.1 changes the single model only.** It was trained to follow the ensemble's
+next-character probabilities (distillation), then averaged half-and-half with 0.4.0's
+v83. Size and architecture are unchanged, so speed is too. Items over 95% go from 10 to
+11 of 17 (hand-07 94.4 -> 95.8%), all six fonts move up a little (worst font 90.1 ->
+90.4%), and the worst photo, hand-06, goes from 83.0 to 84.2%. In exchange hand-08 drops
+from 100 to 96.7%. **This is a small step, not a jump** — the photo mean is the same
+(95.0 vs 94.9%). Re-running the same method at other strengths (0.25, 1.0), and trying
+dropout, weight EMA and SAM, all failed to beat v83.
+
+**What 0.4.0 changed over 0.3.0.** The single model (v83) moved from 94.6 to 95.5% on the
 font mean and from 88.5 to 90.1% on the worst font. In exchange **its photo floor
 dropped** (hand-06 90.3 -> 83.0%, one line of a three-line photo). The ensemble holds
 the floor and moves the photo mean from 95.8 to 96.6%. Of the 17 items (6 fonts + 11
@@ -334,13 +352,13 @@ taken by the author, so it swings ±5%p. The figure closer to what you would see
 someone else's handwriting is the **unseen-fonts** column — tested only on six font
 families never used in training, where the swing is half as wide (±2-3%p).
 
-**What the ensemble buys is the floor, not the mean.** The mean moves a little
-(95.6 vs 95.5), but the worst font goes from 90.1% to 90.7%, and a photo the single
-model dropped to 83.0% (hand-06) comes back at 90.3%. Where one model reads
+**What the ensemble buys is the floor, not the mean.** The font mean is now the same
+(95.6 vs 95.6), but the worst font goes from 90.4% to 90.7%, and a photo the single
+model dropped to 84.2% (hand-06) comes back at 90.3%. Where one model reads
 a cell by a hair, another carries it.
 
-**Not every page improves, though.** A page the single model read at 100% can come
-down to 96.7% (hand-08) — when two models agree on the wrong answer, the one
+**Not every page improves, though.** A page the single model cleared at 95.2% can
+come down to 92.9% (hand-10) — when two models agree on the wrong answer, the one
 that was right is outvoted. And it is seven times slower. Use the ensemble where
 a single page reaching a human is costly, the single model where you need to sweep a lot of pages.
 
@@ -351,14 +369,14 @@ a single page reaching a human is costly, the single model where you need to swe
 Look only at the average and **the font that collapses is hidden.** The real spread
 is close to 9%p.
 
-| Font | single model (v83) | ensemble |
-|---|---|---|
-| **EastSeaDokdo (동해독도)** | **90.1%** | **90.7%** |
-| KirangHaerang (기랑해랑) | 94.7% | 94.7% |
-| HiMelody (하이멜로디) | 95.4% | 95.4% |
-| NanumPenScript (나눔펜스크립트) | 95.7% | 95.9% |
-| GamjaFlower (감자꽃) | 97.9% | 98.0% |
-| SingleDay (싱글데이) | 98.9% | 98.9% |
+| Font | single model (0.4.1) | ensemble | *0.4.0 single model (v83)* |
+|---|---|---|---|
+| **EastSeaDokdo (동해독도)** | **90.4%** | **90.7%** | *90.1%* |
+| KirangHaerang (기랑해랑) | 94.7% | 94.7% | *94.7%* |
+| HiMelody (하이멜로디) | 95.6% | 95.4% | *95.4%* |
+| NanumPenScript (나눔펜스크립트) | 95.9% | 95.9% | *95.7%* |
+| GamjaFlower (감자꽃) | 98.0% | 98.0% | *97.9%* |
+| SingleDay (싱글데이) | 99.0% | 98.9% | *98.9%* |
 
 What has to clear the bar is not the mean but **the lowest font.** Once all six passed
 90% (2026-09-18) the goal was raised to 95%. Four are over it now; EastSeaDokdo and
@@ -404,16 +422,23 @@ lines, cutting is more than half the cost.
 
 | | cut | read | one photo (3.2 lines) | per line | 30-line page |
 |---|---|---|---|---|---|
-| single model, beam 5 | 0.52s | 0.79s | 1.31s | 0.25s | 8.0s |
-| single model, greedy | 0.51s | 0.36s | 0.86s | 0.11s | 3.9s |
-| ensemble, beam 5 | 0.51s | 5.81s | 6.32s | 1.83s | 55.3s |
+| single model, beam 5 | 0.48s | 0.57s | 1.04s | 0.18s | 6.9s |
+| single model, greedy | 0.48s | 0.30s | 0.78s | 0.09s | 2.0s |
+| ensemble, beam 5 | 0.48s | 4.36s | 4.83s | 1.37s | 47.1s |
+
+Measured on 2026-10-07. The same day, 0.4.0's single model (v83) took 1.00 s per photo
+and 0.17 s per line — size and architecture are identical, so **0.4.1 is neither heavier
+nor slower** (differences under 5% are day-to-day noise). **The machine itself varies by
+day**: on 2026-09-22 the same v83 measured 0.25 s per line. Only compare figures taken
+on the same day.
 
 Memory, as the peak while reading the 11 photos, is about 1.07GB for the single model
-and about 1.51GB for the ensemble. Measured on 2026-09-22.
+and about 1.51GB for the ensemble. Measured on 2026-09-22 (the 0.4.1 single model has
+the same architecture).
 
-**Eight layers are not free.** Re-measuring 0.3.0's 6-layer v62 the same day with the
-same harness gives 0.18 s per line (beam 5), 0.09 s (greedy) and 1.03GB. The 8-layer
-checkpoint is **about 40% slower** at beam 5. If speed comes first, take v62 from
+**Eight layers are not free.** On 2026-09-22, re-measuring 0.3.0's 6-layer v62 with the
+same harness gave 0.18 s per line (beam 5), 0.09 s (greedy) and 1.03GB, against 0.25 s
+for the 8-layer model that day. The 8-layer model is **about 40% slower** at beam 5. If speed comes first, take v62 from
 v0.3.0.
 
 **The right-hand column is not the photo figure multiplied out.** Our test photos hold
