@@ -23,9 +23,12 @@ photo  ->  line cutting  ->  ko-hand-ocr  ->  "부서 : 포테토뭉부서"
 
 ![ko-hand-ocr scoreboard](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-board.en.svg)
 
-The **single model** reads with one 41M model. The **ensemble** runs three models and picks
-the answer they agree on — more accurate, seven times slower. Every number above comes
-from `tools/verify.py` at about 960 lines per font.
+The top table puts us next to **six other public OCR models** on the same test sheets, on
+the same PC at the same moment (`tools/vs.py` — who was run and how is
+[below](#measured-against-other-ocr-on-the-same-ruler)). Below it are our two models item
+by item, from `tools/verify.py` at about 960 lines per font. The **single model** reads with
+one 41M model. The **ensemble** runs three models and picks the answer they agree on —
+more accurate, seven times slower.
 
 ---
 
@@ -42,6 +45,7 @@ from `tools/verify.py` at about 960 lines per font.
 | **Speed** | **0.18 s per line** · 1.04 s for a whole photo — **CPU only, no GPU** |
 | **Memory** | 1.07 GB single model · 1.51 GB ensemble |
 | **Accuracy** | **95.6%** mean on six handwriting fonts never seen in training (95.6% ensemble) · worst font 90.4% (90.7% ensemble) · 11 handwriting photos 94.9% (96.6% ensemble) · 11 of 17 items over 95% (ensemble 12) |
+| **Against others** | On the same sheets, ahead of the best of six public OCR models by **+17.7 points** on the six fonts (ko-trocr) and **+15.7 points** on the photos (ko-trocr) — single model |
 | **Training data** | Synthetic — drawn on the fly from OFL fonts. Nothing is stored on disk |
 | **License** | Apache-2.0, weights included — **no dataset terms inherited** |
 | **Python** | 3.10+ · PyTorch 2.5+ |
@@ -64,27 +68,39 @@ from `tools/verify.py` at about 960 lines per font.
 
 ## Why it exists
 
-In practice the only publicly available Korean handwriting OCR model is
-`ddobokki/ko-trocr`, and its training data comes from AI Hub, which places conditions
-on purpose of use and on redistribution. That blocks it from being embedded in an
-in-house tool or shipped as a public package. So **the same capability was rebuilt
-from scratch** — with a provenance chain that can be audited part by part.
+The only public model aimed at Korean **handwriting** that we could find is
+`ddobokki/ko-trocr`, and its training data comes from AI Hub, which places conditions on purpose of use and on
+redistribution. That blocks it from being embedded in an in-house tool or shipped as a
+public package. General OCR engines (PaddleOCR, EasyOCR, Tesseract) and large VLMs fall
+well short on a line of handwriting — on the same sheets the best of them reads
+77.6% of the six fonts and 78.5% of the photos (below). So
+**a model for this job was built from scratch** — with a provenance chain that can be
+audited part by part.
 
-![ko-hand-ocr vs ko-trocr](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-compare.svg)
+## Measured against other OCR on the same ruler
 
-## Measured against ko-trocr on the same ruler
+There are six rivals — one from each kind of thing people actually reach for to read Korean.
 
-The chart above compares **terms and footprint**. Reading accuracy was
-measured separately.
+| Rival | Kind | Size | How it was run |
+|---|---|---|---|
+| `ddobokki/ko-trocr` | Korean TrOCR (trained on AI Hub) | 214M | transformers, float32, beam 5, length cap raised 16 -> 64 |
+| PaddleOCR PP-OCRv5 | line recogniser (`korean_PP-OCRv5_mobile_rec`) | 3.3M | paddleocr 3.7.0 / paddle 3.4.0, `TextRecognition` |
+| EasyOCR | line recogniser (`korean_g2`) | 4.0M | easyocr 1.7.2, `Reader(["ko", "en"]).recognize()` |
+| Tesseract 5 | line recogniser (LSTM, no parameter count published) | 6MB file | tesseract 5.5.3, `--oem 1 --psm 7 -l kor+eng` |
+| PaddleOCR-VL-1.6 | OCR-specific VLM | 906M | transformers 5.16.1, bfloat16, prompt "OCR:" (model card) |
+| Qwen3-VL-2B-Instruct | general VLM | 2.1B | transformers 5.16.1, bfloat16, Korean prompt — the best of three we tried |
 
-A comparison only holds if **the model is the only thing that differs**.
-Photos were cut once with our line cutter (`kohandocr.page`) and the **same
-cells** were handed to both. Font test sheets were handed over **raw**,
-exactly as `synth.render` drew them — putting our preprocessing (64×640
-letterbox) on them would squash the other model twice. Metric, precision
-(float32), beam width (5), GPU and the moment of measurement are all shared.
-What was measured and how is spelled out in the header of `tools/vs.py`, and
-every number below comes from the `runs/VS.json` it leaves behind.
+Every rival runs **exactly as its model card says**, each in its own environment
+(`tools/rival_worker.py`), and only the time the engine itself reports is counted (handing
+images across is not).
+
+A comparison only holds if **the model is the only thing that differs**. Photos were cut
+once with our line cutter (`kohandocr.page`) and the **same cells** were handed to
+everyone. Font test sheets were handed over **raw**, exactly as `synth.render` drew them —
+putting our preprocessing (64×640 letterbox) on them would squash the others twice.
+Metric, GPU and the moment of measurement are all shared. What was measured and how is
+spelled out in the header of `tools/vs.py`, and every number below comes from the
+`runs/VS.json` it leaves behind.
 
 ![Accuracy](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-accuracy.svg)
 
@@ -94,6 +110,11 @@ every number below comes from the `runs/VS.json` it leaves behind.
 | ko-hand-ocr ensemble (118M) | **96.52%** | **8.61%** | **67.6%** | **90.28%** |
 | ko-hand-ocr single model (41M) | 94.24% | 13.40% | 61.8% | 83.03% |
 | ddobokki/ko-trocr (214M) | 78.50% | 39.23% | 26.5% | 58.56% |
+| PaddleOCR PP-OCRv5 (3.3M) | 71.75% | 39.71% | 8.8% | 34.81% |
+| Qwen3-VL-2B (2.1B) | 69.86% | 38.28% | 8.8% | 46.86% |
+| PaddleOCR-VL-1.6 (906M) | 61.71% | 44.02% | 2.9% | 18.52% |
+| EasyOCR (4.0M) | 66.88% | 55.02% | 2.9% | 46.19% |
+| Tesseract 5 (6MB) | 13.21% | 98.56% | 0.0% | 0.00% |
 
 #### Six unseen handwriting fonts · 670 lines, 4708 characters
 |  | Jamo similarity | Character error rate | Exact line match | Worst font |
@@ -101,6 +122,11 @@ every number below comes from the `runs/VS.json` it leaves behind.
 | ko-hand-ocr ensemble (118M) | **95.65%** | **8.28%** | **73.0%** | **89.83%** |
 | ko-hand-ocr single model (41M) | 95.36% | 8.45% | 72.2% | 89.02% |
 | ddobokki/ko-trocr (214M) | 77.62% | 41.67% | 29.4% | 65.24% |
+| PaddleOCR PP-OCRv5 (3.3M) | 72.28% | 40.40% | 28.4% | 52.43% |
+| Qwen3-VL-2B (2.1B) | 66.02% | 79.89% | 19.9% | 50.02% |
+| PaddleOCR-VL-1.6 (906M) | 62.97% | 62.34% | 18.1% | 43.05% |
+| EasyOCR (4.0M) | 56.35% | 64.21% | 9.7% | 36.95% |
+| Tesseract 5 (6MB) | 17.42% | 98.13% | 0.9% | 7.29% |
 
 #### Breadth — 24 more fonts · 648 lines, 3768 characters
 |  | Jamo similarity | Character error rate | Exact line match | Worst font |
@@ -108,6 +134,11 @@ every number below comes from the `runs/VS.json` it leaves behind.
 | ko-hand-ocr ensemble (118M) | **97.71%** | **3.42%** | **85.5%** | **92.46%** |
 | ko-hand-ocr single model (41M) | 97.20% | 3.98% | 84.7% | 89.14% |
 | ddobokki/ko-trocr (214M) | 79.94% | 32.38% | 42.0% | 46.52% |
+| PaddleOCR PP-OCRv5 (3.3M) | 75.27% | 30.02% | 39.5% | 18.66% |
+| Qwen3-VL-2B (2.1B) | 67.81% | 62.98% | 26.1% | 24.46% |
+| PaddleOCR-VL-1.6 (906M) | 66.69% | 45.94% | 24.8% | 27.33% |
+| EasyOCR (4.0M) | 64.38% | 48.91% | 19.1% | 19.28% |
+| Tesseract 5 (6MB) | 19.98% | 95.12% | 2.2% | 3.07% |
 
 ![All 480 fonts](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-fonts.svg)
 
@@ -117,24 +148,42 @@ every number below comes from the `runs/VS.json` it leaves behind.
 | ko-hand-ocr ensemble (118M) | 99.15% | 99.00% | 98.22% | **98.27%** | 436 | 5 |
 | ko-hand-ocr single model (41M) | 98.49% | 98.58% | 98.06% | **98.09%** | 434 | 4 |
 | ddobokki/ko-trocr (214M) | 85.29% | 83.29% | 82.48% | **82.56%** | 46 | 158 |
+| PaddleOCR PP-OCRv5 (3.3M) | 80.07% | 78.48% | 78.02% | **78.07%** | 86 | 198 |
+| Qwen3-VL-2B (2.1B) | 65.17% | 67.35% | 69.32% | **69.17%** | 50 | 289 |
+| PaddleOCR-VL-1.6 (906M) | — | — | — | — | — | — |
+| EasyOCR (4.0M) | 67.73% | 68.17% | 67.15% | **67.21%** | 9 | 319 |
+| Tesseract 5 (6MB) | 21.56% | 19.28% | 20.50% | **20.45%** | 0 | 480 |
 
-- **The 41M single model already beats the 214M one.** On the six unseen
-  fonts, 95.36% against 77.62%.
-- **Neither model has ever seen the eleven photos.** That is the cleanest
-  ground here: 96.52% against 78.50%, with 67.6% of lines read exactly right
-  against 26.5%.
-- **Run every single font in the folder — all 480 of them — and it is still
-  98.27% against 82.56%.** 436 fonts clear 95% against 46; 5 fall below 80%
-  against 158. **The 24 fonts we have never seen (99.00%) score higher than
-  the 450 used in training (98.22%)** — so this is not a number propped up by
-  memorisation.
-- **Some fonts still collapse.** The worst of the 480 sits at 63.21% (34.96%
-  in 0.3.0). Six fonts would never have shown that. With only 12 lines per
-  font a single font's score swings hard, so read the herd totals and the
-  distribution, not one row.
-- **The single model has a lower photo floor than 0.3.0.** Its worst
-  photo is hand-06 at 83.03% — one line (`전자금융TF서약`) of a three-line
-  photo. In the ensemble another model carries it and it stays at 90.28%.
+- **Even the best of the six rivals is far behind.** On the six unseen fonts the best
+  rival is ko-trocr at 77.62%; our single model (41M) reads
+  95.36%. On the twenty-four it is ko-trocr 79.94% against
+  97.20%.
+- **Nobody has ever seen the eleven photos.** That is the cleanest ground here: our
+  ensemble reads 96.52% and the single model 94.24%, against
+  78.50% for the best rival (ko-trocr). Lines read exactly right:
+  67.6% against 26.5% (the best rival value).
+- **A large VLM does not read a handwritten line well just by being large.**
+  Qwen3-VL-2B (2.1B) reads 66.02% of the six fonts and
+  PaddleOCR-VL-1.6 (906M) 62.97%. They are twenty to fifty times our
+  size but were not trained for this job. Reading whole documents is another matter (not
+  measured).
+- **Tesseract barely reads handwriting** (17.42% on the fonts,
+  13.21% on the photos). It is a printed-text engine, as expected. It stays as
+  a baseline.
+- **Run every single font in the folder — all 480 of them** — and we read
+  98.27% (ensemble) and 98.09% (single) against
+  82.56% for the best rival (ko-trocr). **The 24 fonts we have never
+  seen (99.00%) score higher than the 450 used in training
+  (98.22%)** — so this is not a number propped up by
+  memorisation. PaddleOCR-VL takes about a second per line at its cheapest batch, so it was
+  not run on all 480 (blank in the table).
+- **Some fonts still collapse.** The worst of the 480 sits at 47.31% for our single
+  model and 63.21% for the ensemble. Six fonts would never have shown that. With
+  only 12 lines per font a single font's score swings hard, so read the herd totals and
+  the distribution, not one row.
+- **The single model has a lower photo floor than 0.3.0.** Its worst photo is hand-06 at
+  83.03% — one line (`전자금융TF서약`) of a three-line photo. In the
+  ensemble another model carries it and it stays at 90.28%.
 - **The 0.4.1 single model gained on fonts only.** Against 0.4.0 (v83) it moves
   from 95.20 to 95.36% on the six fonts, 96.87 to 97.20% on the twenty-four and
   98.00 to 98.09% on all 480 — up on all three rulers. The photo row in this table
@@ -151,6 +200,11 @@ every number below comes from the `runs/VS.json` it leaves behind.
 | ko-hand-ocr ensemble (118M) | 14.1% | 8.3% | 9.6% | 4.7% | 8.1% |
 | ko-hand-ocr single model (41M) | 14.5% | 7.6% | 8.7% | 5.5% | 8.6% |
 | ddobokki/ko-trocr (214M) | 59.5% | 30.3% | 49.4% | 25.0% | 46.1% |
+| PaddleOCR PP-OCRv5 (3.3M) | 53.7% | 32.1% | 43.7% | 33.5% | 40.9% |
+| Qwen3-VL-2B (2.1B) | 58.7% | 96.5% | 49.1% | 104.5% | 82.1% |
+| PaddleOCR-VL-1.6 (906M) | 75.7% | 65.9% | 45.6% | 81.7% | 51.4% |
+| EasyOCR (4.0M) | 68.5% | 55.6% | 64.8% | 64.7% | 64.1% |
+| Tesseract 5 (6MB) | 90.8% | 103.3% | 82.3% | 114.5% | 96.0% |
 
 ![CER by line length](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-span.svg)
 
@@ -160,13 +214,20 @@ every number below comes from the `runs/VS.json` it leaves behind.
 | ko-hand-ocr ensemble (118M) | 6.1% | 8.4% | 8.3% | 17.6% |
 | ko-hand-ocr single model (41M) | 6.5% | 8.9% | 8.1% | 15.7% |
 | ddobokki/ko-trocr (214M) | 30.7% | 35.0% | 50.7% | 92.1% |
+| PaddleOCR PP-OCRv5 (3.3M) | 42.9% | 33.8% | 40.1% | 92.1% |
+| Qwen3-VL-2B (2.1B) | 101.2% | 84.0% | 59.0% | 85.6% |
+| PaddleOCR-VL-1.6 (906M) | 96.3% | 50.8% | 55.5% | 58.8% |
+| EasyOCR (4.0M) | 70.4% | 58.5% | 63.0% | 97.2% |
+| Tesseract 5 (6MB) | 114.6% | 98.9% | 86.0% | 98.6% |
 
-- **Latin abbreviations split them.** 59.5% against 14.1% — 4.2 times. The
-  Latin that turns up on forms is mostly abbreviations (`TF`, `OCR`, `Codex`),
-  and the other model mashes those into Hangul.
-- **Longer lines split them further.** ko-trocr's encoder is a 384×384 square,
-  so a long line is squashed whole into it; ours is 64×640. **The 21+ bucket
-  holds only 6 lines, though** — read it as a direction, not a result.
+- **Latin abbreviations split them.** Character error rate is 14.5% for our single
+  model against 53.7% for the best rival there (PaddleOCR PP-OCRv5). The Latin
+  that turns up on forms is mostly abbreviations (`TF`, `OCR`, `Codex`); reading Hangul
+  and Latin together on one line is where they part.
+- **Longer lines split them further.** At 21+ characters: 15.7% against
+  58.8% for the best rival (PaddleOCR-VL-1.6). ko-trocr's encoder is a 384×384
+  square, so a long line is squashed whole into it; ours is 64×640. **The 21+ bucket holds
+  only 6 lines, though** — read it as a direction, not a result.
 
 ### What it costs
 
@@ -175,46 +236,61 @@ every number below comes from the `runs/VS.json` it leaves behind.
 #### Speed and size
 |  | Parameters | Download | lines/s (GPU) | lines/s (CPU) | 30-line page (GPU) | 30-line page (CPU) | Peak VRAM |
 |---|---|---|---|---|---|---|---|
-| ko-hand-ocr ensemble (118M) | 118M | 450MB | 7.0 | 0.8 | 4.72s | 38.4s | 1772MB |
-| ko-hand-ocr single model (41M) | 41M | 156MB | **35.3** | **4.6** | **1.27s** | **6.9s** | **1052MB** |
-| ddobokki/ko-trocr (214M) | 214M | 408MB | 5.0 | 0.7 | 6.46s | 41.2s | 2744MB |
+| ko-hand-ocr ensemble (118M) | 118M | 450MB | 6.9 | 0.66 | 4.76s | 45.8s | 1772MB |
+| ko-hand-ocr single model (41M) | 41M | 156MB | 34.2 | 3.08 | 1.31s | 10.2s | 1052MB |
+| ddobokki/ko-trocr (214M) | 214M | 408MB | 5.3 | 0.52 | 6.09s | 58.1s | 1798MB |
+| PaddleOCR PP-OCRv5 (3.3M) | 3.3M | 13MB | **336.5** | 14.68 | **0.52s** | 2.5s | 111MB |
+| Qwen3-VL-2B (2.1B) | 2.1B | 4058MB | 6.5 | 0.47 | 5.02s | 64.1s | 5724MB |
+| PaddleOCR-VL-1.6 (906M) | 906M | 1828MB | 0.9 | 0.04 | 32.80s | 680.7s | 1937MB |
+| EasyOCR (4.0M) | 4.0M | 15MB | 32.5 | 14.88 | 1.36s | 2.5s | **70MB** |
+| Tesseract 5 (6MB) | — | 6MB | — | **22.25** | — | **1.8s** | — |
 
-- **The ensemble is ahead on GPU too** (7.0 against 5.0 lines/s, 1.4×) — and
-  that is while running three models times three shakes, **nine decodes
-  per cell**. The single model runs at 35.3 lines/s, 7.1× ko-trocr. GPU
-  figures ride on the laptop GPU's state that day — in 0.3.0 ko-trocr came out
-  at 6.0 lines/s — so **read the ratio measured at the same moment.**
-- **On CPU they part further.** The single model does 4.6 lines/s against
-  0.7 — **6.3×**. A thirty-line page takes 6.9s against 41.2s. **Whether it
-  fits on an office PC with no GPU is decided here.** Going to an 8-layer
-  decoder shrank this ratio (the 6-layer single model was 12.5×).
-- **Batch size is measured, not guessed.** 16 lines is cheapest for our
-  ensemble, 32 for our single model, 8 for ko-trocr — its 384×384 encoder
-  gets *more* expensive per line as you batch.
-  A batch that does not fit this card is not timed at all — ko-trocr's 32-line
-  batch is one, and the tool's own reason reads: "앞 묶음 4642MB 의 두 배가
-  카드 8151MB 를 넘는다". **A number that was not measured is not written down
-  as if it were.**
+- **We are not the fastest.** On CPU, Tesseract 5 (22.2 lines/s), EasyOCR (14.9 lines/s), PaddleOCR PP-OCRv5 (14.7 lines/s)
+  beat our single model (3.1 lines/s). They read
+  Tesseract 5 17.4%, EasyOCR 56.4%, PaddleOCR PP-OCRv5 72.3% of the six fonts.
+  **Read accuracy and speed together** — on a form a wrong answer is worse than a blank.
+- **Against a model of similar purpose**, ko-trocr (214M), we are
+  5.9× faster on CPU (a thirty-line page in 10.2s against
+  58.1s). Whether it fits on an office PC with no GPU is decided here.
+- **CPU figures ride hard on this laptop's state at the time.** Same day, same cells, same
+  method: the single model ran at 4.6 lines/s in the morning, 3.1 in this run and 2.6 in
+  the evening, and its lead over ko-trocr moved through 6.3×, 5.9× and 4.4×. That is why
+  the 0.18 s per line under "Speed and footprint" below (`bench.py`, measured separately)
+  does not match. Read **the order within one run** rather than lines/s itself, and the
+  lead as 4–6× — being faster than ko-trocr held all three times.
+- **The large VLMs need a GPU.** On CPU Qwen3-VL-2B does 0.47 lines/s and
+  PaddleOCR-VL-1.6 0.04, so a thirty-line page takes 64s and
+  681s. Even on GPU they run at 6.5 and 0.9 lines/s, slower than
+  our single model (34.2). On CPU they take 2s and 23s per line,
+  so only the one-line batch was timed, once.
+- **Batch size is measured, not guessed.** Each model reads at its own cheapest batch. A
+  batch that does not fit this card is not timed at all — ko-trocr's 32-line batch is one,
+  and the tool's own reason reads: "앞 묶음 4642MB(가중치 848MB)에서 활성값을 두 배 하면 8437MB 로 카드 8151MB 를 넘는다". **A number that was not
+  measured is not written down as if it were.**
 
 ### What is *not* equal — and which side it favours
 
 | What | How | Favours |
 |---|---|---|
-| Test fonts | The six and the twenty-four were held out of **our** training only. What ko-trocr saw on AI Hub is unknown to us | ko-trocr |
-| Length cap | ko-trocr ships `max_length: 16` (character tokenizer). It was raised to 64 | ko-trocr |
-| Line cutting | ko-trocr has none. Ours was lent to it | ko-trocr |
-| Design intent | ko-trocr was trained on AI Hub's "Korean character OCR" and "public administrative document OCR" sets. **It was not built for handwriting alone** | — |
+| Test fonts | The six and the twenty-four were held out of **our** training only. What the rivals were trained on is unknown to us | rivals |
+| Line cutting | Our cutter was lent to every rival (they all receive one line image) | rivals |
+| Length cap | ko-trocr ships `max_length: 16` (character tokenizer). Like the two VLMs it was given 64 tokens. Every line where Qwen3-VL hit the cap was a runaway repeat (`11 11 11 …`); no long answer was cut short (re-reading the 670 font lines, all 24 that hit the cap were like that) | ko-trocr |
+| Prompt | Qwen3-VL has no fixed OCR prompt; three were tried and the one it reads best with was used | Qwen3-VL |
+| Precision | The two VLMs run in their released precision (bfloat16), the rest in float32. ko-trocr's float16 speed was also timed | — |
+| VLM on CPU | Seconds to tens of seconds per line, so only the one-line batch was timed, once. An 8-line batch might be faster | ko-hand-ocr |
+| All 480 fonts | PaddleOCR-VL takes about a second per line, so it was not run on all 480 (blank) | — |
+| Design intent | The three line recognisers target mainly printed and scene text, the VLMs whole documents, ko-trocr AI Hub's handwriting and administrative documents. **Only this model targets a single handwritten line** | ko-hand-ocr |
 | Number of models | Our ensemble is three models (one 36M + two 41M, 118M). For a size-matched view read the "single model" row | ko-hand-ocr |
 | Training fonts | 450 of the 480 fonts are ones **we have seen**. That is why the herds are reported apart | ko-hand-ocr |
 
-**None of this says ko-trocr is a bad model.** A model built to read printed
-administrative documents was handed a line of handwriting, and on that job
-this one does better. The other direction — whole printed documents — was not
+**None of this says the rivals are bad models.** Models built for printed documents,
+scene text or whole pages were handed a line of handwriting, and on that job this one does
+better. The other direction — whole printed documents, tables, scene text — was not
 measured, and if it were, this model would probably lose.
 
-Measured on: NVIDIA GeForce RTX 5060 Laptop GPU · torch 2.14.0+cu130 ·
-2026-10-07 09:54. Accuracy for the ensemble and ko-trocr matches 0.4.0 (2026-09-22) to
-the character — same models, same ruler. Speed differs because the machine differs by day.
+Measured on: NVIDIA GeForce RTX 5060 Laptop GPU · torch 2.14.0+cu130 · 2026-10-07 17:32. Accuracy for our two models
+and ko-trocr matches the same morning's run to the character — same models, same ruler.
+Speed rides on the machine's state, so **compare only figures taken at the same moment**.
 
 ## Install
 

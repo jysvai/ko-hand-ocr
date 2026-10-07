@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 602" width="820" height="602" role="img" aria-label="Character error rate by line content. Lower is better. 라틴 섞임: ko-hand-ocr 앙상블 14 percent, ko-hand-ocr 단일 모델 14 percent, ddobokki/ko-trocr 60 percent. 서식 라벨: ko-hand-ocr 앙상블 8 percent, ko-hand-ocr 단일 모델 8 percent, ddobokki/ko-trocr 30 percent. 숫자 섞임: ko-hand-ocr 앙상블 10 percent, ko-hand-ocr 단일 모델 9 percent, ddobokki/ko-trocr 49 percent. 한글 낱말·이름: ko-hand-ocr 앙상블 5 percent, ko-hand-ocr 단일 모델 5 percent, ddobokki/ko-trocr 25 percent. 한글 문장: ko-hand-ocr 앙상블 8 percent, ko-hand-ocr 단일 모델 9 percent, ddobokki/ko-trocr 46 percent.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 492" width="820" height="492" role="img" aria-label="Character error rate by line content. Lower is better. 라틴 섞임: ko-hand-ocr 앙상블 14 percent, ko-hand-ocr 단일 모델 14 percent, ddobokki/ko-trocr 60 percent, PaddleOCR PP-OCRv5 54 percent, Qwen3-VL-2B 59 percent, PaddleOCR-VL-1.6 76 percent, EasyOCR 69 percent, Tesseract 5 91 percent. 서식 라벨: ko-hand-ocr 앙상블 8 percent, ko-hand-ocr 단일 모델 8 percent, ddobokki/ko-trocr 30 percent, PaddleOCR PP-OCRv5 32 percent, Qwen3-VL-2B 96 percent, PaddleOCR-VL-1.6 66 percent, EasyOCR 56 percent, Tesseract 5 103 percent. 숫자 섞임: ko-hand-ocr 앙상블 10 percent, ko-hand-ocr 단일 모델 9 percent, ddobokki/ko-trocr 49 percent, PaddleOCR PP-OCRv5 44 percent, Qwen3-VL-2B 49 percent, PaddleOCR-VL-1.6 46 percent, EasyOCR 65 percent, Tesseract 5 82 percent. 한글 낱말·이름: ko-hand-ocr 앙상블 5 percent, ko-hand-ocr 단일 모델 5 percent, ddobokki/ko-trocr 25 percent, PaddleOCR PP-OCRv5 33 percent, Qwen3-VL-2B 105 percent, PaddleOCR-VL-1.6 82 percent, EasyOCR 65 percent, Tesseract 5 115 percent. 한글 문장: ko-hand-ocr 앙상블 8 percent, ko-hand-ocr 단일 모델 9 percent, ddobokki/ko-trocr 46 percent, PaddleOCR PP-OCRv5 41 percent, Qwen3-VL-2B 82 percent, PaddleOCR-VL-1.6 51 percent, EasyOCR 64 percent, Tesseract 5 96 percent.">
 <style>
   .surface{fill:#fcfcfb}
   .ink{fill:#0b0b0b}
@@ -9,6 +9,7 @@
   .s2{fill:#8a8880}
   .grid{stroke:#e3e2de;stroke-width:1}
   .rule{stroke:#cdccc6;stroke-width:1}
+  .heat{fill:#cf3a2e}
   text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
   @media (prefers-color-scheme: dark){
     .surface{fill:#1a1a19}
@@ -20,68 +21,113 @@
     .s2{fill:#7c7a73}
     .grid{stroke:#3a3a38}
     .rule{stroke:#4a4946}
+    .heat{fill:#ff6b5e}
   }
 </style>
-<rect class="surface" width="820" height="602" rx="8"/>
+<rect class="surface" width="820" height="492" rx="8"/>
 <text class="ink" x="20" y="32" font-size="19" font-weight="600">줄 안에 무엇이 들었나 — 글자 오류율(CER)</text>
 <text class="ink2" x="20" y="55" font-size="13.5">안 배운 글씨체 6벌 670줄을 내용으로 갈라 쟀다. 낮을수록 좋다.</text>
-<rect class="s0" x="20.0" y="78" width="12" height="12" rx="3"/>
-<text class="ink2" x="38.0" y="88" font-size="13.5">ko-hand-ocr 앙상블 (118M)</text>
-<rect class="s1" x="245.3" y="78" width="12" height="12" rx="3"/>
-<text class="ink2" x="263.3" y="88" font-size="13.5">ko-hand-ocr 단일 모델 (41M)</text>
-<rect class="s2" x="483.9" y="78" width="12" height="12" rx="3"/>
-<text class="ink2" x="501.9" y="88" font-size="13.5">ddobokki/ko-trocr (214M)</text>
-<line class="grid" x1="228.0" y1="106.0" x2="228.0" y2="441.0"/>
-<line class="grid" x1="328.4" y1="106.0" x2="328.4" y2="441.0"/>
-<line class="grid" x1="428.8" y1="106.0" x2="428.8" y2="441.0"/>
-<line class="grid" x1="529.2" y1="106.0" x2="529.2" y2="441.0"/>
-<line class="grid" x1="629.6" y1="106.0" x2="629.6" y2="441.0"/>
-<line class="grid" x1="730.0" y1="106.0" x2="730.0" y2="441.0"/>
-<text class="ink2" x="216" y="143.5" font-size="14" text-anchor="end">라틴 섞임</text>
-<path class="s0" d="M228,114.0 H295.4 Q298.9,114.0 298.9,117.5 V125.5 Q298.9,129.0 295.4,129.0 H228 Z"/>
-<text class="ink2" x="304.9" y="127.5" font-size="12.5">14.1%</text>
-<path class="s1" d="M228,132.0 H297.1 Q300.6,132.0 300.6,135.5 V143.5 Q300.6,147.0 297.1,147.0 H228 Z"/>
-<text class="ink2" x="306.6" y="145.5" font-size="12.5">14.5%</text>
-<path class="s2" d="M228,150.0 H523.3 Q526.8,150.0 526.8,153.5 V161.5 Q526.8,165.0 523.3,165.0 H228 Z"/>
-<text class="ink2" x="532.8" y="163.5" font-size="12.5">59.5%</text>
-<text class="ink2" x="216" y="213.5" font-size="14" text-anchor="end">서식 라벨</text>
-<path class="s0" d="M228,184.0 H266.3 Q269.8,184.0 269.8,187.5 V195.5 Q269.8,199.0 266.3,199.0 H228 Z"/>
-<text class="ink2" x="275.8" y="197.5" font-size="12.5">8.3%</text>
-<path class="s1" d="M228,202.0 H262.5 Q266.0,202.0 266.0,205.5 V213.5 Q266.0,217.0 262.5,217.0 H228 Z"/>
-<text class="ink2" x="272.0" y="215.5" font-size="12.5">7.6%</text>
-<path class="s2" d="M228,220.0 H376.6 Q380.1,220.0 380.1,223.5 V231.5 Q380.1,235.0 376.6,235.0 H228 Z"/>
-<text class="ink2" x="386.1" y="233.5" font-size="12.5">30.3%</text>
-<text class="ink2" x="216" y="283.5" font-size="14" text-anchor="end">숫자 섞임</text>
-<path class="s0" d="M228,254.0 H272.8 Q276.3,254.0 276.3,257.5 V265.5 Q276.3,269.0 272.8,269.0 H228 Z"/>
-<text class="ink2" x="282.3" y="267.5" font-size="12.5">9.6%</text>
-<path class="s1" d="M228,272.0 H268.3 Q271.8,272.0 271.8,275.5 V283.5 Q271.8,287.0 268.3,287.0 H228 Z"/>
-<text class="ink2" x="277.8" y="285.5" font-size="12.5">8.7%</text>
-<path class="s2" d="M228,290.0 H472.7 Q476.2,290.0 476.2,293.5 V301.5 Q476.2,305.0 472.7,305.0 H228 Z"/>
-<text class="ink2" x="482.2" y="303.5" font-size="12.5">49.4%</text>
-<text class="ink2" x="216" y="353.5" font-size="14" text-anchor="end">한글 낱말·이름</text>
-<path class="s0" d="M228,324.0 H248.1 Q251.6,324.0 251.6,327.5 V335.5 Q251.6,339.0 248.1,339.0 H228 Z"/>
-<text class="ink2" x="257.6" y="337.5" font-size="12.5">4.7%</text>
-<path class="s1" d="M228,342.0 H251.9 Q255.4,342.0 255.4,345.5 V353.5 Q255.4,357.0 251.9,357.0 H228 Z"/>
-<text class="ink2" x="261.4" y="355.5" font-size="12.5">5.5%</text>
-<path class="s2" d="M228,360.0 H350.2 Q353.7,360.0 353.7,363.5 V371.5 Q353.7,375.0 350.2,375.0 H228 Z"/>
-<text class="ink2" x="359.7" y="373.5" font-size="12.5">25.0%</text>
-<text class="ink2" x="216" y="423.5" font-size="14" text-anchor="end">한글 문장</text>
-<path class="s0" d="M228,394.0 H265.1 Q268.6,394.0 268.6,397.5 V405.5 Q268.6,409.0 265.1,409.0 H228 Z"/>
-<text class="ink2" x="274.6" y="407.5" font-size="12.5">8.1%</text>
-<path class="s1" d="M228,412.0 H267.6 Q271.1,412.0 271.1,415.5 V423.5 Q271.1,427.0 267.6,427.0 H228 Z"/>
-<text class="ink2" x="277.1" y="425.5" font-size="12.5">8.6%</text>
-<path class="s2" d="M228,430.0 H456.0 Q459.5,430.0 459.5,433.5 V441.5 Q459.5,445.0 456.0,445.0 H228 Z"/>
-<text class="ink2" x="465.5" y="443.5" font-size="12.5">46.1%</text>
-<line class="rule" x1="228" y1="458" x2="730" y2="458"/>
-<text class="ink3" x="228.0" y="472" font-size="12.5" text-anchor="middle">0%</text>
-<text class="ink3" x="328.4" y="472" font-size="12.5" text-anchor="middle">20%</text>
-<text class="ink3" x="428.8" y="472" font-size="12.5" text-anchor="middle">40%</text>
-<text class="ink3" x="529.2" y="472" font-size="12.5" text-anchor="middle">60%</text>
-<text class="ink3" x="629.6" y="472" font-size="12.5" text-anchor="middle">80%</text>
-<text class="ink3" x="730.0" y="472" font-size="12.5" text-anchor="middle">100%</text>
-<text class="ink3" x="20" y="516" font-size="12.5">CER 은 고쳐야 하는 글자 수를 정답 글자 수로 나눈 값이다. 자모 닮음과 다른 자다 — '팀'을 '탐'으로 읽으면 자모로는 0.67,</text>
-<text class="ink3" x="20" y="534" font-size="12.5">CER 로는 1.0 이다.</text>
-<text class="ink3" x="20" y="552" font-size="12.5">줄마다 평균 내지 않고 글자를 다 모아 놓고 나눈다. 안 그러면 한 글자 줄과 서른 글자 줄이 같은 무게가 된다.</text>
-<text class="ink3" x="20" y="570" font-size="12.5">가로 눈금은 갈래별·길이별 두 장이 같다. 나란히 놓고 봐도 속지 않게.</text>
-<text class="ink3" x="20" y="588" font-size="12.5">잰 날 2026-10-07 09:54 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
+<text class="ink2" x="279.8" y="88.0" font-size="12.5" font-weight="600" text-anchor="middle">라틴 섞임</text>
+<text class="ink2" x="279.8" y="103.0" font-size="12.5" font-weight="600" text-anchor="middle">66줄</text>
+<text class="ink2" x="395.4" y="88.0" font-size="12.5" font-weight="600" text-anchor="middle">서식 라벨</text>
+<text class="ink2" x="395.4" y="103.0" font-size="12.5" font-weight="600" text-anchor="middle">60줄</text>
+<text class="ink2" x="511.0" y="88.0" font-size="12.5" font-weight="600" text-anchor="middle">숫자 섞임</text>
+<text class="ink2" x="511.0" y="103.0" font-size="12.5" font-weight="600" text-anchor="middle">84줄</text>
+<text class="ink2" x="626.6" y="88.0" font-size="12.5" font-weight="600" text-anchor="middle">한글 낱말·이름</text>
+<text class="ink2" x="626.6" y="103.0" font-size="12.5" font-weight="600" text-anchor="middle">304줄</text>
+<text class="ink2" x="742.2" y="88.0" font-size="12.5" font-weight="600" text-anchor="middle">한글 문장</text>
+<text class="ink2" x="742.2" y="103.0" font-size="12.5" font-weight="600" text-anchor="middle">156줄</text>
+<text class="ink2" x="210" y="141.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
+<rect class="heat" x="224.0" y="124.0" width="111.6" height="24" rx="4" fill-opacity="0.13"/>
+<text class="ink" x="279.8" y="141.0" font-size="13" text-anchor="middle">14.1%</text>
+<rect class="heat" x="339.6" y="124.0" width="111.6" height="24" rx="4" fill-opacity="0.10"/>
+<text class="ink" x="395.4" y="141.0" font-size="13" text-anchor="middle">8.3%</text>
+<rect class="heat" x="455.2" y="124.0" width="111.6" height="24" rx="4" fill-opacity="0.11"/>
+<text class="ink" x="511.0" y="141.0" font-size="13" text-anchor="middle">9.6%</text>
+<rect class="heat" x="570.8" y="124.0" width="111.6" height="24" rx="4" fill-opacity="0.08"/>
+<text class="ink" x="626.6" y="141.0" font-size="13" text-anchor="middle">4.7%</text>
+<rect class="heat" x="686.4" y="124.0" width="111.6" height="24" rx="4" fill-opacity="0.10"/>
+<text class="ink" x="742.2" y="141.0" font-size="13" text-anchor="middle">8.1%</text>
+<text class="ink2" x="210" y="171.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
+<rect class="heat" x="224.0" y="154.0" width="111.6" height="24" rx="4" fill-opacity="0.14"/>
+<text class="ink" x="279.8" y="171.0" font-size="13" text-anchor="middle">14.5%</text>
+<rect class="heat" x="339.6" y="154.0" width="111.6" height="24" rx="4" fill-opacity="0.10"/>
+<text class="ink" x="395.4" y="171.0" font-size="13" text-anchor="middle">7.6%</text>
+<rect class="heat" x="455.2" y="154.0" width="111.6" height="24" rx="4" fill-opacity="0.11"/>
+<text class="ink" x="511.0" y="171.0" font-size="13" text-anchor="middle">8.7%</text>
+<rect class="heat" x="570.8" y="154.0" width="111.6" height="24" rx="4" fill-opacity="0.09"/>
+<text class="ink" x="626.6" y="171.0" font-size="13" text-anchor="middle">5.5%</text>
+<rect class="heat" x="686.4" y="154.0" width="111.6" height="24" rx="4" fill-opacity="0.10"/>
+<text class="ink" x="742.2" y="171.0" font-size="13" text-anchor="middle">8.6%</text>
+<text class="ink2" x="210" y="201.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
+<rect class="heat" x="224.0" y="184.0" width="111.6" height="24" rx="4" fill-opacity="0.37"/>
+<text class="ink" x="279.8" y="201.0" font-size="13" text-anchor="middle">59.5%</text>
+<rect class="heat" x="339.6" y="184.0" width="111.6" height="24" rx="4" fill-opacity="0.22"/>
+<text class="ink" x="395.4" y="201.0" font-size="13" text-anchor="middle">30.3%</text>
+<rect class="heat" x="455.2" y="184.0" width="111.6" height="24" rx="4" fill-opacity="0.32"/>
+<text class="ink" x="511.0" y="201.0" font-size="13" text-anchor="middle">49.4%</text>
+<rect class="heat" x="570.8" y="184.0" width="111.6" height="24" rx="4" fill-opacity="0.19"/>
+<text class="ink" x="626.6" y="201.0" font-size="13" text-anchor="middle">25.0%</text>
+<rect class="heat" x="686.4" y="184.0" width="111.6" height="24" rx="4" fill-opacity="0.30"/>
+<text class="ink" x="742.2" y="201.0" font-size="13" text-anchor="middle">46.1%</text>
+<text class="ink2" x="210" y="231.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
+<rect class="heat" x="224.0" y="214.0" width="111.6" height="24" rx="4" fill-opacity="0.34"/>
+<text class="ink" x="279.8" y="231.0" font-size="13" text-anchor="middle">53.7%</text>
+<rect class="heat" x="339.6" y="214.0" width="111.6" height="24" rx="4" fill-opacity="0.23"/>
+<text class="ink" x="395.4" y="231.0" font-size="13" text-anchor="middle">32.1%</text>
+<rect class="heat" x="455.2" y="214.0" width="111.6" height="24" rx="4" fill-opacity="0.29"/>
+<text class="ink" x="511.0" y="231.0" font-size="13" text-anchor="middle">43.7%</text>
+<rect class="heat" x="570.8" y="214.0" width="111.6" height="24" rx="4" fill-opacity="0.24"/>
+<text class="ink" x="626.6" y="231.0" font-size="13" text-anchor="middle">33.5%</text>
+<rect class="heat" x="686.4" y="214.0" width="111.6" height="24" rx="4" fill-opacity="0.27"/>
+<text class="ink" x="742.2" y="231.0" font-size="13" text-anchor="middle">40.9%</text>
+<text class="ink2" x="210" y="261.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
+<rect class="heat" x="224.0" y="244.0" width="111.6" height="24" rx="4" fill-opacity="0.37"/>
+<text class="ink" x="279.8" y="261.0" font-size="13" text-anchor="middle">58.7%</text>
+<rect class="heat" x="339.6" y="244.0" width="111.6" height="24" rx="4" fill-opacity="0.57"/>
+<text class="ink" x="395.4" y="261.0" font-size="13" text-anchor="middle">96.5%</text>
+<rect class="heat" x="455.2" y="244.0" width="111.6" height="24" rx="4" fill-opacity="0.32"/>
+<text class="ink" x="511.0" y="261.0" font-size="13" text-anchor="middle">49.1%</text>
+<rect class="heat" x="570.8" y="244.0" width="111.6" height="24" rx="4" fill-opacity="0.61"/>
+<text class="ink" x="626.6" y="261.0" font-size="13" text-anchor="middle">104.5%</text>
+<rect class="heat" x="686.4" y="244.0" width="111.6" height="24" rx="4" fill-opacity="0.49"/>
+<text class="ink" x="742.2" y="261.0" font-size="13" text-anchor="middle">82.1%</text>
+<text class="ink2" x="210" y="291.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
+<rect class="heat" x="224.0" y="274.0" width="111.6" height="24" rx="4" fill-opacity="0.46"/>
+<text class="ink" x="279.8" y="291.0" font-size="13" text-anchor="middle">75.7%</text>
+<rect class="heat" x="339.6" y="274.0" width="111.6" height="24" rx="4" fill-opacity="0.41"/>
+<text class="ink" x="395.4" y="291.0" font-size="13" text-anchor="middle">65.9%</text>
+<rect class="heat" x="455.2" y="274.0" width="111.6" height="24" rx="4" fill-opacity="0.30"/>
+<text class="ink" x="511.0" y="291.0" font-size="13" text-anchor="middle">45.6%</text>
+<rect class="heat" x="570.8" y="274.0" width="111.6" height="24" rx="4" fill-opacity="0.49"/>
+<text class="ink" x="626.6" y="291.0" font-size="13" text-anchor="middle">81.7%</text>
+<rect class="heat" x="686.4" y="274.0" width="111.6" height="24" rx="4" fill-opacity="0.33"/>
+<text class="ink" x="742.2" y="291.0" font-size="13" text-anchor="middle">51.4%</text>
+<text class="ink2" x="210" y="321.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
+<rect class="heat" x="224.0" y="304.0" width="111.6" height="24" rx="4" fill-opacity="0.42"/>
+<text class="ink" x="279.8" y="321.0" font-size="13" text-anchor="middle">68.5%</text>
+<rect class="heat" x="339.6" y="304.0" width="111.6" height="24" rx="4" fill-opacity="0.35"/>
+<text class="ink" x="395.4" y="321.0" font-size="13" text-anchor="middle">55.6%</text>
+<rect class="heat" x="455.2" y="304.0" width="111.6" height="24" rx="4" fill-opacity="0.40"/>
+<text class="ink" x="511.0" y="321.0" font-size="13" text-anchor="middle">64.8%</text>
+<rect class="heat" x="570.8" y="304.0" width="111.6" height="24" rx="4" fill-opacity="0.40"/>
+<text class="ink" x="626.6" y="321.0" font-size="13" text-anchor="middle">64.7%</text>
+<rect class="heat" x="686.4" y="304.0" width="111.6" height="24" rx="4" fill-opacity="0.40"/>
+<text class="ink" x="742.2" y="321.0" font-size="13" text-anchor="middle">64.1%</text>
+<text class="ink2" x="210" y="351.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
+<rect class="heat" x="224.0" y="334.0" width="111.6" height="24" rx="4" fill-opacity="0.54"/>
+<text class="ink" x="279.8" y="351.0" font-size="13" text-anchor="middle">90.8%</text>
+<rect class="heat" x="339.6" y="334.0" width="111.6" height="24" rx="4" fill-opacity="0.60"/>
+<text class="ink" x="395.4" y="351.0" font-size="13" text-anchor="middle">103.3%</text>
+<rect class="heat" x="455.2" y="334.0" width="111.6" height="24" rx="4" fill-opacity="0.49"/>
+<text class="ink" x="511.0" y="351.0" font-size="13" text-anchor="middle">82.3%</text>
+<rect class="heat" x="570.8" y="334.0" width="111.6" height="24" rx="4" fill-opacity="0.66"/>
+<text class="ink" x="626.6" y="351.0" font-size="13" text-anchor="middle">114.5%</text>
+<rect class="heat" x="686.4" y="334.0" width="111.6" height="24" rx="4" fill-opacity="0.56"/>
+<text class="ink" x="742.2" y="351.0" font-size="13" text-anchor="middle">96.0%</text>
+<text class="ink3" x="20" y="406" font-size="12.5">CER 은 고쳐야 하는 글자 수를 정답 글자 수로 나눈 값이다. 자모 닮음과 다른 자다 — '팀'을 '탐'으로 읽으면 자모로는 0.67,</text>
+<text class="ink3" x="20" y="424" font-size="12.5">CER 로는 1.0 이다.</text>
+<text class="ink3" x="20" y="442" font-size="12.5">줄마다 평균 내지 않고 글자를 다 모아 놓고 나눈다. 안 그러면 한 글자 줄과 서른 글자 줄이 같은 무게가 된다.</text>
+<text class="ink3" x="20" y="460" font-size="12.5">칸이 진할수록 많이 틀렸다. 진하기의 자는 갈래별·길이별 두 장이 같다(가장 진한 칸 = 115%).</text>
+<text class="ink3" x="20" y="478" font-size="12.5">잰 날 2026-10-07 17:32 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
 </svg>

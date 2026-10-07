@@ -4,10 +4,15 @@
     python tools/vs.py --fonts 120 --wide 30    # 시험지 줄 수를 줄여 빨리
     python tools/vs.py --skip-cpu               # CPU 재기를 건너뛴다(오래 걸린다)
 
-견주는 쪽은 `ddobokki/ko-trocr` 다. 한국어 손글씨를 읽는 공개 모델이 사실상
+처음 견준 쪽은 `ddobokki/ko-trocr` 다. 한국어 손글씨만 노린 공개 모델이 사실상
 그것뿐이라 README 가 처음부터 그것을 견줌 대상으로 적어 두었는데, 정작 **우리가
 직접 재 본 적이 없었다.** 남의 카드에 적힌 숫자를 우리 숫자 옆에 놓는 것은
 견준 것이 아니다. 자가 다르기 때문이다.
+
+2026-10-07 부터는 상대가 여섯이다(아래 `OUTSIDE`). 하나만 세우면 '그 모델보다 낫다'
+밖에 말 못 한다. 사람들이 한국어 OCR 로 실제로 꺼내 쓰는 것 — 가벼운 줄 인식기
+셋(PaddleOCR·EasyOCR·Tesseract)과 큰 VLM 둘(PaddleOCR-VL·Qwen3-VL) — 을 같은
+자로 같이 잰다. 아래 「무엇을 같게 두었나」는 그들에게도 그대로 걸린다.
 
 ## 무엇을 같게 두었나
 
@@ -51,8 +56,12 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
+import shutil
 import statistics
+import subprocess
 import sys
+import tempfile
 import time
 import unicodedata
 from pathlib import Path
@@ -93,6 +102,52 @@ RIVAL_TOKENS = 64
 # **480벌을 재는 데 몇 시간이 더 든다.** 그래서 빠르기를 먼저 재고 그 결과에서
 # 가장 싼 묶음을 골라 판독에 쓴다.
 CHUNK = 16                       # 아직 안 쟀을 때 기댈 자리
+
+# ── 견줌 상대 — 공개된 다른 OCR ──────────────────────────────────────
+#
+# 사용자 말(2026-10-07): 「벤치마크에 우리 정보만 있는 게 아니라 비교할 비교군이
+# 있어야 신뢰도가 있지」. ko-trocr 하나로는 '한 모델보다 낫다' 밖에 말 못 한다.
+# 사람들이 실제로 한국어 OCR 로 꺼내 쓰는 것을 갈래마다 하나씩 세운다.
+#
+#     줄 인식기     PaddleOCR(PP-OCRv5 한국어), EasyOCR, Tesseract — 가볍고 흔한 셋
+#     한국어 TrOCR  ddobokki/ko-trocr — 위의 `Rival`
+#     큰 VLM       PaddleOCR-VL-1.6(OCR 전용 0.9B), Qwen3-VL-2B(두루 쓰는 2B)
+#
+# 엔진마다 끌고 오는 것이 달라서(paddle, OpenCV, torchvision …) **학습 venv 에
+# 안 깐다.** `~/.cache/ko-hand-ocr/rivals/<이름>` 에 따로 깔고 `tools/rival_worker.py`
+# 를 그 python 으로 띄워 줄 그림을 넘긴다. 깔린 자리는 `KOHAND_RIVALS` 로 바꾼다.
+#
+#     uv venv paddle-gpu --python 3.12;  uv pip install paddlepaddle-gpu paddleocr
+#         (--index-url https://www.paddlepaddle.org.cn/packages/stable/cu129/ — RTX 50 은 cu129 부터)
+#     uv venv easyocr;  uv pip install torch torchvision easyocr    (CUDA torch)
+#     uv venv vlm;      uv pip install torch torchvision transformers accelerate
+#     micromamba create -p tesseract -c conda-forge tesseract       (관리자 권한 없이)
+RIVALS = Path(os.environ.get("KOHAND_RIVALS",
+                             Path.home() / ".cache" / "ko-hand-ocr" / "rivals"))
+WORKER = ROOT / "tools" / "rival_worker.py"
+
+# 열쇠 -> (이름표, venv 폴더 또는 None(이 python), 일꾼 인자, GPU 를 쓰나)
+#
+# **물음(prompt)은 모델 카드가 적은 것을 쓴다.** PaddleOCR-VL 은 「OCR:」 이다.
+# Qwen3-VL 은 정해 둔 OCR 물음이 없어서 셋을 시험 6벌 42줄 + 사진 11장에 대 보고
+# 가장 잘 읽는 쪽을 골랐다 — **그쪽에 유리하게** 고른 것이다(2026-10-07, 자모 닮음):
+#     영문 "Read the text … Output only the text."   글씨체 59.89%  사진 69.13%
+#     한글 (아래)                                    글씨체 60.66%  사진 69.44%
+#     "OCR:"                                         글씨체 58.96%  사진 67.82%
+OUTSIDE = {
+    "paddle": ("PaddleOCR PP-OCRv5 (korean)", "paddle-gpu", ["paddle"], True),
+    "easyocr": ("EasyOCR (korean)", "easyocr", ["easyocr"], True),
+    "tesseract": ("Tesseract 5 (kor+eng)", None,
+                  ["tesseract", "--tesseract",
+                   str(RIVALS / "tesseract" / "Library" / "bin" / "tesseract.exe")], False),
+    "paddle-vl": ("PaddlePaddle/PaddleOCR-VL-1.6", "vlm",
+                  ["vlm", "--repo", "PaddlePaddle/PaddleOCR-VL-1.6", "--prompt", "OCR:"],
+                  True),
+    "qwen-vl": ("Qwen/Qwen3-VL-2B-Instruct", "vlm",
+                ["vlm", "--repo", "Qwen/Qwen3-VL-2B-Instruct", "--prompt",
+                 "이 이미지에 쓰인 글자를 그대로 읽어 적으세요. 글자만 출력하세요."],
+                True),
+}
 
 
 # ── 자 ────────────────────────────────────────────────────────────────
@@ -218,6 +273,11 @@ class Ours:
     def trust(self, images: list[Image.Image]) -> list[tuple[str, float]]:
         return self.reader.read_trust(images, beams=R.BEAMS)
 
+    def held(self) -> float:
+        """판독 전에 GPU 에 올라 있는 것(MB) — 거의 가중치다. `speed` 가 다음 묶음이
+        카드에 들어갈지 셈할 때 이것은 두 배 하지 않는다."""
+        return torch.cuda.memory_allocated() / 2**20
+
     def params(self) -> int:
         n = sum(p.numel() for p in self.reader.model.parameters())
         return n + sum(sum(p.numel() for p in m.parameters())
@@ -288,6 +348,11 @@ class Rival:
     def params(self) -> int:
         return sum(p.numel() for p in self.model.parameters())
 
+    def held(self) -> float:
+        """판독 전에 GPU 에 올라 있는 것(MB) — 거의 가중치다. `speed` 가 다음 묶음이
+        카드에 들어갈지 셈할 때 이것은 두 배 하지 않는다."""
+        return torch.cuda.memory_allocated() / 2**20
+
     def disk(self) -> float:
         """HF 캐시에 받아 둔 가중치 크기(MB). 심볼릭 링크 너머의 실제 파일을 잰다."""
         spot = Path(self.model.config.name_or_path or "")
@@ -300,6 +365,118 @@ class Rival:
     def free(self) -> None:
         self.model = self.proc = None
         torch.cuda.empty_cache()
+
+
+class Outside:
+    """제 venv 에서 도는 상대(`OUTSIDE`). `tools/rival_worker.py` 를 띄워 두고 줄 그림을
+    PNG 로 넘긴다. PNG 는 손실이 없어서 ko-trocr 가 받는 것과 **같은 그림**이다.
+
+    **시간은 일꾼이 잰 값을 쓴다**(`clock`). 파이프로 주고받고 PNG 를 쓰는 값은 우리가
+    붙인 것이라 그쪽 빠르기에 넣으면 안 된다. GPU 메모리도 그 프로세스의 것이라
+    일꾼이 알려 준 꼭대기를 쓴다.
+    """
+
+    def __init__(self, key: str) -> None:
+        label, venv, argv, gpu = OUTSIDE[key]
+        self.key, self.name, self.gpu = key, label, gpu
+        self.python = (str(RIVALS / venv / "Scripts" / "python.exe") if venv
+                       else sys.executable)
+        if not Path(self.python).exists():
+            raise SystemExit("%s 가 안 깔려 있다: %s (vs.py 머리의 OUTSIDE 참고)"
+                             % (label, self.python))
+        self.argv = argv
+        self.clock, self.capped, self.last_peak = 0.0, 0, None
+        self.restarts, self._capped_before = 0, 0
+        self.tmp = Path(tempfile.mkdtemp(prefix="vs-%s-" % key))
+        self.saved: dict[int, tuple[str, Image.Image]] = {}
+        self.proc = None
+        self.device = "cpu"
+        self.chunk = CHUNK
+
+    def _ask(self, **ask) -> dict:
+        self.proc.stdin.write(json.dumps(ask, ensure_ascii=False) + "\n")
+        self.proc.stdin.flush()
+        line = self.proc.stdout.readline()
+        if not line:
+            raise RuntimeError("%s 일꾼이 죽었다 — runs/VS-%s.err" % (self.name, self.key))
+        got = json.loads(line)
+        if "error" in got:
+            raise RuntimeError("%s: %s" % (self.name, got["error"]))
+        return got
+
+    def _spawn(self, device: str, mode: str = "w") -> dict:
+        err = open(ROOT / "runs" / ("VS-%s.err" % self.key), mode, encoding="utf-8")
+        env = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONUTF8="1")
+        self.proc = subprocess.Popen([self.python, str(WORKER), *self.argv],
+                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                     stderr=err, text=True, encoding="utf-8", env=env)
+        return self._ask(op="load", device=device)
+
+    def load(self, device: str) -> float:
+        self.device = device if self.gpu else "cpu"
+        self.info = self._spawn(self.device)
+        return self.info["seconds"]
+
+    def to(self, device: str) -> None:
+        if device == self.device:
+            return
+        self._ask(op="to", device=device)
+        self.device = device
+
+    def _path(self, img: Image.Image) -> str:
+        # 그림은 한 번만 쓴다. 그림도 같이 쥐고 있어서 id 가 다른 그림에 다시 안 쓰인다.
+        key = id(img)
+        if key not in self.saved:
+            spot = self.tmp / ("%d.png" % len(self.saved))
+            img.save(spot)
+            self.saved[key] = (str(spot), img)
+        return self.saved[key][0]
+
+    def read(self, images: list[Image.Image]) -> list[str]:
+        if not images:
+            return []
+        paths = [self._path(one) for one in images]
+        try:
+            got = self._ask(op="read", paths=paths)
+        except RuntimeError as why:
+            # PaddleOCR 의 GPU 판이 **가끔** 말없이 죽는다(2026-10-07, 같은 자리를 두 번
+            # 다시 돌리니 둘 다 끝까지 갔다). 한 번만 다시 띄워 같은 묶음을 다시 읽힌다.
+            # 죽은 묶음의 시간은 안 들어간다(답을 못 받았다). 몇 번 다시 띄웠는지는
+            # 성적표에 적는다(`worker_restarts`). 두 번째도 죽으면 그대로 멈춘다.
+            if "죽었다" not in str(why) or self.restarts >= 3:
+                raise
+            self.restarts += 1
+            self._capped_before = self.capped
+            print("      (%s 일꾼이 죽어서 다시 띄운다 — %d번째)" % (self.name, self.restarts))
+            self._spawn(self.device, mode="a")
+            got = self._ask(op="read", paths=paths)
+        self.clock += got["seconds"]
+        self.last_peak = got.get("peak_mb")
+        self.capped = self._capped_before + got.get("capped", 0)
+        return got["texts"]
+
+    def reset_peak(self) -> None:
+        self._ask(op="reset_peak")
+
+    def held(self) -> float:
+        """그 프로세스가 GPU 에 올려 둔 것(MB). CPU 에서 도는 엔진은 0."""
+        return self._ask(op="held").get("mb") or 0.0
+
+    def params(self):
+        return self.info.get("params")
+
+    def disk(self) -> float:
+        return self.info.get("disk_mb") or 0.0
+
+    def free(self) -> None:
+        if self.proc and self.proc.poll() is None:
+            try:
+                self._ask(op="quit")
+            except (RuntimeError, OSError, ValueError):
+                pass
+            self.proc.wait(timeout=60)
+        self.proc = None
+        shutil.rmtree(self.tmp, ignore_errors=True)
 
 
 # ── 시험지 ────────────────────────────────────────────────────────────
@@ -564,9 +741,13 @@ def speed(side, cells: list[Image.Image], device: str, repeat: int,
     묶음마다 **칸 전부를 한 바퀴** 돈다. 묶음을 한 칸으로 채워 재면 그 칸의
     길이를 재는 것이지 줄당 초를 재는 것이 아니다.
     """
+    outside = isinstance(side, Outside)
     cuda = device.startswith("cuda")
     total = (torch.cuda.get_device_properties(0).total_memory / 2**20) if cuda else 0.0
     out, best, last_peak = {}, None, 0.0
+    # 판독 전에 이미 잡고 있는 메모리 — 대부분 **가중치**다. 묶음을 키워도 이것은
+    # 안 늘어난다(아래).
+    held = side.held() if cuda else 0.0
     for size in sizes:
         # **묶음을 같은 칸으로 채우면 안 된다.** 칸마다 글자 수가 달라서 읽는
         # 시간이 다르고, 자모를 한 개씩 뽑는 판이라 그 차이가 그대로 시간이다.
@@ -589,32 +770,47 @@ def speed(side, cells: list[Image.Image], device: str, repeat: int,
         # 굳이 돌리면 torch 가 터지는 대신 시스템 메모리로 새면서 한 번에
         # 2~10분을 쓰고, 그러고 나오는 말은 '안 들어간다' 하나뿐이다.
         #
+        # **두 배가 되는 것은 활성값뿐이다.** 예전에는 꼭대기를 통째로 두 배
+        # 했는데, Qwen3-VL-2B 는 꼭대기 4152MB 가 거의 다 가중치(4058MB)라 1줄
+        # 묶음 다음을 「안 들어간다」로 적고 멈췄다 — 실제로는 7줄 묶음도
+        # 4239MB 로 들어간다(2026-10-07). 가중치를 빼고 활성값만 두 배 한다.
+        #
         # 여기서 적는 것은 **짐작한 속도가 아니라 안 들어간다는 사실**이다.
         # 속도 칸은 비워 둔다 — 안 잰 값을 잰 것처럼 적으면 안 된다.
-        if cuda and last_peak and last_peak * 2 > 0.90 * total:
+        guess = held + 2 * max(0.0, last_peak - held)
+        if cuda and last_peak and guess > 0.90 * total:
             out[str(size)] = {"seconds": None, "per_line": None,
                               "peak_mb": None, "spilled": True, "slower": False,
-                              "why": "앞 묶음 %.0fMB 의 두 배가 카드 %.0fMB 를 넘는다"
-                                     % (last_peak, total)}
-            print("      %2d줄 묶음  이 카드에 안 들어간다 (앞 묶음이 이미 "
-                  "%.0fMB / %.0fMB). 안 잰다." % (size, last_peak, total))
+                              "why": "앞 묶음 %.0fMB(가중치 %.0fMB)에서 활성값을 두 배 하면 "
+                                     "%.0fMB 로 카드 %.0fMB 를 넘는다"
+                                     % (last_peak, held, guess, total)}
+            print("      %2d줄 묶음  이 카드에 안 들어간다 (앞 묶음 %.0fMB, 가중치 "
+                  "%.0fMB -> %.0fMB / %.0fMB). 안 잰다."
+                  % (size, last_peak, held, guess, total))
             break
         try:
             side.read(rounds[0][:1])
-            if cuda:
+            if outside:
+                side.reset_peak()
+            elif cuda:
                 torch.cuda.reset_peak_memory_stats()
             spent = []
             for _ in range(repeat):
-                if cuda:
+                if cuda and not outside:
                     torch.cuda.synchronize()
-                start = time.perf_counter()
+                start, clock = time.perf_counter(), getattr(side, "clock", 0.0)
                 for one in rounds:
                     side.read(one)
-                if cuda:
+                if cuda and not outside:
                     torch.cuda.synchronize()
-                spent.append(time.perf_counter() - start)
+                # 제 프로세스에서 도는 상대는 **그쪽이 잰 시간**이다(`Outside`).
+                spent.append(side.clock - clock if outside
+                             else time.perf_counter() - start)
             took = statistics.median(spent)
-            peak = (torch.cuda.max_memory_allocated() / 2**20) if cuda else None
+            if outside:
+                peak = side.last_peak if cuda else None
+            else:
+                peak = (torch.cuda.max_memory_allocated() / 2**20) if cuda else None
             last_peak = peak or 0.0
             per = took / seen
             spilled = bool(cuda and peak and peak > 0.90 * total)
@@ -670,6 +866,15 @@ def main() -> None:
     ap.add_argument("--one", default="", help="단일 모델로 잴 폴더 (예: runs/v81)")
     ap.add_argument("--team", nargs="*", default=[],
                     help="앙상블로 잴 폴더들. 안 주면 runs/ENSEMBLE.json")
+    ap.add_argument("--only", nargs="*", default=[],
+                    help="이 쪽들만 잰다: team one ko-trocr " + " ".join(OUTSIDE))
+    ap.add_argument("--out", default=str(CARD.relative_to(ROOT)),
+                    help="성적표 자리 (기본 runs/VS.json)")
+    ap.add_argument("--resume", action="store_true",
+                    help="죽은 뒤 이어 잰다 — <out>.partial.json 에 있는 쪽은 건너뛴다")
+    ap.add_argument("--merge", action="store_true",
+                    help="성적표에 이미 있는 다른 쪽은 남기고 잰 쪽만 갈아 끼운다. "
+                         "**빠르기는 다른 때 잰 것끼리 섞인다** — 다 같이 다시 재는 것이 맞다")
     args = ap.parse_args()
 
     others = B.busy()
@@ -728,30 +933,64 @@ def main() -> None:
     # 디코더가 6층이 되면서 36M 이 됐고, 박아 둔 숫자는 안 따라 올라갔다.
     # 크기는 `params` 로 재서 적고, 그리는 쪽이 거기서 이름표를 만든다.
     sides = [
-        ("ko-hand-ocr 앙상블", lambda: Ours("ours-team", team)),
-        ("ko-hand-ocr 판 하나",
+        ("team", "ko-hand-ocr 앙상블", lambda: Ours("ours-team", team)),
+        ("one", "ko-hand-ocr 판 하나",
          lambda: Ours("ours-one", [args.one.replace("\\", "/")] if args.one else team[:1])),
-        ("ddobokki/ko-trocr", lambda: Rival()),
-    ]
+        ("ko-trocr", "ddobokki/ko-trocr", lambda: Rival()),
+    ] + [(key, OUTSIDE[key][0], (lambda key=key: Outside(key))) for key in OUTSIDE]
+    if args.only:
+        unknown = set(args.only) - {key for key, _, _ in sides}
+        if unknown:
+            raise SystemExit("모르는 쪽: %s (있는 것: %s)"
+                             % (", ".join(sorted(unknown)),
+                                ", ".join(key for key, _, _ in sides)))
+        sides = [one for one in sides if one[0] in args.only]
 
-    cards = []
-    for label, make in sides:
+    # **한 쪽이 끝날 때마다 적어 둔다.** 2026-10-07 에 여덟 쪽 가운데 셋째에서 죽자
+    # 50분 동안 잰 것이 하나도 안 남았다(성적표를 끝에 한 번만 썼다). `--resume` 은
+    # 그 중간 성적표에 있는 쪽을 건너뛴다 — 같은 날 이어 재는 것이라 빠르기도 크게
+    # 안 어긋나지만, 그래도 이어 쟀다는 것을 성적표에 적는다(`resumed`).
+    card_path = ROOT / args.out
+    part_path = card_path.with_name(card_path.stem + ".partial.json")
+    cards, resumed = [], []
+    if args.resume and part_path.exists():
+        cards = json.loads(part_path.read_text(encoding="utf-8"))["sides"]
+        resumed = [c["name"] for c in cards]
+        sides = [one for one in sides if one[1] not in resumed]
+        print("이어 잰다 — 이미 잰 쪽: %s" % ", ".join(resumed))
+    for key, label, make in sides:
         print("\n" + "=" * 74)
         print(label)
         print("=" * 74)
         side = make()
         load_s = side.load(args.device)
-        card = {"name": label, "load_seconds": round(load_s, 2),
+        card = {"name": label, "key": key, "load_seconds": round(load_s, 2),
                 "params": side.params(), "disk_mb": side.disk()}
-        print("  판 올리기 %.1fs, 파라미터 %.1fM, 디스크 %.0fMB"
-              % (load_s, card["params"] / 1e6, card["disk_mb"]))
+        if isinstance(side, Outside):
+            card["how"] = side.info.get("what")
+            card["version"] = side.info.get("version")
+        print("  판 올리기 %.1fs, 파라미터 %s, 디스크 %.0fMB"
+              % (load_s, "%.1fM" % (card["params"] / 1e6) if card["params"] else "모름",
+                 card["disk_mb"]))
 
         # **빠르기를 먼저 잰다.** 두 가지를 얻는다 — 성적표에 적을 줄/초와,
         # 이 모델이 가장 싸게 도는 묶음 크기. 뒤의 판독은 그 묶음으로 돈다.
         # 묶음은 답을 안 바꾸고 시간만 바꾸므로 정확도는 그대로다.
-        print("  빠르기 (GPU)")
-        card["gpu"] = speed(side, flat, args.device, args.repeat)
-        where, _ = fastest(card["gpu"])
+        #
+        # GPU 를 안 쓰는 엔진(Tesseract)은 CPU 로 재고 그 자리에서 묶음을 고른다.
+        # GPU 칸은 **비워 둔다** — 안 잰 값을 0 이나 CPU 값으로 채우면 안 된다.
+        cpu_only = isinstance(side, Outside) and not side.gpu
+        if cpu_only:
+            print("  빠르기 (CPU — 이 엔진은 GPU 를 안 쓴다)")
+            card["gpu"] = {}
+            card["gpu_note"] = "GPU 를 안 쓰는 엔진"
+            card["cpu"] = speed(side, flat, "cpu", max(1, args.repeat - 1),
+                                sizes=(1, 8))
+            where, _ = fastest(card["cpu"])
+        else:
+            print("  빠르기 (GPU)")
+            card["gpu"] = speed(side, flat, args.device, args.repeat)
+            where, _ = fastest(card["gpu"])
         side.chunk = int(where) if where else CHUNK
         card["read_chunk"] = side.chunk
         print("      -> 판독은 %d줄씩 묶어 돈다 (가장 싼 자리)" % side.chunk)
@@ -782,11 +1021,22 @@ def main() -> None:
             print("  두루 읽나 — 24벌")
             card["wide_fonts"] = on_sheets(side, wide, "24벌")
 
-        if every:
+        # 글꼴 전부(480벌 x 12줄 = 4,320줄)는 **줄당 0.3초보다 느린 쪽은 건너뛴다.**
+        # PaddleOCR-VL 은 가장 싼 묶음이 줄당 0.9초라 그것만 한 시간 넘게 돈다
+        # (2026-10-07). 사진·6벌·24벌은 모두 다 읽힌다. 건너뛴 것은 성적표에 적고
+        # 표에서는 빈칸이 된다 — 안 잰 값을 짐작해 채우지 않는다.
+        _, fit = fastest(card["gpu"] or card.get("cpu") or {})
+        if every and fit and fit["per_line"] > 0.3:
+            card["every_font_skipped"] = ("가장 싼 묶음이 줄당 %.2f초라 %d줄을 다 읽히면 "
+                                          "%.0f분이 넘는다" % (
+                                              fit["per_line"], sum(len(m) for _, m in every.values()),
+                                              fit["per_line"] * sum(len(m) for _, m in every.values()) / 60))
+            print("  글꼴 전부 — 건너뛴다: %s" % card["every_font_skipped"])
+        elif every:
             print("  글꼴 전부 — %d벌" % len(every))
             card["every_font"] = on_every(side, every, "%d벌" % len(every))
 
-        if isinstance(side, Rival):
+        if isinstance(side, (Rival, Outside)):
             card["capped_lines"] = side.capped
         else:
             print("  못 읽었으면 물러서나 (믿음값 %.2f 아래)" % R.TRUST_EDGE)
@@ -795,14 +1045,26 @@ def main() -> None:
             print("    막음 %d줄 / 놓침 %d줄 / 샘 %d줄 / 그냥 맞음 %d줄"
                   % (t["blocked"], t["missed"], t["leaked"], t["kept"]))
 
-        if not args.skip_cpu:
+        if not args.skip_cpu and not cpu_only:
             print("  빠르기 (CPU — 이 모델이 실제로 도는 자리)")
             side.to("cpu")
-            card["cpu"] = speed(side, flat, "cpu", max(1, args.repeat - 1),
-                                sizes=(1, 8))
+            # 큰 VLM 은 CPU 에서 줄당 수십 초다(2026-10-07, PaddleOCR-VL 0.9B bfloat16
+            # 으로 6~8토큰 짜리 줄 하나에 30~43초). 칸 전부를 도는 것은 그대로 두고
+            # **1줄 묶음을 한 번만** 잰다 — 1·8줄 묶음을 두 번씩 돌면 한 모델에 한 시간이
+            # 넘는다. 8줄로 묶으면 더 빠를 수도 있으니 **그쪽에 불리한 쪽으로 기운 값**
+            # 이다. 무엇을 줄였는지 성적표(`cpu_repeat`, 묶음 칸)와 README 에 적는다.
+            slow = isinstance(side, Outside) and side.argv[0] == "vlm"
+            again = 1 if slow else max(1, args.repeat - 1)
+            card["cpu"] = speed(side, flat, "cpu", again, sizes=(1,) if slow else (1, 8))
+            card["cpu_repeat"] = again
         card["cut_per_page"] = cut_per_page
+        if isinstance(side, Outside):
+            card["worker_restarts"] = side.restarts      # CPU 재기까지 다 센 값
         cards.append(card)
         side.free()
+        part_path.write_text(json.dumps({"when": time.strftime("%Y-%m-%d %H:%M"),
+                                         "sides": cards}, ensure_ascii=False, indent=2),
+                             encoding="utf-8")
 
     # ── 한 자리에 모은다 ──────────────────────────────────────────
     n = args.page_lines
@@ -845,8 +1107,24 @@ def main() -> None:
            "lines_per_every_font": args.every,
            "page_lines": n, "beams": R.BEAMS, "rival_max_new_tokens": RIVAL_TOKENS,
            "sides": cards}
-    CARD.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
-    print("\n적었다: %s" % CARD.relative_to(ROOT))
+    if resumed:
+        out["resumed"] = resumed
+    if args.merge and card_path.exists():
+        # 이번에 안 잰 쪽은 옛 성적표에서 그대로 가져오고, 순서는 `sides` 의 순서다.
+        old = json.loads(card_path.read_text(encoding="utf-8"))
+        fresh = {c["name"] for c in cards}
+        kept = [c for c in old.get("sides", []) if c["name"] not in fresh]
+        order = [label for _, label, _ in
+                 [("team", "ko-hand-ocr 앙상블", 0), ("one", "ko-hand-ocr 판 하나", 0),
+                  ("ko-trocr", "ddobokki/ko-trocr", 0)]] + [v[0] for v in OUTSIDE.values()]
+        everyone = kept + cards
+        everyone.sort(key=lambda c: order.index(c["name"]) if c["name"] in order else 99)
+        out["sides"] = everyone
+        out["merged"] = {"kept_from": old.get("when"),
+                         "kept": [c["name"] for c in kept]}
+    card_path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+    part_path.unlink(missing_ok=True)
+    print("\n적었다: %s" % card_path)
 
 
 if __name__ == "__main__":
