@@ -71,12 +71,23 @@ def sheet(count: int, fonts_dir: str, only: str = "",
     rng = random.Random(SEED)
     out = []
     for text in corpus.lines(count, seed=SEED):
-        if _has_bare_jamo(text):
+        if _has_bare_jamo(text) or not drawable(fonts, text):
             continue
         page = synth.render(text, fonts, rng)
         if page is not None:
             out.append((text, synth.fit(page)))
     return out
+
+
+def drawable(fonts, text: str) -> bool:
+    """이 글꼴들 가운데 하나라도 이 줄을 **다** 그리나. 못 그리면 시험지에서 뺀다.
+
+    홑자모 줄을 빼는 것과 같은 까닭이다 — 아무도 못 맞히는 줄이다. 글꼴이 없는 음절을
+    빈칸(동해독도)이나 네모(기랑해랑)로 그려 놓고 정답에는 제 글자가 적혀 있었다. 두 벌
+    모두 383줄 가운데 65줄이 그랬고, 다 맞혀도 97.5% 였다. 2026-10-08 에 뺐다 — 그날부터
+    그 두 벌의 시험지가 바뀌었다(나머지 네 벌은 그림까지 같다).
+    """
+    return any(fonts.draws(i, text) for i in range(len(fonts)))
 
 
 def _short(name: str) -> str:

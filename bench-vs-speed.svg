@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 1308" width="820" height="1308" role="img" aria-label="Speed and size. ko-hand-ocr 앙상블: 0.66 lines per second on CPU, 118M. ko-hand-ocr 단일 모델: 3.08 lines per second on CPU, 41M. ddobokki/ko-trocr: 0.52 lines per second on CPU, 214M. PaddleOCR PP-OCRv5: 14.68 lines per second on CPU, 3.3M. Qwen3-VL-2B: 0.47 lines per second on CPU, 2.1B. PaddleOCR-VL-1.6: 0.04 lines per second on CPU, 906M. EasyOCR: 14.88 lines per second on CPU, 4.0M. Tesseract 5: 22.25 lines per second on CPU, 6MB.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 1423" width="820" height="1423" role="img" aria-label="Speed and size. ko-hand-ocr 앙상블: 1.05 lines per second on CPU, 118M. ko-hand-ocr 단일 모델: 6.76 lines per second on CPU, 41M. ko-hand-ocr-vl: 0.95 lines per second on CPU, 853M. ddobokki/ko-trocr: 0.92 lines per second on CPU, 214M. PaddleOCR PP-OCRv5: 64.01 lines per second on CPU, 3.3M. Qwen3-VL-2B: 0.60 lines per second on CPU, 2.1B. PaddleOCR-VL-1.6: 0.08 lines per second on CPU, 906M. EasyOCR: 42.47 lines per second on CPU, 4.0M. Tesseract 5: 35.79 lines per second on CPU, 6MB.">
 <style>
   .surface{fill:#fcfcfb}
   .ink{fill:#0b0b0b}
@@ -7,6 +7,7 @@
   .s0{fill:#2a78d6}
   .s1{fill:#eb6834}
   .s2{fill:#8a8880}
+  .s3{fill:#1a9e77}
   .grid{stroke:#e3e2de;stroke-width:1}
   .rule{stroke:#cdccc6;stroke-width:1}
   .heat{fill:#cf3a2e}
@@ -19,140 +20,156 @@
     .s0{fill:#3987e5}
     .s1{fill:#d95926}
     .s2{fill:#7c7a73}
+    .s3{fill:#2bb58c}
     .grid{stroke:#3a3a38}
     .rule{stroke:#4a4946}
     .heat{fill:#ff6b5e}
   }
 </style>
-<rect class="surface" width="820" height="1308" rx="8"/>
+<rect class="surface" width="820" height="1423" rx="8"/>
 <text class="ink" x="20" y="32" font-size="19" font-weight="600">무엇을 치렀나 — 빠르기와 덩치</text>
 <text class="ink2" x="20" y="55" font-size="13.5">같은 PC·같은 칸으로 쟀다. 줄/초는 묶음(GPU 1·4·8·16·32줄, CPU 1·8줄 — VLM 은 CPU 1줄만) 가운데 가장 싼 값이다.</text>
 <text class="ink" x="20" y="88" font-size="14" font-weight="600">CPU 로 몇 줄/초 — GPU 없이 도는 자리 (VLM 은 bfloat16, 나머지 float32). 높을수록 좋다</text>
 <text class="ink2" x="216" y="113.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
-<path class="s1" d="M228,100.0 H237.1 Q240.6,100.0 240.6,103.5 V111.5 Q240.6,115.0 237.1,115.0 H228 Z"/>
-<text class="ink2" x="246.6" y="113.5" font-size="12.5">0.66줄/초</text>
+<path class="s1" d="M228,100.0 H231.5 Q234.9,100.0 234.9,103.5 V111.5 Q234.9,115.0 231.5,115.0 H228 Z"/>
+<text class="ink2" x="240.9" y="113.5" font-size="12.5">1.05줄/초</text>
 <text class="ink2" x="216" y="136.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
-<path class="s0" d="M228,123.0 H283.3 Q286.8,123.0 286.8,126.5 V134.5 Q286.8,138.0 283.3,138.0 H228 Z"/>
-<text class="ink2" x="292.8" y="136.5" font-size="12.5">3.08줄/초</text>
-<text class="ink2" x="216" y="159.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
-<path class="s2" d="M228,146.0 H234.5 Q238.0,146.0 238.0,149.5 V157.5 Q238.0,161.0 234.5,161.0 H228 Z"/>
-<text class="ink2" x="244.0" y="159.5" font-size="12.5">0.52줄/초</text>
-<text class="ink2" x="216" y="182.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
-<path class="s2" d="M228,169.0 H505.1 Q508.6,169.0 508.6,172.5 V180.5 Q508.6,184.0 505.1,184.0 H228 Z"/>
-<text class="ink2" x="514.6" y="182.5" font-size="12.5">14.68줄/초</text>
-<text class="ink2" x="216" y="205.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
-<path class="s2" d="M228,192.0 H233.5 Q237.0,192.0 237.0,195.5 V203.5 Q237.0,207.0 233.5,207.0 H228 Z"/>
-<text class="ink2" x="243.0" y="205.5" font-size="12.5">0.47줄/초</text>
-<text class="ink2" x="216" y="228.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
-<path class="s2" d="M228,215.0 H228.4 Q228.8,215.0 228.8,215.4 V229.6 Q228.8,230.0 228.4,230.0 H228 Z"/>
-<text class="ink2" x="234.8" y="228.5" font-size="12.5">0.04줄/초</text>
-<text class="ink2" x="216" y="251.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
-<path class="s2" d="M228,238.0 H509.0 Q512.5,238.0 512.5,241.5 V249.5 Q512.5,253.0 509.0,253.0 H228 Z"/>
-<text class="ink2" x="518.5" y="251.5" font-size="12.5">14.88줄/초</text>
-<text class="ink2" x="216" y="274.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
-<path class="s2" d="M228,261.0 H649.9 Q653.4,261.0 653.4,264.5 V272.5 Q653.4,276.0 649.9,276.0 H228 Z"/>
-<text class="ink2" x="659.4" y="274.5" font-size="12.5">22.25줄/초</text>
-<text class="ink" x="20" y="308" font-size="14" font-weight="600">GPU 로 몇 줄/초 (RTX 5060 Laptop GPU · VLM 은 bfloat16, 나머지 float32)</text>
-<text class="ink2" x="216" y="333.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
-<path class="s1" d="M228,320.0 H233.3 Q236.8,320.0 236.8,323.5 V331.5 Q236.8,335.0 233.3,335.0 H228 Z"/>
-<text class="ink2" x="242.8" y="333.5" font-size="12.5">6.9줄/초</text>
-<text class="ink2" x="216" y="356.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
-<path class="s0" d="M228,343.0 H267.7 Q271.2,343.0 271.2,346.5 V354.5 Q271.2,358.0 267.7,358.0 H228 Z"/>
-<text class="ink2" x="277.2" y="356.5" font-size="12.5">34.2줄/초</text>
-<text class="ink2" x="216" y="379.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
-<path class="s2" d="M228,366.0 H231.4 Q234.7,366.0 234.7,369.4 V377.6 Q234.7,381.0 231.4,381.0 H228 Z"/>
-<text class="ink2" x="240.7" y="379.5" font-size="12.5">5.3줄/초</text>
-<text class="ink2" x="216" y="402.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
-<path class="s2" d="M228,389.0 H649.9 Q653.4,389.0 653.4,392.5 V400.5 Q653.4,404.0 649.9,404.0 H228 Z"/>
-<text class="ink2" x="659.4" y="402.5" font-size="12.5">336.5줄/초</text>
-<text class="ink2" x="216" y="425.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
-<path class="s2" d="M228,412.0 H232.8 Q236.3,412.0 236.3,415.5 V423.5 Q236.3,427.0 232.8,427.0 H228 Z"/>
-<text class="ink2" x="242.3" y="425.5" font-size="12.5">6.5줄/초</text>
-<text class="ink2" x="216" y="448.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
-<path class="s2" d="M228,435.0 H228.6 Q229.2,435.0 229.2,435.6 V449.4 Q229.2,450.0 228.6,450.0 H228 Z"/>
-<text class="ink2" x="235.2" y="448.5" font-size="12.5">0.9줄/초</text>
-<text class="ink2" x="216" y="471.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
-<path class="s2" d="M228,458.0 H265.6 Q269.1,458.0 269.1,461.5 V469.5 Q269.1,473.0 265.6,473.0 H228 Z"/>
-<text class="ink2" x="275.1" y="471.5" font-size="12.5">32.5줄/초</text>
-<text class="ink2" x="216" y="494.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
-<text class="ink3" x="232" y="494.0" font-size="12.5">GPU 를 안 쓰는 엔진</text>
-<text class="ink" x="20" y="528" font-size="14" font-weight="600">30줄짜리 서류 한 쪽, CPU (자르기 + 읽기). 낮을수록 좋다</text>
-<text class="ink2" x="216" y="553.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
-<path class="s1" d="M228,540.0 H253.1 Q256.6,540.0 256.6,543.5 V551.5 Q256.6,555.0 253.1,555.0 H228 Z"/>
-<text class="ink2" x="262.6" y="553.5" font-size="12.5">45.8초</text>
-<text class="ink2" x="216" y="576.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
-<path class="s0" d="M228,563.0 H231.2 Q234.4,563.0 234.4,566.2 V574.8 Q234.4,578.0 231.2,578.0 H228 Z"/>
-<text class="ink2" x="240.4" y="576.5" font-size="12.5">10.2초</text>
-<text class="ink2" x="216" y="599.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
-<path class="s2" d="M228,586.0 H260.8 Q264.3,586.0 264.3,589.5 V597.5 Q264.3,601.0 260.8,601.0 H228 Z"/>
-<text class="ink2" x="270.3" y="599.5" font-size="12.5">58.1초</text>
-<text class="ink2" x="216" y="622.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
-<path class="s2" d="M228,609.0 H228.8 Q229.5,609.0 229.5,609.8 V623.2 Q229.5,624.0 228.8,624.0 H228 Z"/>
-<text class="ink2" x="235.5" y="622.5" font-size="12.5">2.5초</text>
-<text class="ink2" x="216" y="645.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
-<path class="s2" d="M228,632.0 H264.6 Q268.1,632.0 268.1,635.5 V643.5 Q268.1,647.0 264.6,647.0 H228 Z"/>
-<text class="ink2" x="274.1" y="645.5" font-size="12.5">64.1초</text>
-<text class="ink2" x="216" y="668.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
-<path class="s2" d="M228,655.0 H649.9 Q653.4,655.0 653.4,658.5 V666.5 Q653.4,670.0 649.9,670.0 H228 Z"/>
-<text class="ink2" x="659.4" y="668.5" font-size="12.5">680.7초</text>
-<text class="ink2" x="216" y="691.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
-<path class="s2" d="M228,678.0 H228.8 Q229.5,678.0 229.5,678.8 V692.2 Q229.5,693.0 228.8,693.0 H228 Z"/>
-<text class="ink2" x="235.5" y="691.5" font-size="12.5">2.5초</text>
-<text class="ink2" x="216" y="714.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
-<path class="s2" d="M228,701.0 H228.6 Q229.1,701.0 229.1,701.6 V715.4 Q229.1,716.0 228.6,716.0 H228 Z"/>
-<text class="ink2" x="235.1" y="714.5" font-size="12.5">1.8초</text>
-<text class="ink" x="20" y="748" font-size="14" font-weight="600">덩치 — 파라미터(M). 파라미터 수를 공개하지 않은 엔진은 비운다</text>
-<text class="ink2" x="216" y="773.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
-<path class="s1" d="M228,760.0 H248.1 Q251.6,760.0 251.6,763.5 V771.5 Q251.6,775.0 248.1,775.0 H228 Z"/>
-<text class="ink2" x="257.6" y="773.5" font-size="12.5">118M</text>
-<text class="ink2" x="216" y="796.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
-<path class="s0" d="M228,783.0 H232.7 Q236.2,783.0 236.2,786.5 V794.5 Q236.2,798.0 232.7,798.0 H228 Z"/>
-<text class="ink2" x="242.2" y="796.5" font-size="12.5">41M</text>
-<text class="ink2" x="216" y="819.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
-<path class="s2" d="M228,806.0 H267.2 Q270.7,806.0 270.7,809.5 V817.5 Q270.7,821.0 267.2,821.0 H228 Z"/>
-<text class="ink2" x="276.7" y="819.5" font-size="12.5">214M</text>
-<text class="ink2" x="216" y="842.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
-<path class="s2" d="M228,829.0 H228.3 Q228.7,829.0 228.7,829.3 V843.7 Q228.7,844.0 228.3,844.0 H228 Z"/>
-<text class="ink2" x="234.7" y="842.5" font-size="12.5">3M</text>
-<text class="ink2" x="216" y="865.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
-<path class="s2" d="M228,852.0 H649.9 Q653.4,852.0 653.4,855.5 V863.5 Q653.4,867.0 649.9,867.0 H228 Z"/>
-<text class="ink2" x="659.4" y="865.5" font-size="12.5">2128M</text>
-<text class="ink2" x="216" y="888.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
-<path class="s2" d="M228,875.0 H405.6 Q409.1,875.0 409.1,878.5 V886.5 Q409.1,890.0 405.6,890.0 H228 Z"/>
-<text class="ink2" x="415.1" y="888.5" font-size="12.5">906M</text>
-<text class="ink2" x="216" y="911.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
-<path class="s2" d="M228,898.0 H228.4 Q228.8,898.0 228.8,898.4 V912.6 Q228.8,913.0 228.4,913.0 H228 Z"/>
-<text class="ink2" x="234.8" y="911.5" font-size="12.5">4M</text>
-<text class="ink2" x="216" y="934.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
-<text class="ink3" x="232" y="934.0" font-size="12.5">공개 안 함</text>
-<text class="ink" x="20" y="968" font-size="14" font-weight="600">받아야 하는 가중치(MB)</text>
-<text class="ink2" x="216" y="993.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
-<path class="s1" d="M228,980.0 H271.7 Q275.2,980.0 275.2,983.5 V991.5 Q275.2,995.0 271.7,995.0 H228 Z"/>
-<text class="ink2" x="281.2" y="993.5" font-size="12.5">450MB</text>
-<text class="ink2" x="216" y="1016.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
-<path class="s0" d="M228,1003.0 H240.9 Q244.4,1003.0 244.4,1006.5 V1014.5 Q244.4,1018.0 240.9,1018.0 H228 Z"/>
-<text class="ink2" x="250.4" y="1016.5" font-size="12.5">156MB</text>
-<text class="ink2" x="216" y="1039.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
-<path class="s2" d="M228,1026.0 H267.2 Q270.7,1026.0 270.7,1029.5 V1037.5 Q270.7,1041.0 267.2,1041.0 H228 Z"/>
-<text class="ink2" x="276.7" y="1039.5" font-size="12.5">408MB</text>
-<text class="ink2" x="216" y="1062.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
-<path class="s2" d="M228,1049.0 H228.7 Q229.4,1049.0 229.4,1049.7 V1063.3 Q229.4,1064.0 228.7,1064.0 H228 Z"/>
-<text class="ink2" x="235.4" y="1062.5" font-size="12.5">13MB</text>
-<text class="ink2" x="216" y="1085.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
-<path class="s2" d="M228,1072.0 H649.9 Q653.4,1072.0 653.4,1075.5 V1083.5 Q653.4,1087.0 649.9,1087.0 H228 Z"/>
-<text class="ink2" x="659.4" y="1085.5" font-size="12.5">4058MB</text>
-<text class="ink2" x="216" y="1108.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
-<path class="s2" d="M228,1095.0 H416.2 Q419.7,1095.0 419.7,1098.5 V1106.5 Q419.7,1110.0 416.2,1110.0 H228 Z"/>
-<text class="ink2" x="425.7" y="1108.5" font-size="12.5">1828MB</text>
-<text class="ink2" x="216" y="1131.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
-<path class="s2" d="M228,1118.0 H228.8 Q229.6,1118.0 229.6,1118.8 V1132.2 Q229.6,1133.0 228.8,1133.0 H228 Z"/>
-<text class="ink2" x="235.6" y="1131.5" font-size="12.5">15MB</text>
-<text class="ink2" x="216" y="1154.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
+<path class="s0" d="M228,123.0 H269.4 Q272.9,123.0 272.9,126.5 V134.5 Q272.9,138.0 269.4,138.0 H228 Z"/>
+<text class="ink2" x="278.9" y="136.5" font-size="12.5">6.76줄/초</text>
+<text class="ink2" x="216" y="159.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (853M)</text>
+<path class="s3" d="M228,146.0 H231.2 Q234.3,146.0 234.3,149.2 V157.8 Q234.3,161.0 231.2,161.0 H228 Z"/>
+<text class="ink2" x="240.3" y="159.5" font-size="12.5">0.95줄/초</text>
+<text class="ink2" x="216" y="182.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
+<path class="s2" d="M228,169.0 H231.1 Q234.1,169.0 234.1,172.1 V180.9 Q234.1,184.0 231.1,184.0 H228 Z"/>
+<text class="ink2" x="240.1" y="182.5" font-size="12.5">0.92줄/초</text>
+<text class="ink2" x="216" y="205.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
+<path class="s2" d="M228,192.0 H649.9 Q653.4,192.0 653.4,195.5 V203.5 Q653.4,207.0 649.9,207.0 H228 Z"/>
+<text class="ink2" x="659.4" y="205.5" font-size="12.5">64.01줄/초</text>
+<text class="ink2" x="216" y="228.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
+<path class="s2" d="M228,215.0 H230.0 Q232.0,215.0 232.0,217.0 V228.0 Q232.0,230.0 230.0,230.0 H228 Z"/>
+<text class="ink2" x="238.0" y="228.5" font-size="12.5">0.60줄/초</text>
+<text class="ink2" x="216" y="251.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
 
-<text class="ink2" x="234.6" y="1154.5" font-size="12.5">6MB</text>
-<text class="ink3" x="20" y="1222" font-size="12.5">8GB 카드라 큰 묶음은 카드 밖으로 샌다(32줄 묶음). 샌 값은 모델이 아니라 이 노트북을 잰 것이라 골라 뺐다.</text>
-<text class="ink3" x="20" y="1240" font-size="12.5">우리 앙상블은 모델 셋을 흔들기 셋으로 읽어 한 칸에 판독을 아홉 번 돈다. 크기로 견주려면 '단일 모델' 줄을 본다.</text>
-<text class="ink3" x="20" y="1258" font-size="12.5">Tesseract 5 는 GPU 를 안 쓰는 엔진이라 GPU 칸이 비어 있다. 자르기(CPU)는 모두 같은 값이다 — 줄 자르기가 없는 상대에게는</text>
-<text class="ink3" x="20" y="1276" font-size="12.5">우리 것을 빌려주었다. 장당 0.435초.</text>
-<text class="ink3" x="20" y="1294" font-size="12.5">잰 날 2026-10-07 17:32 · torch 2.14.0+cu130 · tools/vs.py</text>
+<text class="ink2" x="234.6" y="251.5" font-size="12.5">0.08줄/초</text>
+<text class="ink2" x="216" y="274.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
+<path class="s2" d="M228,261.0 H506.8 Q510.3,261.0 510.3,264.5 V272.5 Q510.3,276.0 506.8,276.0 H228 Z"/>
+<text class="ink2" x="516.3" y="274.5" font-size="12.5">42.47줄/초</text>
+<text class="ink2" x="216" y="297.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
+<path class="s2" d="M228,284.0 H462.4 Q465.9,284.0 465.9,287.5 V295.5 Q465.9,299.0 462.4,299.0 H228 Z"/>
+<text class="ink2" x="471.9" y="297.5" font-size="12.5">35.79줄/초</text>
+<text class="ink" x="20" y="331" font-size="14" font-weight="600">GPU 로 몇 줄/초 (RTX 5060 Laptop GPU · VLM 은 bfloat16, 나머지 float32)</text>
+<text class="ink2" x="216" y="356.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
+<path class="s1" d="M228,343.0 H231.4 Q234.7,343.0 234.7,346.4 V354.6 Q234.7,358.0 231.4,358.0 H228 Z"/>
+<text class="ink2" x="240.7" y="356.5" font-size="12.5">8.2줄/초</text>
+<text class="ink2" x="216" y="379.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
+<path class="s0" d="M228,366.0 H258.7 Q262.2,366.0 262.2,369.5 V377.5 Q262.2,381.0 258.7,381.0 H228 Z"/>
+<text class="ink2" x="268.2" y="379.5" font-size="12.5">42.0줄/초</text>
+<text class="ink2" x="216" y="402.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (853M)</text>
+<path class="s3" d="M228,389.0 H234.6 Q238.1,389.0 238.1,392.5 V400.5 Q238.1,404.0 234.6,404.0 H228 Z"/>
+<text class="ink2" x="244.1" y="402.5" font-size="12.5">12.4줄/초</text>
+<text class="ink2" x="216" y="425.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
+<path class="s2" d="M228,412.0 H230.5 Q233.1,412.0 233.1,414.5 V424.5 Q233.1,427.0 230.5,427.0 H228 Z"/>
+<text class="ink2" x="239.1" y="425.5" font-size="12.5">6.2줄/초</text>
+<text class="ink2" x="216" y="448.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
+<path class="s2" d="M228,435.0 H649.9 Q653.4,435.0 653.4,438.5 V446.5 Q653.4,450.0 649.9,450.0 H228 Z"/>
+<text class="ink2" x="659.4" y="448.5" font-size="12.5">522.3줄/초</text>
+<text class="ink2" x="216" y="471.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
+<path class="s2" d="M228,458.0 H233.0 Q236.5,458.0 236.5,461.5 V469.5 Q236.5,473.0 233.0,473.0 H228 Z"/>
+<text class="ink2" x="242.5" y="471.5" font-size="12.5">10.5줄/초</text>
+<text class="ink2" x="216" y="494.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
+<path class="s2" d="M228,481.0 H228.6 Q229.1,481.0 229.1,481.6 V495.4 Q229.1,496.0 228.6,496.0 H228 Z"/>
+<text class="ink2" x="235.1" y="494.5" font-size="12.5">1.4줄/초</text>
+<text class="ink2" x="216" y="517.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
+<path class="s2" d="M228,504.0 H278.7 Q282.2,504.0 282.2,507.5 V515.5 Q282.2,519.0 278.7,519.0 H228 Z"/>
+<text class="ink2" x="288.2" y="517.5" font-size="12.5">66.5줄/초</text>
+<text class="ink2" x="216" y="540.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
+<text class="ink3" x="232" y="540.0" font-size="12.5">GPU 를 안 쓰는 엔진</text>
+<text class="ink" x="20" y="574" font-size="14" font-weight="600">30줄짜리 서류 한 쪽, CPU (자르기 + 읽기). 낮을수록 좋다</text>
+<text class="ink2" x="216" y="599.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
+<path class="s1" d="M228,586.0 H259.3 Q262.8,586.0 262.8,589.5 V597.5 Q262.8,601.0 259.3,601.0 H228 Z"/>
+<text class="ink2" x="268.8" y="599.5" font-size="12.5">29.1초</text>
+<text class="ink2" x="216" y="622.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
+<path class="s0" d="M228,609.0 H230.9 Q233.8,609.0 233.8,611.9 V621.1 Q233.8,624.0 230.9,624.0 H228 Z"/>
+<text class="ink2" x="239.8" y="622.5" font-size="12.5">4.8초</text>
+<text class="ink2" x="216" y="645.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (853M)</text>
+<path class="s3" d="M228,632.0 H262.7 Q266.2,632.0 266.2,635.5 V643.5 Q266.2,647.0 262.7,647.0 H228 Z"/>
+<text class="ink2" x="272.2" y="645.5" font-size="12.5">31.9초</text>
+<text class="ink2" x="216" y="668.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
+<path class="s2" d="M228,655.0 H263.8 Q267.3,655.0 267.3,658.5 V666.5 Q267.3,670.0 263.8,670.0 H228 Z"/>
+<text class="ink2" x="273.3" y="668.5" font-size="12.5">32.9초</text>
+<text class="ink2" x="216" y="691.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
+<path class="s2" d="M228,678.0 H228.5 Q229.0,678.0 229.0,678.5 V692.5 Q229.0,693.0 228.5,693.0 H228 Z"/>
+<text class="ink2" x="235.0" y="691.5" font-size="12.5">0.9초</text>
+<text class="ink2" x="216" y="714.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
+<path class="s2" d="M228,701.0 H284.8 Q288.3,701.0 288.3,704.5 V712.5 Q288.3,716.0 284.8,716.0 H228 Z"/>
+<text class="ink2" x="294.3" y="714.5" font-size="12.5">50.4초</text>
+<text class="ink2" x="216" y="737.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
+<path class="s2" d="M228,724.0 H649.9 Q653.4,724.0 653.4,727.5 V735.5 Q653.4,739.0 649.9,739.0 H228 Z"/>
+<text class="ink2" x="659.4" y="737.5" font-size="12.5">355.8초</text>
+<text class="ink2" x="216" y="760.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
+<path class="s2" d="M228,747.0 H228.7 Q229.3,747.0 229.3,747.7 V761.3 Q229.3,762.0 228.7,762.0 H228 Z"/>
+<text class="ink2" x="235.3" y="760.5" font-size="12.5">1.1초</text>
+<text class="ink2" x="216" y="783.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
+<path class="s2" d="M228,770.0 H228.7 Q229.5,770.0 229.5,770.7 V784.3 Q229.5,785.0 228.7,785.0 H228 Z"/>
+<text class="ink2" x="235.5" y="783.5" font-size="12.5">1.2초</text>
+<text class="ink" x="20" y="817" font-size="14" font-weight="600">덩치 — 파라미터(M). 파라미터 수를 공개하지 않은 엔진은 비운다</text>
+<text class="ink2" x="216" y="842.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
+<path class="s1" d="M228,829.0 H248.1 Q251.6,829.0 251.6,832.5 V840.5 Q251.6,844.0 248.1,844.0 H228 Z"/>
+<text class="ink2" x="257.6" y="842.5" font-size="12.5">118M</text>
+<text class="ink2" x="216" y="865.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
+<path class="s0" d="M228,852.0 H232.7 Q236.2,852.0 236.2,855.5 V863.5 Q236.2,867.0 232.7,867.0 H228 Z"/>
+<text class="ink2" x="242.2" y="865.5" font-size="12.5">41M</text>
+<text class="ink2" x="216" y="888.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (853M)</text>
+<path class="s3" d="M228,875.0 H395.1 Q398.6,875.0 398.6,878.5 V886.5 Q398.6,890.0 395.1,890.0 H228 Z"/>
+<text class="ink2" x="404.6" y="888.5" font-size="12.5">853M</text>
+<text class="ink2" x="216" y="911.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
+<path class="s2" d="M228,898.0 H267.2 Q270.7,898.0 270.7,901.5 V909.5 Q270.7,913.0 267.2,913.0 H228 Z"/>
+<text class="ink2" x="276.7" y="911.5" font-size="12.5">214M</text>
+<text class="ink2" x="216" y="934.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
+<path class="s2" d="M228,921.0 H228.3 Q228.7,921.0 228.7,921.3 V935.7 Q228.7,936.0 228.3,936.0 H228 Z"/>
+<text class="ink2" x="234.7" y="934.5" font-size="12.5">3M</text>
+<text class="ink2" x="216" y="957.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
+<path class="s2" d="M228,944.0 H649.9 Q653.4,944.0 653.4,947.5 V955.5 Q653.4,959.0 649.9,959.0 H228 Z"/>
+<text class="ink2" x="659.4" y="957.5" font-size="12.5">2128M</text>
+<text class="ink2" x="216" y="980.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
+<path class="s2" d="M228,967.0 H405.6 Q409.1,967.0 409.1,970.5 V978.5 Q409.1,982.0 405.6,982.0 H228 Z"/>
+<text class="ink2" x="415.1" y="980.5" font-size="12.5">906M</text>
+<text class="ink2" x="216" y="1003.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
+<path class="s2" d="M228,990.0 H228.4 Q228.8,990.0 228.8,990.4 V1004.6 Q228.8,1005.0 228.4,1005.0 H228 Z"/>
+<text class="ink2" x="234.8" y="1003.5" font-size="12.5">4M</text>
+<text class="ink2" x="216" y="1026.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
+<text class="ink3" x="232" y="1026.0" font-size="12.5">공개 안 함</text>
+<text class="ink" x="20" y="1060" font-size="14" font-weight="600">받아야 하는 가중치(MB)</text>
+<text class="ink2" x="216" y="1085.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
+<path class="s1" d="M228,1072.0 H271.7 Q275.2,1072.0 275.2,1075.5 V1083.5 Q275.2,1087.0 271.7,1087.0 H228 Z"/>
+<text class="ink2" x="281.2" y="1085.5" font-size="12.5">450MB</text>
+<text class="ink2" x="216" y="1108.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
+<path class="s0" d="M228,1095.0 H240.9 Q244.4,1095.0 244.4,1098.5 V1106.5 Q244.4,1110.0 240.9,1110.0 H228 Z"/>
+<text class="ink2" x="250.4" y="1108.5" font-size="12.5">156MB</text>
+<text class="ink2" x="216" y="1131.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (853M)</text>
+<path class="s3" d="M228,1118.0 H399.2 Q402.7,1118.0 402.7,1121.5 V1129.5 Q402.7,1133.0 399.2,1133.0 H228 Z"/>
+<text class="ink2" x="408.7" y="1131.5" font-size="12.5">1666MB</text>
+<text class="ink2" x="216" y="1154.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
+<path class="s2" d="M228,1141.0 H267.2 Q270.7,1141.0 270.7,1144.5 V1152.5 Q270.7,1156.0 267.2,1156.0 H228 Z"/>
+<text class="ink2" x="276.7" y="1154.5" font-size="12.5">408MB</text>
+<text class="ink2" x="216" y="1177.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
+<path class="s2" d="M228,1164.0 H228.7 Q229.4,1164.0 229.4,1164.7 V1178.3 Q229.4,1179.0 228.7,1179.0 H228 Z"/>
+<text class="ink2" x="235.4" y="1177.5" font-size="12.5">13MB</text>
+<text class="ink2" x="216" y="1200.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
+<path class="s2" d="M228,1187.0 H649.9 Q653.4,1187.0 653.4,1190.5 V1198.5 Q653.4,1202.0 649.9,1202.0 H228 Z"/>
+<text class="ink2" x="659.4" y="1200.5" font-size="12.5">4058MB</text>
+<text class="ink2" x="216" y="1223.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
+<path class="s2" d="M228,1210.0 H416.2 Q419.7,1210.0 419.7,1213.5 V1221.5 Q419.7,1225.0 416.2,1225.0 H228 Z"/>
+<text class="ink2" x="425.7" y="1223.5" font-size="12.5">1828MB</text>
+<text class="ink2" x="216" y="1246.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
+<path class="s2" d="M228,1233.0 H228.8 Q229.6,1233.0 229.6,1233.8 V1247.2 Q229.6,1248.0 228.8,1248.0 H228 Z"/>
+<text class="ink2" x="235.6" y="1246.5" font-size="12.5">15MB</text>
+<text class="ink2" x="216" y="1269.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
+
+<text class="ink2" x="234.6" y="1269.5" font-size="12.5">6MB</text>
+<text class="ink3" x="20" y="1337" font-size="12.5">8GB 카드라 큰 묶음은 카드 밖으로 샌다(32줄 묶음). 샌 값은 모델이 아니라 이 노트북을 잰 것이라 골라 뺐다.</text>
+<text class="ink3" x="20" y="1355" font-size="12.5">우리 앙상블은 모델 셋을 흔들기 셋으로 읽어 한 칸에 판독을 아홉 번 돈다. 크기로 견주려면 '단일 모델' 줄을 본다.</text>
+<text class="ink3" x="20" y="1373" font-size="12.5">Tesseract 5 는 GPU 를 안 쓰는 엔진이라 GPU 칸이 비어 있다. 자르기(CPU)는 모두 같은 값이다 — 줄 자르기가 없는 상대에게는</text>
+<text class="ink3" x="20" y="1391" font-size="12.5">우리 것을 빌려주었다. 장당 0.404초.</text>
+<text class="ink3" x="20" y="1409" font-size="12.5">잰 날 2026-10-09 07:25 · torch 2.14.0+cu130 · tools/vs.py</text>
 </svg>

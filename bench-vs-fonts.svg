@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 781" width="820" height="781" role="img" aria-label="Per-font accuracy over 480 handwriting fonts, grouped by whether the font was used in our training. 고르기 6벌: ko-hand-ocr 앙상블 99.2 percent, ko-hand-ocr 단일 모델 98.5 percent, ddobokki/ko-trocr 85.3 percent, PaddleOCR PP-OCRv5 80.1 percent, Qwen3-VL-2B 65.2 percent, EasyOCR 67.7 percent, Tesseract 5 21.6 percent. 두루 24벌: ko-hand-ocr 앙상블 99.0 percent, ko-hand-ocr 단일 모델 98.6 percent, ddobokki/ko-trocr 83.3 percent, PaddleOCR PP-OCRv5 78.5 percent, Qwen3-VL-2B 67.4 percent, EasyOCR 68.2 percent, Tesseract 5 19.3 percent. 학습에 쓴 벌: ko-hand-ocr 앙상블 98.2 percent, ko-hand-ocr 단일 모델 98.1 percent, ddobokki/ko-trocr 82.5 percent, PaddleOCR PP-OCRv5 78.0 percent, Qwen3-VL-2B 69.3 percent, EasyOCR 67.1 percent, Tesseract 5 20.5 percent.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 841" width="820" height="841" role="img" aria-label="Per-font accuracy over 480 handwriting fonts, grouped by whether the font was used in our training. 고르기 6벌: ko-hand-ocr 앙상블 99.2 percent, ko-hand-ocr 단일 모델 98.5 percent, ko-hand-ocr-vl 99.3 percent, ddobokki/ko-trocr 85.3 percent, PaddleOCR PP-OCRv5 80.1 percent, Qwen3-VL-2B 65.5 percent, EasyOCR 67.7 percent, Tesseract 5 21.6 percent. 두루 24벌: ko-hand-ocr 앙상블 99.0 percent, ko-hand-ocr 단일 모델 98.6 percent, ko-hand-ocr-vl 98.7 percent, ddobokki/ko-trocr 83.3 percent, PaddleOCR PP-OCRv5 78.5 percent, Qwen3-VL-2B 67.4 percent, EasyOCR 68.2 percent, Tesseract 5 19.3 percent. 학습에 쓴 벌: ko-hand-ocr 앙상블 98.2 percent, ko-hand-ocr 단일 모델 98.1 percent, ko-hand-ocr-vl 97.9 percent, ddobokki/ko-trocr 82.5 percent, PaddleOCR PP-OCRv5 78.0 percent, Qwen3-VL-2B 69.3 percent, EasyOCR 67.2 percent, Tesseract 5 20.5 percent.">
 <style>
   .surface{fill:#fcfcfb}
   .ink{fill:#0b0b0b}
@@ -7,6 +7,7 @@
   .s0{fill:#2a78d6}
   .s1{fill:#eb6834}
   .s2{fill:#8a8880}
+  .s3{fill:#1a9e77}
   .grid{stroke:#e3e2de;stroke-width:1}
   .rule{stroke:#cdccc6;stroke-width:1}
   .heat{fill:#cf3a2e}
@@ -19,14 +20,15 @@
     .s0{fill:#3987e5}
     .s1{fill:#d95926}
     .s2{fill:#7c7a73}
+    .s3{fill:#2bb58c}
     .grid{stroke:#3a3a38}
     .rule{stroke:#4a4946}
     .heat{fill:#ff6b5e}
   }
 </style>
-<rect class="surface" width="820" height="781" rx="8"/>
+<rect class="surface" width="820" height="841" rx="8"/>
 <text class="ink" x="20" y="32" font-size="19" font-weight="600">글꼴 480벌 전부 — 어디까지 읽히나</text>
-<text class="ink2" x="20" y="55" font-size="13.5">벌당 12줄, 모두 4320줄. 한 벌의 값은 흔들리므로 무리 합계와 분포로 본다.</text>
+<text class="ink2" x="20" y="55" font-size="13.5">벌당 12줄, 모두 4316줄. 한 벌의 값은 흔들리므로 무리 합계와 분포로 본다.</text>
 <text class="ink" x="20" y="88" font-size="14" font-weight="600">무리별 자모 닮음 — 칸이 옅을수록 잘 읽는다</text>
 <text class="ink2" x="318.3" y="110.0" font-size="12.5" font-weight="600" text-anchor="middle">고르기 6벌</text>
 <text class="ink2" x="318.3" y="125.0" font-size="12.5" font-weight="600" text-anchor="middle">6벌</text>
@@ -48,173 +50,197 @@
 <text class="ink" x="511.0" y="193.0" font-size="13" text-anchor="middle">98.6%</text>
 <rect class="heat" x="609.3" y="176.0" width="188.7" height="24" rx="4" fill-opacity="0.07"/>
 <text class="ink" x="703.7" y="193.0" font-size="13" text-anchor="middle">98.1%</text>
-<text class="ink2" x="210" y="223.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
-<rect class="heat" x="224.0" y="206.0" width="188.7" height="24" rx="4" fill-opacity="0.15"/>
-<text class="ink" x="318.3" y="223.0" font-size="13" text-anchor="middle">85.3%</text>
-<rect class="heat" x="416.7" y="206.0" width="188.7" height="24" rx="4" fill-opacity="0.16"/>
-<text class="ink" x="511.0" y="223.0" font-size="13" text-anchor="middle">83.3%</text>
-<rect class="heat" x="609.3" y="206.0" width="188.7" height="24" rx="4" fill-opacity="0.17"/>
-<text class="ink" x="703.7" y="223.0" font-size="13" text-anchor="middle">82.5%</text>
-<text class="ink2" x="210" y="253.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
-<rect class="heat" x="224.0" y="236.0" width="188.7" height="24" rx="4" fill-opacity="0.18"/>
-<text class="ink" x="318.3" y="253.0" font-size="13" text-anchor="middle">80.1%</text>
-<rect class="heat" x="416.7" y="236.0" width="188.7" height="24" rx="4" fill-opacity="0.19"/>
-<text class="ink" x="511.0" y="253.0" font-size="13" text-anchor="middle">78.5%</text>
-<rect class="heat" x="609.3" y="236.0" width="188.7" height="24" rx="4" fill-opacity="0.19"/>
-<text class="ink" x="703.7" y="253.0" font-size="13" text-anchor="middle">78.0%</text>
-<text class="ink2" x="210" y="283.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
-<rect class="heat" x="224.0" y="266.0" width="188.7" height="24" rx="4" fill-opacity="0.27"/>
-<text class="ink" x="318.3" y="283.0" font-size="13" text-anchor="middle">65.2%</text>
-<rect class="heat" x="416.7" y="266.0" width="188.7" height="24" rx="4" fill-opacity="0.26"/>
-<text class="ink" x="511.0" y="283.0" font-size="13" text-anchor="middle">67.4%</text>
-<rect class="heat" x="609.3" y="266.0" width="188.7" height="24" rx="4" fill-opacity="0.24"/>
-<text class="ink" x="703.7" y="283.0" font-size="13" text-anchor="middle">69.3%</text>
-<text class="ink2" x="210" y="313.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
-<rect class="heat" x="224.0" y="296.0" width="188.7" height="24" rx="4" fill-opacity="0.25"/>
-<text class="ink" x="318.3" y="313.0" font-size="13" text-anchor="middle">67.7%</text>
-<rect class="heat" x="416.7" y="296.0" width="188.7" height="24" rx="4" fill-opacity="0.25"/>
-<text class="ink" x="511.0" y="313.0" font-size="13" text-anchor="middle">68.2%</text>
-<rect class="heat" x="609.3" y="296.0" width="188.7" height="24" rx="4" fill-opacity="0.26"/>
-<text class="ink" x="703.7" y="313.0" font-size="13" text-anchor="middle">67.1%</text>
-<text class="ink2" x="210" y="343.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
-<rect class="heat" x="224.0" y="326.0" width="188.7" height="24" rx="4" fill-opacity="0.53"/>
-<text class="ink" x="318.3" y="343.0" font-size="13" text-anchor="middle">21.6%</text>
-<rect class="heat" x="416.7" y="326.0" width="188.7" height="24" rx="4" fill-opacity="0.54"/>
-<text class="ink" x="511.0" y="343.0" font-size="13" text-anchor="middle">19.3%</text>
-<rect class="heat" x="609.3" y="326.0" width="188.7" height="24" rx="4" fill-opacity="0.54"/>
-<text class="ink" x="703.7" y="343.0" font-size="13" text-anchor="middle">20.5%</text>
-<text class="ink" x="20" y="382" font-size="14" font-weight="600">몇 벌이 어느 구간에 있나 (전체 480벌) — 칸이 진할수록 많다</text>
-<text class="ink2" x="258.1" y="404.0" font-size="12.5" font-weight="600" text-anchor="middle">0~50%</text>
-<text class="ink2" x="330.4" y="404.0" font-size="12.5" font-weight="600" text-anchor="middle">50~60%</text>
-<text class="ink2" x="402.6" y="404.0" font-size="12.5" font-weight="600" text-anchor="middle">60~70%</text>
-<text class="ink2" x="474.9" y="404.0" font-size="12.5" font-weight="600" text-anchor="middle">70~80%</text>
-<text class="ink2" x="547.1" y="404.0" font-size="12.5" font-weight="600" text-anchor="middle">80~85%</text>
-<text class="ink2" x="619.4" y="404.0" font-size="12.5" font-weight="600" text-anchor="middle">85~90%</text>
-<text class="ink2" x="691.6" y="404.0" font-size="12.5" font-weight="600" text-anchor="middle">90~95%</text>
-<text class="ink2" x="763.9" y="404.0" font-size="12.5" font-weight="600" text-anchor="middle">95~100%</text>
-<text class="ink2" x="210" y="442.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
-<rect class="heat" x="224.0" y="425.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="258.1" y="442.0" font-size="13" text-anchor="middle">0</text>
-<rect class="heat" x="296.2" y="425.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="330.4" y="442.0" font-size="13" text-anchor="middle">0</text>
-<rect class="heat" x="368.5" y="425.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="402.6" y="442.0" font-size="13" text-anchor="middle">2</text>
-<rect class="heat" x="440.8" y="425.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="474.9" y="442.0" font-size="13" text-anchor="middle">3</text>
-<rect class="heat" x="513.0" y="425.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
-<text class="ink" x="547.1" y="442.0" font-size="13" text-anchor="middle">5</text>
-<rect class="heat" x="585.2" y="425.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
-<text class="ink" x="619.4" y="442.0" font-size="13" text-anchor="middle">6</text>
-<rect class="heat" x="657.5" y="425.0" width="68.2" height="24" rx="4" fill-opacity="0.10"/>
-<text class="ink" x="691.6" y="442.0" font-size="13" text-anchor="middle">28</text>
-<rect class="heat" x="729.8" y="425.0" width="68.2" height="24" rx="4" fill-opacity="0.61"/>
-<text class="ink" x="763.9" y="442.0" font-size="13" text-anchor="middle">436</text>
-<text class="ink2" x="210" y="472.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
+<text class="ink2" x="210" y="223.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (853M)</text>
+<rect class="heat" x="224.0" y="206.0" width="188.7" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="318.3" y="223.0" font-size="13" text-anchor="middle">99.3%</text>
+<rect class="heat" x="416.7" y="206.0" width="188.7" height="24" rx="4" fill-opacity="0.07"/>
+<text class="ink" x="511.0" y="223.0" font-size="13" text-anchor="middle">98.7%</text>
+<rect class="heat" x="609.3" y="206.0" width="188.7" height="24" rx="4" fill-opacity="0.07"/>
+<text class="ink" x="703.7" y="223.0" font-size="13" text-anchor="middle">97.9%</text>
+<text class="ink2" x="210" y="253.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
+<rect class="heat" x="224.0" y="236.0" width="188.7" height="24" rx="4" fill-opacity="0.15"/>
+<text class="ink" x="318.3" y="253.0" font-size="13" text-anchor="middle">85.3%</text>
+<rect class="heat" x="416.7" y="236.0" width="188.7" height="24" rx="4" fill-opacity="0.16"/>
+<text class="ink" x="511.0" y="253.0" font-size="13" text-anchor="middle">83.3%</text>
+<rect class="heat" x="609.3" y="236.0" width="188.7" height="24" rx="4" fill-opacity="0.16"/>
+<text class="ink" x="703.7" y="253.0" font-size="13" text-anchor="middle">82.5%</text>
+<text class="ink2" x="210" y="283.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
+<rect class="heat" x="224.0" y="266.0" width="188.7" height="24" rx="4" fill-opacity="0.18"/>
+<text class="ink" x="318.3" y="283.0" font-size="13" text-anchor="middle">80.1%</text>
+<rect class="heat" x="416.7" y="266.0" width="188.7" height="24" rx="4" fill-opacity="0.19"/>
+<text class="ink" x="511.0" y="283.0" font-size="13" text-anchor="middle">78.5%</text>
+<rect class="heat" x="609.3" y="266.0" width="188.7" height="24" rx="4" fill-opacity="0.19"/>
+<text class="ink" x="703.7" y="283.0" font-size="13" text-anchor="middle">78.0%</text>
+<text class="ink2" x="210" y="313.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
+<rect class="heat" x="224.0" y="296.0" width="188.7" height="24" rx="4" fill-opacity="0.27"/>
+<text class="ink" x="318.3" y="313.0" font-size="13" text-anchor="middle">65.5%</text>
+<rect class="heat" x="416.7" y="296.0" width="188.7" height="24" rx="4" fill-opacity="0.26"/>
+<text class="ink" x="511.0" y="313.0" font-size="13" text-anchor="middle">67.4%</text>
+<rect class="heat" x="609.3" y="296.0" width="188.7" height="24" rx="4" fill-opacity="0.24"/>
+<text class="ink" x="703.7" y="313.0" font-size="13" text-anchor="middle">69.3%</text>
+<text class="ink2" x="210" y="343.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
+<rect class="heat" x="224.0" y="326.0" width="188.7" height="24" rx="4" fill-opacity="0.25"/>
+<text class="ink" x="318.3" y="343.0" font-size="13" text-anchor="middle">67.7%</text>
+<rect class="heat" x="416.7" y="326.0" width="188.7" height="24" rx="4" fill-opacity="0.25"/>
+<text class="ink" x="511.0" y="343.0" font-size="13" text-anchor="middle">68.2%</text>
+<rect class="heat" x="609.3" y="326.0" width="188.7" height="24" rx="4" fill-opacity="0.26"/>
+<text class="ink" x="703.7" y="343.0" font-size="13" text-anchor="middle">67.2%</text>
+<text class="ink2" x="210" y="373.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
+<rect class="heat" x="224.0" y="356.0" width="188.7" height="24" rx="4" fill-opacity="0.53"/>
+<text class="ink" x="318.3" y="373.0" font-size="13" text-anchor="middle">21.6%</text>
+<rect class="heat" x="416.7" y="356.0" width="188.7" height="24" rx="4" fill-opacity="0.54"/>
+<text class="ink" x="511.0" y="373.0" font-size="13" text-anchor="middle">19.3%</text>
+<rect class="heat" x="609.3" y="356.0" width="188.7" height="24" rx="4" fill-opacity="0.54"/>
+<text class="ink" x="703.7" y="373.0" font-size="13" text-anchor="middle">20.5%</text>
+<text class="ink" x="20" y="412" font-size="14" font-weight="600">몇 벌이 어느 구간에 있나 (전체 480벌) — 칸이 진할수록 많다</text>
+<text class="ink2" x="258.1" y="434.0" font-size="12.5" font-weight="600" text-anchor="middle">0~50%</text>
+<text class="ink2" x="330.4" y="434.0" font-size="12.5" font-weight="600" text-anchor="middle">50~60%</text>
+<text class="ink2" x="402.6" y="434.0" font-size="12.5" font-weight="600" text-anchor="middle">60~70%</text>
+<text class="ink2" x="474.9" y="434.0" font-size="12.5" font-weight="600" text-anchor="middle">70~80%</text>
+<text class="ink2" x="547.1" y="434.0" font-size="12.5" font-weight="600" text-anchor="middle">80~85%</text>
+<text class="ink2" x="619.4" y="434.0" font-size="12.5" font-weight="600" text-anchor="middle">85~90%</text>
+<text class="ink2" x="691.6" y="434.0" font-size="12.5" font-weight="600" text-anchor="middle">90~95%</text>
+<text class="ink2" x="763.9" y="434.0" font-size="12.5" font-weight="600" text-anchor="middle">95~100%</text>
+<text class="ink2" x="210" y="472.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
 <rect class="heat" x="224.0" y="455.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="258.1" y="472.0" font-size="13" text-anchor="middle">2</text>
+<text class="ink" x="258.1" y="472.0" font-size="13" text-anchor="middle">0</text>
 <rect class="heat" x="296.2" y="455.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
 <text class="ink" x="330.4" y="472.0" font-size="13" text-anchor="middle">0</text>
 <rect class="heat" x="368.5" y="455.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="402.6" y="472.0" font-size="13" text-anchor="middle">1</text>
+<text class="ink" x="402.6" y="472.0" font-size="13" text-anchor="middle">2</text>
 <rect class="heat" x="440.8" y="455.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="474.9" y="472.0" font-size="13" text-anchor="middle">1</text>
+<text class="ink" x="474.9" y="472.0" font-size="13" text-anchor="middle">3</text>
 <rect class="heat" x="513.0" y="455.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
 <text class="ink" x="547.1" y="472.0" font-size="13" text-anchor="middle">5</text>
 <rect class="heat" x="585.2" y="455.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
 <text class="ink" x="619.4" y="472.0" font-size="13" text-anchor="middle">6</text>
-<rect class="heat" x="657.5" y="455.0" width="68.2" height="24" rx="4" fill-opacity="0.10"/>
-<text class="ink" x="691.6" y="472.0" font-size="13" text-anchor="middle">31</text>
+<rect class="heat" x="657.5" y="455.0" width="68.2" height="24" rx="4" fill-opacity="0.09"/>
+<text class="ink" x="691.6" y="472.0" font-size="13" text-anchor="middle">27</text>
 <rect class="heat" x="729.8" y="455.0" width="68.2" height="24" rx="4" fill-opacity="0.61"/>
-<text class="ink" x="763.9" y="472.0" font-size="13" text-anchor="middle">434</text>
-<text class="ink2" x="210" y="502.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
-<rect class="heat" x="224.0" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.08"/>
-<text class="ink" x="258.1" y="502.0" font-size="13" text-anchor="middle">16</text>
-<rect class="heat" x="296.2" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.08"/>
-<text class="ink" x="330.4" y="502.0" font-size="13" text-anchor="middle">17</text>
-<rect class="heat" x="368.5" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.11"/>
-<text class="ink" x="402.6" y="502.0" font-size="13" text-anchor="middle">39</text>
-<rect class="heat" x="440.8" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.17"/>
-<text class="ink" x="474.9" y="502.0" font-size="13" text-anchor="middle">86</text>
-<rect class="heat" x="513.0" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
-<text class="ink" x="547.1" y="502.0" font-size="13" text-anchor="middle">49</text>
-<rect class="heat" x="585.2" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.18"/>
-<text class="ink" x="619.4" y="502.0" font-size="13" text-anchor="middle">97</text>
-<rect class="heat" x="657.5" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.22"/>
-<text class="ink" x="691.6" y="502.0" font-size="13" text-anchor="middle">130</text>
-<rect class="heat" x="729.8" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
-<text class="ink" x="763.9" y="502.0" font-size="13" text-anchor="middle">46</text>
-<text class="ink2" x="210" y="532.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
-<rect class="heat" x="224.0" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.13"/>
-<text class="ink" x="258.1" y="532.0" font-size="13" text-anchor="middle">53</text>
-<rect class="heat" x="296.2" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.09"/>
-<text class="ink" x="330.4" y="532.0" font-size="13" text-anchor="middle">22</text>
-<rect class="heat" x="368.5" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
-<text class="ink" x="402.6" y="532.0" font-size="13" text-anchor="middle">45</text>
-<rect class="heat" x="440.8" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.16"/>
-<text class="ink" x="474.9" y="532.0" font-size="13" text-anchor="middle">78</text>
-<rect class="heat" x="513.0" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
-<text class="ink" x="547.1" y="532.0" font-size="13" text-anchor="middle">45</text>
-<rect class="heat" x="585.2" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.15"/>
-<text class="ink" x="619.4" y="532.0" font-size="13" text-anchor="middle">74</text>
-<rect class="heat" x="657.5" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.16"/>
-<text class="ink" x="691.6" y="532.0" font-size="13" text-anchor="middle">77</text>
-<rect class="heat" x="729.8" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.17"/>
-<text class="ink" x="763.9" y="532.0" font-size="13" text-anchor="middle">86</text>
-<text class="ink2" x="210" y="562.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
-<rect class="heat" x="224.0" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.19"/>
-<text class="ink" x="258.1" y="562.0" font-size="13" text-anchor="middle">104</text>
-<rect class="heat" x="296.2" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.11"/>
-<text class="ink" x="330.4" y="562.0" font-size="13" text-anchor="middle">41</text>
-<rect class="heat" x="368.5" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.14"/>
-<text class="ink" x="402.6" y="562.0" font-size="13" text-anchor="middle">61</text>
+<text class="ink" x="763.9" y="472.0" font-size="13" text-anchor="middle">437</text>
+<text class="ink2" x="210" y="502.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
+<rect class="heat" x="224.0" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="258.1" y="502.0" font-size="13" text-anchor="middle">2</text>
+<rect class="heat" x="296.2" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="330.4" y="502.0" font-size="13" text-anchor="middle">0</text>
+<rect class="heat" x="368.5" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="402.6" y="502.0" font-size="13" text-anchor="middle">1</text>
+<rect class="heat" x="440.8" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="474.9" y="502.0" font-size="13" text-anchor="middle">1</text>
+<rect class="heat" x="513.0" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
+<text class="ink" x="547.1" y="502.0" font-size="13" text-anchor="middle">5</text>
+<rect class="heat" x="585.2" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
+<text class="ink" x="619.4" y="502.0" font-size="13" text-anchor="middle">6</text>
+<rect class="heat" x="657.5" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.10"/>
+<text class="ink" x="691.6" y="502.0" font-size="13" text-anchor="middle">30</text>
+<rect class="heat" x="729.8" y="485.0" width="68.2" height="24" rx="4" fill-opacity="0.61"/>
+<text class="ink" x="763.9" y="502.0" font-size="13" text-anchor="middle">435</text>
+<text class="ink2" x="210" y="532.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (853M)</text>
+<rect class="heat" x="224.0" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="258.1" y="532.0" font-size="13" text-anchor="middle">1</text>
+<rect class="heat" x="296.2" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="330.4" y="532.0" font-size="13" text-anchor="middle">0</text>
+<rect class="heat" x="368.5" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="402.6" y="532.0" font-size="13" text-anchor="middle">2</text>
+<rect class="heat" x="440.8" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
+<text class="ink" x="474.9" y="532.0" font-size="13" text-anchor="middle">4</text>
+<rect class="heat" x="513.0" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
+<text class="ink" x="547.1" y="532.0" font-size="13" text-anchor="middle">4</text>
+<rect class="heat" x="585.2" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.08"/>
+<text class="ink" x="619.4" y="532.0" font-size="13" text-anchor="middle">13</text>
+<rect class="heat" x="657.5" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.09"/>
+<text class="ink" x="691.6" y="532.0" font-size="13" text-anchor="middle">27</text>
+<rect class="heat" x="729.8" y="515.0" width="68.2" height="24" rx="4" fill-opacity="0.60"/>
+<text class="ink" x="763.9" y="532.0" font-size="13" text-anchor="middle">429</text>
+<text class="ink2" x="210" y="562.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
+<rect class="heat" x="224.0" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.08"/>
+<text class="ink" x="258.1" y="562.0" font-size="13" text-anchor="middle">16</text>
+<rect class="heat" x="296.2" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.08"/>
+<text class="ink" x="330.4" y="562.0" font-size="13" text-anchor="middle">17</text>
+<rect class="heat" x="368.5" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.11"/>
+<text class="ink" x="402.6" y="562.0" font-size="13" text-anchor="middle">39</text>
 <rect class="heat" x="440.8" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.17"/>
-<text class="ink" x="474.9" y="562.0" font-size="13" text-anchor="middle">83</text>
-<rect class="heat" x="513.0" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.10"/>
-<text class="ink" x="547.1" y="562.0" font-size="13" text-anchor="middle">31</text>
-<rect class="heat" x="585.2" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.13"/>
-<text class="ink" x="619.4" y="562.0" font-size="13" text-anchor="middle">52</text>
-<rect class="heat" x="657.5" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.13"/>
-<text class="ink" x="691.6" y="562.0" font-size="13" text-anchor="middle">58</text>
+<text class="ink" x="474.9" y="562.0" font-size="13" text-anchor="middle">86</text>
+<rect class="heat" x="513.0" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
+<text class="ink" x="547.1" y="562.0" font-size="13" text-anchor="middle">49</text>
+<rect class="heat" x="585.2" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.18"/>
+<text class="ink" x="619.4" y="562.0" font-size="13" text-anchor="middle">95</text>
+<rect class="heat" x="657.5" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.23"/>
+<text class="ink" x="691.6" y="562.0" font-size="13" text-anchor="middle">131</text>
 <rect class="heat" x="729.8" y="545.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
-<text class="ink" x="763.9" y="562.0" font-size="13" text-anchor="middle">50</text>
-<text class="ink2" x="210" y="592.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
-<rect class="heat" x="224.0" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.19"/>
-<text class="ink" x="258.1" y="592.0" font-size="13" text-anchor="middle">106</text>
-<rect class="heat" x="296.2" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
-<text class="ink" x="330.4" y="592.0" font-size="13" text-anchor="middle">46</text>
-<rect class="heat" x="368.5" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.15"/>
-<text class="ink" x="402.6" y="592.0" font-size="13" text-anchor="middle">70</text>
-<rect class="heat" x="440.8" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.18"/>
-<text class="ink" x="474.9" y="592.0" font-size="13" text-anchor="middle">97</text>
+<text class="ink" x="763.9" y="562.0" font-size="13" text-anchor="middle">47</text>
+<text class="ink2" x="210" y="592.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR PP-OCRv5 (3.3M)</text>
+<rect class="heat" x="224.0" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.13"/>
+<text class="ink" x="258.1" y="592.0" font-size="13" text-anchor="middle">53</text>
+<rect class="heat" x="296.2" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.09"/>
+<text class="ink" x="330.4" y="592.0" font-size="13" text-anchor="middle">22</text>
+<rect class="heat" x="368.5" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
+<text class="ink" x="402.6" y="592.0" font-size="13" text-anchor="middle">45</text>
+<rect class="heat" x="440.8" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.16"/>
+<text class="ink" x="474.9" y="592.0" font-size="13" text-anchor="middle">78</text>
 <rect class="heat" x="513.0" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
-<text class="ink" x="547.1" y="592.0" font-size="13" text-anchor="middle">50</text>
-<rect class="heat" x="585.2" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.13"/>
-<text class="ink" x="619.4" y="592.0" font-size="13" text-anchor="middle">52</text>
-<rect class="heat" x="657.5" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
-<text class="ink" x="691.6" y="592.0" font-size="13" text-anchor="middle">50</text>
-<rect class="heat" x="729.8" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
-<text class="ink" x="763.9" y="592.0" font-size="13" text-anchor="middle">9</text>
-<text class="ink2" x="210" y="622.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
-<rect class="heat" x="224.0" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.66"/>
-<text class="ink" x="258.1" y="622.0" font-size="13" text-anchor="middle">474</text>
-<rect class="heat" x="296.2" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
-<text class="ink" x="330.4" y="622.0" font-size="13" text-anchor="middle">6</text>
-<rect class="heat" x="368.5" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="402.6" y="622.0" font-size="13" text-anchor="middle">0</text>
-<rect class="heat" x="440.8" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="474.9" y="622.0" font-size="13" text-anchor="middle">0</text>
-<rect class="heat" x="513.0" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="547.1" y="622.0" font-size="13" text-anchor="middle">0</text>
-<rect class="heat" x="585.2" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="619.4" y="622.0" font-size="13" text-anchor="middle">0</text>
-<rect class="heat" x="657.5" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="691.6" y="622.0" font-size="13" text-anchor="middle">0</text>
-<rect class="heat" x="729.8" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
-<text class="ink" x="763.9" y="622.0" font-size="13" text-anchor="middle">0</text>
-<text class="ink3" x="20" y="677" font-size="12.5">'학습에 쓴 벌'은 우리 학습 자료다. 거기 점수가 높은 것은 일반화가 아니라 '배운 것을 외웠나'이고, 상대에게는 그냥 처음 보는</text>
-<text class="ink3" x="20" y="695" font-size="12.5">글씨체다.</text>
-<text class="ink3" x="20" y="713" font-size="12.5">'고르기 6벌'은 학습에서 뺐지만 조합을 고르는 데 쓴다. '두루 24벌'은 학습에서도 빼고 고르기에도 안 쓴다 — 우리 쪽에서 가장</text>
-<text class="ink3" x="20" y="731" font-size="12.5">깨끗한 자리다.</text>
-<text class="ink3" x="20" y="749" font-size="12.5">세 무리를 한 숫자로 뭉개면 안 된다. 같은 시험이 아니다.</text>
-<text class="ink3" x="20" y="767" font-size="12.5">잰 날 2026-10-07 17:32 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
+<text class="ink" x="547.1" y="592.0" font-size="13" text-anchor="middle">45</text>
+<rect class="heat" x="585.2" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.15"/>
+<text class="ink" x="619.4" y="592.0" font-size="13" text-anchor="middle">73</text>
+<rect class="heat" x="657.5" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.16"/>
+<text class="ink" x="691.6" y="592.0" font-size="13" text-anchor="middle">78</text>
+<rect class="heat" x="729.8" y="575.0" width="68.2" height="24" rx="4" fill-opacity="0.17"/>
+<text class="ink" x="763.9" y="592.0" font-size="13" text-anchor="middle">86</text>
+<text class="ink2" x="210" y="622.0" font-size="13.5" font-weight="400" text-anchor="end">Qwen3-VL-2B (2.1B)</text>
+<rect class="heat" x="224.0" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.19"/>
+<text class="ink" x="258.1" y="622.0" font-size="13" text-anchor="middle">106</text>
+<rect class="heat" x="296.2" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.11"/>
+<text class="ink" x="330.4" y="622.0" font-size="13" text-anchor="middle">39</text>
+<rect class="heat" x="368.5" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.14"/>
+<text class="ink" x="402.6" y="622.0" font-size="13" text-anchor="middle">60</text>
+<rect class="heat" x="440.8" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.16"/>
+<text class="ink" x="474.9" y="622.0" font-size="13" text-anchor="middle">81</text>
+<rect class="heat" x="513.0" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.10"/>
+<text class="ink" x="547.1" y="622.0" font-size="13" text-anchor="middle">33</text>
+<rect class="heat" x="585.2" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.13"/>
+<text class="ink" x="619.4" y="622.0" font-size="13" text-anchor="middle">52</text>
+<rect class="heat" x="657.5" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.13"/>
+<text class="ink" x="691.6" y="622.0" font-size="13" text-anchor="middle">57</text>
+<rect class="heat" x="729.8" y="605.0" width="68.2" height="24" rx="4" fill-opacity="0.13"/>
+<text class="ink" x="763.9" y="622.0" font-size="13" text-anchor="middle">52</text>
+<text class="ink2" x="210" y="652.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
+<rect class="heat" x="224.0" y="635.0" width="68.2" height="24" rx="4" fill-opacity="0.19"/>
+<text class="ink" x="258.1" y="652.0" font-size="13" text-anchor="middle">106</text>
+<rect class="heat" x="296.2" y="635.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
+<text class="ink" x="330.4" y="652.0" font-size="13" text-anchor="middle">45</text>
+<rect class="heat" x="368.5" y="635.0" width="68.2" height="24" rx="4" fill-opacity="0.15"/>
+<text class="ink" x="402.6" y="652.0" font-size="13" text-anchor="middle">70</text>
+<rect class="heat" x="440.8" y="635.0" width="68.2" height="24" rx="4" fill-opacity="0.18"/>
+<text class="ink" x="474.9" y="652.0" font-size="13" text-anchor="middle">98</text>
+<rect class="heat" x="513.0" y="635.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
+<text class="ink" x="547.1" y="652.0" font-size="13" text-anchor="middle">50</text>
+<rect class="heat" x="585.2" y="635.0" width="68.2" height="24" rx="4" fill-opacity="0.13"/>
+<text class="ink" x="619.4" y="652.0" font-size="13" text-anchor="middle">52</text>
+<rect class="heat" x="657.5" y="635.0" width="68.2" height="24" rx="4" fill-opacity="0.12"/>
+<text class="ink" x="691.6" y="652.0" font-size="13" text-anchor="middle">50</text>
+<rect class="heat" x="729.8" y="635.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
+<text class="ink" x="763.9" y="652.0" font-size="13" text-anchor="middle">9</text>
+<text class="ink2" x="210" y="682.0" font-size="13.5" font-weight="400" text-anchor="end">Tesseract 5 (6MB)</text>
+<rect class="heat" x="224.0" y="665.0" width="68.2" height="24" rx="4" fill-opacity="0.66"/>
+<text class="ink" x="258.1" y="682.0" font-size="13" text-anchor="middle">474</text>
+<rect class="heat" x="296.2" y="665.0" width="68.2" height="24" rx="4" fill-opacity="0.07"/>
+<text class="ink" x="330.4" y="682.0" font-size="13" text-anchor="middle">6</text>
+<rect class="heat" x="368.5" y="665.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="402.6" y="682.0" font-size="13" text-anchor="middle">0</text>
+<rect class="heat" x="440.8" y="665.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="474.9" y="682.0" font-size="13" text-anchor="middle">0</text>
+<rect class="heat" x="513.0" y="665.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="547.1" y="682.0" font-size="13" text-anchor="middle">0</text>
+<rect class="heat" x="585.2" y="665.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="619.4" y="682.0" font-size="13" text-anchor="middle">0</text>
+<rect class="heat" x="657.5" y="665.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="691.6" y="682.0" font-size="13" text-anchor="middle">0</text>
+<rect class="heat" x="729.8" y="665.0" width="68.2" height="24" rx="4" fill-opacity="0.06"/>
+<text class="ink" x="763.9" y="682.0" font-size="13" text-anchor="middle">0</text>
+<text class="ink3" x="20" y="737" font-size="12.5">'학습에 쓴 벌'은 우리 학습 자료다. 거기 점수가 높은 것은 일반화가 아니라 '배운 것을 외웠나'이고, 상대에게는 그냥 처음 보는</text>
+<text class="ink3" x="20" y="755" font-size="12.5">글씨체다.</text>
+<text class="ink3" x="20" y="773" font-size="12.5">'고르기 6벌'은 학습에서 뺐지만 조합을 고르는 데 쓴다. '두루 24벌'은 학습에서도 빼고 고르기에도 안 쓴다 — 우리 쪽에서 가장</text>
+<text class="ink3" x="20" y="791" font-size="12.5">깨끗한 자리다.</text>
+<text class="ink3" x="20" y="809" font-size="12.5">세 무리를 한 숫자로 뭉개면 안 된다. 같은 시험이 아니다.</text>
+<text class="ink3" x="20" y="827" font-size="12.5">잰 날 2026-10-09 07:25 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
 </svg>

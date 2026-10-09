@@ -277,9 +277,22 @@ class Vlm:
         self.model = AutoModelForImageTextToText.from_pretrained(
             self.repo, dtype="auto").to(device).eval()
         dtype = self.model.dtype
+        # 멈추는 표. 대화 틀이 턴 끝에 `<|im_end|>` 를 쓰면 거기서도 멈춘다(2026-10-08).
+        # Qwen3.5 는 generation_config 가 없어서 eos 가 `<|endoftext|>` 뿐이다 — 그대로 두면
+        # 대답 뒤에 다음 턴을 지어내며 상한까지 채우고, 그 꼬리가 답에 붙어 **그쪽이 손해**다.
+        # Qwen3-VL 은 이미 그 표에서 멈추고(그대로), PaddleOCR-VL 은 그 표를 안 쓴다(그대로).
+        eos = self.model.generation_config.eos_token_id
+        self.stop = list(eos) if isinstance(eos, list) else ([eos] if eos is not None else [])
+        tok = self.proc.tokenizer
+        frame = getattr(self.proc, "chat_template", None) or tok.chat_template or ""
+        if "<|im_end|>" in frame and "<|im_end|>" in tok.get_vocab():
+            end = tok.convert_tokens_to_ids("<|im_end|>")
+            if end not in self.stop:
+                self.stop.append(end)
         took = time.perf_counter() - start
         from huggingface_hub import snapshot_download
-        spot = Path(snapshot_download(self.repo))
+        # 아직 안 올린 판(내 폴더)도 같은 자로 잴 수 있게.
+        spot = Path(self.repo) if Path(self.repo).is_dir() else Path(snapshot_download(self.repo))
         disk = sum(p.resolve().stat().st_size for p in spot.glob("*.safetensors")) / 2**20
         return {"seconds": took,
                 "params": sum(p.numel() for p in self.model.parameters()),
@@ -300,10 +313,9 @@ class Vlm:
             return_tensors="pt", padding=True).to(self.device)
         with torch.no_grad():
             ids = self.model.generate(**batch, max_new_tokens=self.tokens,
-                                      do_sample=False)
+                                      do_sample=False, eos_token_id=self.stop or None)
         made = ids[:, batch["input_ids"].shape[1]:]
-        eos = self.model.generation_config.eos_token_id
-        eos = set(eos if isinstance(eos, list) else [eos])
+        eos = set(self.stop)
         for row in made.tolist():
             if len(row) >= self.tokens and not eos & set(row):
                 self.capped += 1

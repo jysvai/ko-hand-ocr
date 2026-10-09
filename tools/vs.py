@@ -147,6 +147,17 @@ OUTSIDE = {
                 ["vlm", "--repo", "Qwen/Qwen3-VL-2B-Instruct", "--prompt",
                  "이 이미지에 쓰인 글자를 그대로 읽어 적으세요. 글자만 출력하세요."],
                 True),
+    # 우리 VL(Qwen3.5-0.8B 를 미세조정한 것)과 그 원본. 원본을 같이 세워야 미세조정이
+    # 얼마를 보탰는지 보인다. 물음은 Qwen3-VL 과 같은 한글 물음이다. 아직 안 올린 판은
+    # KOHAND_VL 에 그 폴더(LoRA 를 녹여 넣은 safetensors)를 준다.
+    "ko-vl": ("ko-hand-ocr-vl (Qwen3.5-0.8B 미세조정)", "vlm",
+              ["vlm", "--repo", os.environ.get("KOHAND_VL", "localdeel/ko-hand-ocr-vl"),
+               "--prompt", "이 이미지에 쓰인 글자를 그대로 읽어 적으세요. 글자만 출력하세요."],
+              True),
+    "qwen35": ("Qwen/Qwen3.5-0.8B", "vlm",
+               ["vlm", "--repo", "Qwen/Qwen3.5-0.8B", "--prompt",
+                "이 이미지에 쓰인 글자를 그대로 읽어 적으세요. 글자만 출력하세요."],
+               True),
 }
 
 
@@ -496,7 +507,7 @@ def sheet(count: int, fonts_dir: str, only: str, part: str) -> list[tuple[str, I
     out = []
     from kohandocr import corpus
     for text in corpus.lines(count, seed=H.SEED):
-        if H._has_bare_jamo(text):
+        if H._has_bare_jamo(text) or not H.drawable(fonts, text):
             continue
         page = synth.render(text, fonts, rng)
         if page is not None:

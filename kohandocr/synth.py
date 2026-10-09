@@ -542,7 +542,8 @@ class Fonts:
             known = {}
         out, fresh = [], False
         for which, path in enumerate(self.files):
-            stamp = "%d:%d" % (path.stat().st_size, path.stat().st_mtime_ns)
+            # 앞의 "2:" 는 재는 법이 바뀐 차례다. 바꾸면 모든 글꼴을 한 번 다시 잰다.
+            stamp = "2:%d:%d" % (path.stat().st_size, path.stat().st_mtime_ns)
             row = known.get(path.name)
             if not row or row.get("stamp") != stamp:
                 row = {"stamp": stamp,
@@ -562,9 +563,15 @@ class Fonts:
         return out
 
     def _measure_cover(self, which: int) -> bytes:
-        """음절 11,172자마다 잉크가 있나를 비트로. 검사용 면은 들고 있지 않는다."""
+        """음절 11,172자마다 잉크가 있나를 비트로. 검사용 면은 들고 있지 않는다.
+
+        견주는 '없는 글자 모양'은 **아무도 안 쓰는 자리(U+E000)** 의 모양이다(`_missing` 과 같다).
+        2026-10-08 까지 여기는 빈 문자열("")이었다 — 그 모양은 어떤 글자와도 안 같아서, 없는 음절을
+        네모(□)로 그리는 글꼴도 잉크만 있으면 '있다'로 셌다. 학습 글꼴 450벌 가운데 161벌이 그랬고,
+        학습 줄의 5% 에 네모를 그려 놓고 정답에 제 글자를 적어 먹였다. 시험 글꼴 기랑해랑도 그렇다.
+        """
         font = ImageFont.truetype(self.paths[which], 40)
-        empty = font.getmask("", mode="L")         # 아무도 안 쓰는 자리
+        empty = font.getmask("", mode="L")   # 아무도 안 쓰는 자리
         missing = (empty.size, bytes(empty))
         bits = bytearray((SYLLABLES + 7) // 8)
         for at in range(SYLLABLES):
@@ -638,6 +645,14 @@ class Fonts:
         self._lean = cum
         return len(known)
 
+    def draws(self, which: int, text: str) -> bool:
+        """이 글꼴이 이 글월의 빈칸 아닌 글자를 **다** 그리나(네모·빈칸 없이).
+
+        글꼴 하나로 찍는 시험지가 쓴다. 그 글꼴이 못 그리는 글자가 든 줄은 아무도 못 맞히는
+        줄이다 — 동해독도·기랑해랑 시험지 383줄 가운데 65줄이 그랬다(2026-10-08 에 뺐다).
+        """
+        return all(self.has(which, c) for c in set(text) if not c.isspace())
+
     def pick(self, rng: random.Random,
              text: str = "") -> tuple[ImageFont.FreeTypeFont, float]:
         """글꼴 하나와 **그 글꼴의 원래 획 굵기**(글자 높이 대비)를 함께 준다.
@@ -647,8 +662,11 @@ class Fonts:
         100% 인데 전체로는 19.5%). 없는 글자는 두부(.notdef)로 그려지므로,
         그대로 두면 **글자가 아닌 네모를 정답과 함께** 먹이게 된다.
         버리기엔 아까운 손씨라(여덟 벌이면 손씨 가짓수의 7%다) 글월에 맞춰 고른다.
+
+        음절만이 아니라 **빈칸 아닌 글자 전부**를 묻는다(2026-10-08). 학습 글꼴 95벌에
+        `\\` 가, 20벌에 `` ` `` 가 없다.
         """
-        want = {c for c in text if "가" <= c <= "힣"}
+        want = {c for c in text if not c.isspace()}
         for _ in range(6):
             which = (rng.randrange(len(self.files)) if self._lean is None
                      else bisect.bisect(self._lean, rng.random() * self._lean[-1]))
