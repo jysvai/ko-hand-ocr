@@ -338,6 +338,88 @@ def test_뜻_없는_줄과_글꼴_몰기는_시험지를_안_바꾼다(fonts):
         assert fonts.pick(a)[0].path == other.pick(b)[0].path
 
 
+def test_손버릇과_획_지키기는_시험지를_안_바꾼다(fonts):
+    """`hand`(손버릇)와 `guard`(획 지키기)는 학습 자료에만 켠다(2026-10-10).
+
+    시험지가 이 값을 받거나, 끈 채로 난수를 한 번이라도 더 뽑으면 자가 흔들린다.
+    손버릇을 켜면 그림이 실제로 바뀌어야 한다 — 안 바뀌면 학습에도 아무 일이 없는 것이다.
+    """
+    import inspect
+
+    sys.path.insert(0, str(ROOT / "tools"))
+    import holdout
+
+    body = inspect.getsource(holdout.sheet)
+    for word in ("hand", "guard"):
+        assert word not in body, word
+    changed = 0
+    for seed in range(12):
+        plain = synth.render("부서 : 강원도팀", fonts, random.Random(seed))
+        said = synth.render("부서 : 강원도팀", fonts, random.Random(seed), hand=0.0, guard=False)
+        assert (plain is None) == (said is None)
+        if plain is not None:
+            assert plain.tobytes() == said.tobytes()
+        on = synth.render("부서 : 강원도팀", fonts, random.Random(seed), hand=1.0)
+        changed += plain is not None and (on is None or on.tobytes() != plain.tobytes())
+    assert changed >= 10
+
+
+def test_변이는_끄면_난수를_안_뽑고_켜면_그림을_바꾼다(fonts):
+    """`kohandocr/vary.py`(2026-10-11). 학습에만 켜고, 끈 채로는 뒤 그림이 하나도 안 바뀌어야 한다.
+    켜면 변이마다 그림이 실제로 달라지고, 잉크가 남아 있어야 한다(빈 그림에 정답을 붙이면 지어내기를 배운다)."""
+    import numpy as np
+    from kohandocr import cell, vary
+
+    page = None
+    for seed in range(20):
+        page = synth.render("성명 : 홍길동 2026.10.11", fonts, random.Random(seed))
+        if page is not None:
+            break
+    assert page is not None
+    rng = random.Random(9)
+    assert vary.maybe(page, {}, rng) is page and rng.random() == random.Random(9).random()
+    for kind in vary.KINDS:
+        out = vary.apply(page, kind, random.Random(4))
+        assert out.mode == "L", kind
+        assert out.tobytes() != page.tobytes(), kind
+        assert (np.asarray(out) < cell.INK_EDGE).mean() > 0.005, kind
+
+
+def test_획_지키기는_획을_통째로_안_지운다():
+    """굵기 맞추기가 가는 획을 다 깎아 없애던 자리(신과장·귀여운글꼴). 지키면 거의 다 남는다."""
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFilter
+
+    ink = Image.new("L", (200, 120), 0)
+    draw = ImageDraw.Draw(ink)
+    draw.rectangle((20, 10, 44, 110), fill=255)        # 굵은 세로획
+    draw.rectangle((60, 55, 180, 59), fill=255)        # 가는 가로획(5px)
+    # 원래 굵기를 굵게 잘못 알면(0.2) 4px 씩 깎아 가는 획이 사라진다.
+    plain = synth._weight(ink, 120, 0.2, 1.0, random.Random(1))
+    kept = synth._weight(ink, 120, 0.2, 1.0, random.Random(1), guard=True)
+    thin = np.asarray(ink)[50:65, 60:181] > 128
+    assert (np.asarray(plain)[50:65, 60:181] > 60).sum() < 0.1 * thin.sum()
+    grown = kept
+    for _ in range(5):
+        grown = grown.filter(ImageFilter.MaxFilter(3))
+    assert (np.asarray(grown)[50:65, 60:181] > 60)[thin].mean() > 0.9
+
+
+def test_손버릇은_판_크기를_지키고_잉크를_안_잃는다():
+    import numpy as np
+    from PIL import Image, ImageDraw
+
+    canvas = Image.new("L", (90, 80), 0)
+    draw = ImageDraw.Draw(canvas)
+    draw.rectangle((20, 15, 40, 60), fill=255)          # 떨어진 덩이 둘
+    draw.rectangle((55, 15, 70, 60), fill=255)
+    moved = synth._parts(canvas, 60, random.Random(3))
+    assert moved.size == canvas.size
+    before = np.asarray(canvas).astype(int).sum()
+    after = np.asarray(moved).astype(int).sum()
+    assert after >= 0.9 * before                       # 여백 안에서 옮기므로 거의 다 남는다
+
+
 def test_글꼴_몰기는_못_읽는_벌을_더_뽑는다(fonts):
     other = synth.Fonts(FONTS)
     names = [f.name for f in other.files]

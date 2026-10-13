@@ -27,7 +27,7 @@ from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
 
-from . import data, model as builder, synth
+from . import data, model as builder, synth, vary
 from .vocab import SPECIAL, Vocab
 
 
@@ -118,6 +118,17 @@ def parse() -> argparse.Namespace:
     ap.add_argument("--tangle", type=float, default=0.0,
                     help="지운 자국 가운데 제멋대로 엉킨 고리(synth._tangle)로 그릴 몫. "
                          "0 이면 끔. 학습 자료만 바꾼다")
+    # 2026-10-10. 획 지키기는 **기본으로 켠다** — 굵기 맞추기가 학습 글꼴 19벌의 획을 통째로
+    # 지우고 있었다(`synth.GUARD_LOSS` 머리말). 손버릇은 고리가 방법으로 켠다.
+    ap.add_argument("--guard", type=int, default=1,
+                    help="획 지키기(synth.GUARD_LOSS). 0 이면 예전처럼 획째 지워지는 줄도 먹인다")
+    ap.add_argument("--hand", type=float, default=0.0,
+                    help="손버릇(글자마다 크기·비율, 자모 덩이 옮기기) 줄 비율. 0 이면 끔")
+    # 2026-10-11. 합성에 없던 변이(`kohandocr/vary.py`). `tools/probe.py` 가 지금 모델이 90% 를
+    # 못 넘긴 변이를 고리의 방법(`vary_<이름>`)으로 올린다. 0 이면 끔.
+    for kind in vary.KINDS:
+        ap.add_argument("--vary-%s" % kind, type=float, default=0.0,
+                        help="변이 '%s' 를 입힐 줄 비율. 0 이면 끔" % vary.NAMES[kind])
     ap.add_argument("--layers", type=int, default=0,
                     help="이어받은 판의 디코더가 이보다 얕으면 이만큼 늘려서 학습한다 "
                          "(`model.grow`). 0 이면 그대로")
@@ -385,7 +396,8 @@ def main() -> None:
                         seed=args.seed, length=args.steps * args.batch,
                         strike=args.strike, warp=args.warp, digits=args.digits,
                         free=args.free, hard=args.hard, hard_from=args.hard_from,
-                        tangle=args.tangle)
+                        tangle=args.tangle, hand=args.hand, guard=bool(args.guard),
+                        vary={k: getattr(args, "vary_" + k) for k in vary.KINDS})
     if args.hard and not args.hard_from:
         raise SystemExit("--hard 에는 --hard-from 이 있어야 한다 (tools/hardfonts.py)")
     if args.strike is not None:
@@ -400,6 +412,12 @@ def main() -> None:
         print("못 읽는 글꼴 몰기: 뽑기의 %.0f%% (%s)" % (100 * args.hard, args.hard_from))
     if args.tangle:
         print("엉킨 지운 자국: 지운 자국의 %.0f%%" % (100 * args.tangle))
+    print("획 지키기:", "켬" if args.guard else "끔")
+    if args.hand:
+        print("손버릇: 줄의 %.0f%%" % (100 * args.hand))
+    for kind in vary.KINDS:
+        if getattr(args, "vary_" + kind):
+            print("변이 %s: 줄의 %.0f%%" % (vary.NAMES[kind], 100 * getattr(args, "vary_" + kind)))
     if args.noise:
         print("디코더 입력 흐리기: 앞 글자의 %.0f%%" % (100 * args.noise))
     if args.smooth:

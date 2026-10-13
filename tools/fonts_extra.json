@@ -2870,5 +2870,13 @@
     "license_source": "KERIS copyright.keris.or.kr (same program as HakgyoansimBombanghak etc.) + fonts-archive README; distributor: https://copyright.keris.or.kr/wft/fntDwnldView?fntGrpId=GFT202312110000000000014",
     "source": "github.com/fonts-archive/HakgyoansimEunhasu",
     "url": "https://raw.githubusercontent.com/fonts-archive/HakgyoansimEunhasu/92e1d2df08f6a72985117fb0e9b76e905042da83/HakgyoansimEunhasu.ttf"
+  },
+  {
+    "korean": "학교안심 반달 L",
+    "english": "HakgyoansimBandalL",
+    "license": "OFL-1.1",
+    "license_source": "fonts-archive README (라이선스 절): \"국제 SIL(Summer Institute of Linguistics)에서 만든 오픈폰트 라이선스로, OFL 폰트는 이용 대상 및 목적에 제한없이 자유롭게 이용 가능 합니다.\" — 2026-10-11 probe: v116 87.29% (<90) -> 학습에 넣음 (tools/probe.py --new-fonts)",
+    "source": "github.com/fonts-archive/HakgyoansimBandalL",
+    "url": "https://raw.githubusercontent.com/fonts-archive/HakgyoansimBandalL/b4acdb259905af36fd1ea989ed8bc980ff67bc03/Hakgyoansim_BandalL.ttf"
   }
 ]

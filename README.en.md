@@ -9,7 +9,7 @@ A 41M model trained from scratch on synthetic data — no handwriting dataset, n
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](https://github.com/jysvai/ko-hand-ocr/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://github.com/jysvai/ko-hand-ocr)
 [![Params](https://img.shields.io/badge/params-41M-1baf7a)](https://github.com/jysvai/ko-hand-ocr)
-[![Weights](https://img.shields.io/badge/weights-156MB-1baf7a)](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.1)
+[![Weights](https://img.shields.io/badge/weights-78MB-1baf7a)](https://huggingface.co/localdeel/ko-hand-ocr)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-localdeel%2Fko--hand--ocr-ffd21e)](https://huggingface.co/localdeel/ko-hand-ocr)
 [![CPU](https://img.shields.io/badge/runs%20on-CPU%20only-eda100)](https://github.com/jysvai/ko-hand-ocr)
 [![Data](https://img.shields.io/badge/training%20data-synthetic-e87ba4)](https://github.com/jysvai/ko-hand-ocr/blob/main/PROVENANCE.md)
@@ -30,7 +30,7 @@ the same PC at the same moment (`tools/vs.py` — who was run and how is
 by item, from `tools/verify.py` at 810–963 lines per font. The **single model** reads with
 one 41M model. The **ensemble** runs three models and picks the answer they agree on —
 more accurate, seven times slower. The green row is our
-[VL model](https://huggingface.co/localdeel/ko-hand-ocr-vl) (0.8B), which reads whole photos
+[VL model](https://huggingface.co/localdeel/ko-hand-ocr-vl) (660M), which reads whole photos
 and loads straight into LM Studio and Ollama ([below](#use-it-with-lm-studio-ollama-and-vllm)).
 
 > **The test sheets were fixed on 2026-10-08.** The EastSeaDokdo and KirangHaerang sheets
@@ -49,14 +49,14 @@ and loads straight into LM Studio and Ollama ([below](#use-it-with-lm-studio-oll
 | **Model** | ViT-Small encoder (ImageNet, Apache-2.0) + 8-layer TrOCR decoder trained from scratch |
 | **Vocabulary** | 229 jamo tokens — not 11,172 syllables, so unseen characters are still writable |
 | **Parameters** | **41M** — one fifth of `ko-trocr` (213.7M) |
-| **Weights** | **156 MB** single model · 450 MB ensemble (3 models) *(downloaded separately — GitHub Releases · [Hugging Face](https://huggingface.co/localdeel/ko-hand-ocr))* |
+| **Weights** | **78 MB** single model · 225 MB ensemble (3 models) *(downloaded separately — [Hugging Face](https://huggingface.co/localdeel/ko-hand-ocr), stored as float16 for half the size · GitHub Releases has the float32 originals)* |
 | **Package** | 119 KB — the code only |
 | **Plugs into** | a server that speaks the OpenAI and Ollama APIs (`ko-hand-ocr-serve`) · an MCP tool for LM Studio (`ko-hand-ocr-mcp`) |
 | **Speed** | **0.18 s per line** · 1.04 s for a whole photo — **CPU only, no GPU** |
 | **Memory** | 1.07 GB single model · 1.51 GB ensemble |
 | **Accuracy** | **96.6%** mean on six handwriting fonts never seen in training (96.6% ensemble) · worst font 92.7% (93.1% ensemble) · 11 handwriting photos 94.9% (96.6% ensemble) · 12 of 17 items over 95% (ensemble 13) |
 | **Against others** | On the same sheets, ahead of the best of six public OCR models by **+18.6 points** on the six fonts (ko-trocr) and **+15.7 points** on the photos (ko-trocr) — single model |
-| **VL sibling** | [ko-hand-ocr-vl](https://huggingface.co/localdeel/ko-hand-ocr-vl), a 0.8B model that reads whole photos without line cutting — Qwen3.5-0.8B fine-tuned with the architecture unchanged, so it loads straight into LM Studio, Ollama and llama.cpp |
+| **VL sibling** | [ko-hand-ocr-vl](https://huggingface.co/localdeel/ko-hand-ocr-vl), a 660M model that reads whole photos without line cutting — Qwen3.5-0.8B fine-tuned with the architecture unchanged, so it loads straight into LM Studio, Ollama and llama.cpp |
 | **Training data** | Synthetic — drawn on the fly from OFL fonts. Nothing is stored on disk |
 | **License** | Apache-2.0, weights included — **no dataset terms inherited** |
 | **Python** | 3.10+ · PyTorch 2.5+ |
@@ -121,7 +121,7 @@ spelled out in the header of `tools/vs.py`, and every number below comes from th
 |---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | **96.52%** | **8.61%** | **67.6%** | **90.28%** |
 | ko-hand-ocr single model (41M) | 94.24% | 13.40% | 61.8% | 83.03% |
-| ko-hand-ocr-vl (853M) | 93.42% | 15.79% | 55.9% | 81.99% |
+| ko-hand-ocr-vl (660M) | 93.42% | 15.79% | 55.9% | 81.99% |
 | ddobokki/ko-trocr (214M) | 78.50% | 39.23% | 26.5% | 58.56% |
 | PaddleOCR PP-OCRv5 (3.3M) | 71.75% | 39.71% | 8.8% | 34.81% |
 | Qwen3-VL-2B (2.1B) | 69.86% | 38.28% | 8.8% | 46.86% |
@@ -132,13 +132,13 @@ spelled out in the header of `tools/vs.py`, and every number below comes from th
 #### Six unseen handwriting fonts · 640 lines, 4448 characters
 |  | Jamo similarity | Character error rate | Exact line match | Worst font |
 |---|---|---|---|---|
-| ko-hand-ocr ensemble (118M) | **97.08%** | 6.72% | 76.7% | 94.06% |
+| ko-hand-ocr ensemble (118M) | **97.08%** | 6.74% | 76.6% | 94.06% |
 | ko-hand-ocr single model (41M) | 96.80% | 7.17% | 74.5% | 93.14% |
-| ko-hand-ocr-vl (853M) | 97.01% | **5.82%** | **78.8%** | **94.96%** |
+| ko-hand-ocr-vl (660M) | 97.01% | **5.82%** | **78.8%** | **94.96%** |
 | ddobokki/ko-trocr (214M) | 78.24% | 42.31% | 29.5% | 65.93% |
 | PaddleOCR PP-OCRv5 (3.3M) | 72.69% | 40.54% | 29.4% | 52.43% |
 | Qwen3-VL-2B (2.1B) | 66.56% | 79.07% | 20.6% | 49.77% |
-| PaddleOCR-VL-1.6 (906M) | 63.71% | 61.13% | 19.2% | 43.58% |
+| PaddleOCR-VL-1.6 (906M) | 63.57% | 62.86% | 19.5% | 43.05% |
 | EasyOCR (4.0M) | 56.63% | 64.32% | 9.7% | 35.70% |
 | Tesseract 5 (6MB) | 17.73% | 97.35% | 0.8% | 6.90% |
 
@@ -147,28 +147,28 @@ spelled out in the header of `tools/vs.py`, and every number below comes from th
 |---|---|---|---|---|
 | ko-hand-ocr ensemble (118M) | **97.73%** | **3.21%** | **87.5%** | 89.83% |
 | ko-hand-ocr single model (41M) | 97.26% | 3.74% | 87.1% | 89.14% |
-| ko-hand-ocr-vl (853M) | 97.38% | 4.01% | 85.5% | **92.24%** |
+| ko-hand-ocr-vl (660M) | 97.38% | 4.01% | 85.5% | **92.24%** |
 | ddobokki/ko-trocr (214M) | 80.45% | 31.99% | 42.9% | 47.56% |
 | PaddleOCR PP-OCRv5 (3.3M) | 75.29% | 30.02% | 40.7% | 19.38% |
 | Qwen3-VL-2B (2.1B) | 67.97% | 63.25% | 26.8% | 23.91% |
-| PaddleOCR-VL-1.6 (906M) | 66.45% | 45.99% | 25.2% | 27.29% |
+| PaddleOCR-VL-1.6 (906M) | 66.54% | 46.51% | 25.6% | 27.33% |
 | EasyOCR (4.0M) | 64.58% | 48.73% | 19.9% | 19.08% |
 | Tesseract 5 (6MB) | 19.73% | 95.30% | 2.2% | 3.07% |
 
-![All 480 fonts](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-fonts.svg)
+![All 481 fonts](https://raw.githubusercontent.com/jysvai/ko-hand-ocr/main/bench-vs-fonts.svg)
 
-#### All 480 fonts · 12 lines each, 4316 lines, 22532 characters
-|  | held out (6)<br>6 | breadth (24)<br>24 | seen in training<br>450 | All<br>480 | fonts ≥ 95% | fonts < 80% |
+#### All 481 fonts · 12 lines each, 4325 lines, 22579 characters
+|  | held out (6)<br>6 | breadth (24)<br>24 | seen in training<br>451 | All<br>481 | fonts ≥ 95% | fonts < 80% |
 |---|---|---|---|---|---|---|
-| ko-hand-ocr ensemble (118M) | 99.15% | 99.00% | 98.24% | **98.29%** | 437 | 5 |
-| ko-hand-ocr single model (41M) | 98.49% | 98.58% | 98.09% | **98.11%** | 435 | 4 |
-| ko-hand-ocr-vl (853M) | 99.26% | 98.69% | 97.93% | **97.98%** | 429 | 7 |
-| ddobokki/ko-trocr (214M) | 85.29% | 83.29% | 82.50% | **82.58%** | 47 | 158 |
-| PaddleOCR PP-OCRv5 (3.3M) | 80.07% | 78.48% | 78.05% | **78.09%** | 86 | 198 |
-| Qwen3-VL-2B (2.1B) | 65.50% | 67.42% | 69.34% | **69.20%** | 52 | 286 |
+| ko-hand-ocr ensemble (118M) | 99.15% | 99.00% | 98.24% | **98.29%** | 438 | 5 |
+| ko-hand-ocr single model (41M) | 98.49% | 98.58% | 98.07% | **98.10%** | 435 | 4 |
+| ko-hand-ocr-vl (660M) | 99.26% | 98.69% | 97.92% | **97.98%** | 429 | 7 |
+| ddobokki/ko-trocr (214M) | 85.29% | 83.29% | 82.49% | **82.56%** | 47 | 159 |
+| PaddleOCR PP-OCRv5 (3.3M) | 80.07% | 78.48% | 78.05% | **78.10%** | 86 | 199 |
+| Qwen3-VL-2B (2.1B) | 65.50% | 67.55% | 69.38% | **69.24%** | 51 | 288 |
 | PaddleOCR-VL-1.6 (906M) | — | — | — | — | — | — |
-| EasyOCR (4.0M) | 67.73% | 68.17% | 67.18% | **67.24%** | 9 | 319 |
-| Tesseract 5 (6MB) | 21.56% | 19.28% | 20.55% | **20.50%** | 0 | 480 |
+| EasyOCR (4.0M) | 67.73% | 68.17% | 67.16% | **67.22%** | 9 | 320 |
+| Tesseract 5 (6MB) | 21.56% | 19.28% | 20.53% | **20.48%** | 0 | 481 |
 
 - **Even the best of the six rivals is far behind.** On the six unseen fonts the best
   rival is ko-trocr at 78.24%; our single model (41M) reads 96.80%. On the twenty-four it
@@ -177,17 +177,17 @@ spelled out in the header of `tools/vs.py`, and every number below comes from th
   ensemble reads 96.52% and the single model 94.24%, against 78.50% for the best rival
   (ko-trocr). Lines read exactly right: 67.6% against 26.5% (the best rival value).
 - **A large VLM does not read a handwritten line well just by being large.**
-  Qwen3-VL-2B (2.1B) reads 66.56% of the six fonts and PaddleOCR-VL-1.6 (906M) 63.71%.
+  Qwen3-VL-2B (2.1B) reads 66.56% of the six fonts and PaddleOCR-VL-1.6 (906M) 63.57%.
   They are twenty to fifty times our size but were not trained for this job. Reading
   whole documents is another matter (not measured).
 - **Tesseract barely reads handwriting** (17.73% on the fonts, 13.21% on the photos). It
   is a printed-text engine, as expected. It stays as a baseline.
-- **Run every single font in the folder — all 480 of them** — and we read
-  98.29% (ensemble) and 98.11% (single) against 82.58% for the best rival (ko-trocr).
-  **The 24 fonts we have never seen (99.00%) score higher than the 450 used in training
+- **Run every single font in the folder — all 481 of them** — and we read
+  98.29% (ensemble) and 98.10% (single) against 82.56% for the best rival (ko-trocr).
+  **The 24 fonts we have never seen (99.00%) score higher than the 451 used in training
   (98.24%)** — so this is not a number propped up by memorisation. PaddleOCR-VL takes about a second per line at its cheapest batch, so it was
-  not run on all 480 (blank in the table).
-- **Some fonts still collapse.** The worst of the 480 sits at 47.31% for our single
+  not run on all 481 (blank in the table).
+- **Some fonts still collapse.** The worst of the 481 sits at 47.31% for our single
   model and 63.21% for the ensemble. Six fonts would never have shown that. With
   only 12 lines per font a single font's score swings hard, so read the herd totals and
   the distribution, not one row.
@@ -195,10 +195,10 @@ spelled out in the header of `tools/vs.py`, and every number below comes from th
   83.03% — one line (`전자금융TF서약`) of a three-line photo. In the
   ensemble another model carries it and it stays at 90.28%.
 - **The whole-photo VL model was measured too** (green).
-  [ko-hand-ocr-vl](https://huggingface.co/localdeel/ko-hand-ocr-vl) (0.8B), even when fed
+  [ko-hand-ocr-vl](https://huggingface.co/localdeel/ko-hand-ocr-vl) (660M), even when fed
   one line at a time, reads 97.01% of the six fonts — on par with the single model
   (96.80%), with a higher worst font (94.96 vs 93.14%). It is a little lower on photo line
-  crops (93.42%), twenty times larger and seven times slower on CPU. What it is for is
+  crops (93.42%), sixteen times larger and six times slower on CPU. What it is for is
   **reading a whole photo without line cutting** and **loading straight into LM Studio and
   Ollama**. Its own card compares whole-photo reading against other VLMs (page-level 94.3%
   vs 72.7–79.9%).
@@ -212,13 +212,13 @@ spelled out in the header of `tools/vs.py`, and every number below comes from th
 #### CER by line content — lower is better
 |  | Latin mixed in<br>60 lines | form label<br>58 lines | digits mixed in<br>84 lines | Hangul word / name<br>295 lines | Hangul sentence<br>143 lines |
 |---|---|---|---|---|---|
-| ko-hand-ocr ensemble (118M) | 10.6% | 6.9% | 8.9% | 3.1% | 6.9% |
+| ko-hand-ocr ensemble (118M) | 10.6% | 7.1% | 8.9% | 3.1% | 6.9% |
 | ko-hand-ocr single model (41M) | 10.6% | 7.1% | 8.8% | 3.2% | 8.1% |
-| ko-hand-ocr-vl (853M) | 8.7% | 7.1% | 9.5% | 3.6% | 4.0% |
+| ko-hand-ocr-vl (660M) | 8.7% | 7.1% | 9.5% | 3.6% | 4.0% |
 | ddobokki/ko-trocr (214M) | 55.7% | 30.7% | 50.9% | 24.7% | 49.5% |
 | PaddleOCR PP-OCRv5 (3.3M) | 51.2% | 36.2% | 44.4% | 32.4% | 42.1% |
 | Qwen3-VL-2B (2.1B) | 58.3% | 92.9% | 51.9% | 90.8% | 89.7% |
-| PaddleOCR-VL-1.6 (906M) | 76.6% | 65.3% | 46.9% | 77.2% | 50.6% |
+| PaddleOCR-VL-1.6 (906M) | 77.8% | 68.5% | 47.1% | 77.8% | 54.0% |
 | EasyOCR (4.0M) | 67.5% | 56.1% | 65.3% | 64.1% | 64.9% |
 | Tesseract 5 (6MB) | 90.6% | 100.5% | 81.4% | 113.4% | 95.7% |
 
@@ -227,13 +227,13 @@ spelled out in the header of `tools/vs.py`, and every number below comes from th
 #### CER by line length — lower is better
 |  | 1-5 chars<br>279 lines | 6-10 chars<br>257 lines | 11-20 chars<br>98 lines | 21+ chars<br>6 lines |
 |---|---|---|---|---|
-| ko-hand-ocr ensemble (118M) | 4.1% | 6.4% | 7.4% | 17.6% |
+| ko-hand-ocr ensemble (118M) | 4.1% | 6.5% | 7.4% | 17.6% |
 | ko-hand-ocr single model (41M) | 4.0% | 7.6% | 7.2% | 17.6% |
-| ko-hand-ocr-vl (853M) | 5.4% | 5.2% | 6.7% | 7.9% |
+| ko-hand-ocr-vl (660M) | 5.4% | 5.2% | 6.7% | 7.9% |
 | ddobokki/ko-trocr (214M) | 29.4% | 36.0% | 52.3% | 94.9% |
 | PaddleOCR PP-OCRv5 (3.3M) | 41.3% | 33.3% | 41.3% | 96.3% |
 | Qwen3-VL-2B (2.1B) | 95.1% | 82.7% | 61.6% | 83.3% |
-| PaddleOCR-VL-1.6 (906M) | 95.0% | 50.4% | 52.1% | 57.9% |
+| PaddleOCR-VL-1.6 (906M) | 90.8% | 51.5% | 59.3% | 57.9% |
 | EasyOCR (4.0M) | 69.4% | 59.1% | 62.6% | 98.1% |
 | Tesseract 5 (6MB) | 113.5% | 97.4% | 84.8% | 102.3% |
 
@@ -254,34 +254,34 @@ spelled out in the header of `tools/vs.py`, and every number below comes from th
 #### Speed and size
 |  | Parameters | Download | lines/s (GPU) | lines/s (CPU) | 30-line page (GPU) | 30-line page (CPU) | Peak VRAM |
 |---|---|---|---|---|---|---|---|
-| ko-hand-ocr ensemble (118M) | 118M | 450MB | 8.2 | 1.05 | 4.04s | 29.1s | 1772MB |
-| ko-hand-ocr single model (41M) | 41M | 156MB | 42.0 | 6.76 | 1.12s | 4.8s | 1052MB |
-| ko-hand-ocr-vl (853M) | 853M | 1666MB | 12.4 | 0.95 | 2.83s | 31.9s | 2601MB |
-| ddobokki/ko-trocr (214M) | 214M | 408MB | 6.2 | 0.92 | 5.23s | 32.9s | 2744MB |
-| PaddleOCR PP-OCRv5 (3.3M) | 3.3M | 13MB | **522.3** | **64.01** | **0.46s** | **0.9s** | 111MB |
-| Qwen3-VL-2B (2.1B) | 2.1B | 4058MB | 10.5 | 0.60 | 3.27s | 50.4s | 4912MB |
-| PaddleOCR-VL-1.6 (906M) | 906M | 1828MB | 1.4 | 0.08 | 22.36s | 355.8s | 1831MB |
-| EasyOCR (4.0M) | 4.0M | 15MB | 66.5 | 42.47 | 0.85s | 1.1s | **70MB** |
-| Tesseract 5 (6MB) | — | 6MB | — | 35.79 | — | 1.2s | — |
+| ko-hand-ocr ensemble (118M) | 118M | 225MB | 8.3 | 1.08 | 4.00s | 28.1s | 1772MB |
+| ko-hand-ocr single model (41M) | 41M | 78MB | 42.0 | 7.31 | 1.12s | 4.5s | 1052MB |
+| ko-hand-ocr-vl (660M) | 660M | 1297MB | 10.8 | 1.15 | 3.18s | 26.5s | 2231MB |
+| ddobokki/ko-trocr (214M) | 214M | 408MB | 6.1 | 0.93 | 5.36s | 32.7s | 2744MB |
+| PaddleOCR PP-OCRv5 (3.3M) | 3.3M | 13MB | **397.4** | **61.15** | **0.48s** | **0.9s** | 111MB |
+| Qwen3-VL-2B (2.1B) | 2.1B | 4058MB | 7.3 | 0.55 | 4.52s | 54.9s | 4912MB |
+| PaddleOCR-VL-1.6 (906M) | 906M | 1828MB | 1.2 | 0.08 | 26.30s | 398.6s | 1937MB |
+| EasyOCR (4.0M) | 4.0M | 15MB | 81.3 | 43.37 | 0.77s | 1.1s | **70MB** |
+| Tesseract 5 (6MB) | — | 6MB | — | 36.16 | — | 1.2s | — |
 
-- **We are not the fastest.** On CPU, PaddleOCR PP-OCRv5 (64.0 lines/s), EasyOCR
-  (42.5 lines/s) and Tesseract 5 (35.8 lines/s) beat our single model (6.8 lines/s). They
+- **We are not the fastest.** On CPU, PaddleOCR PP-OCRv5 (61.2 lines/s), EasyOCR
+  (43.4 lines/s) and Tesseract 5 (36.2 lines/s) beat our single model (7.3 lines/s). They
   read PaddleOCR PP-OCRv5 72.7%, EasyOCR 56.6%, Tesseract 5 17.7% of the six fonts.
   **Read accuracy and speed together** — on a form a wrong answer is worse than a blank.
 - **Against a model of similar purpose**, ko-trocr (214M), we are
-  7.3× faster on CPU (a thirty-line page in 4.8s against
-  32.9s). Whether it fits on an office PC with no GPU is decided here.
+  7.9× faster on CPU (a thirty-line page in 4.5s against
+  32.7s). Whether it fits on an office PC with no GPU is decided here.
 - **CPU figures ride hard on this laptop's state at the time.** On 2026-10-07, with the same
   cells and method, the single model ran at 4.6, 3.1 and 2.6 lines/s and its lead over
-  ko-trocr moved through 6.3×, 5.9× and 4.4×; this run (2026-10-09) gave 6.8 lines/s and
-  7.3×. That is why the 0.18 s per line under "Speed and footprint" below (`bench.py`,
+  ko-trocr moved through 6.3×, 5.9× and 4.4×; the 2026-10-09 run gave 6.8 lines/s and
+  7.3×, the morning run on 2026-10-13 5.1 lines/s and 7.2×, and this run 7.3 lines/s and 7.9×. That is why the 0.18 s per line under "Speed and footprint" below (`bench.py`,
   measured separately) does not match. Read **the order within one run** rather than
-  lines/s itself, and the lead as 4–7× — being faster than ko-trocr held all four times.
-- **The large VLMs need a GPU.** On CPU Qwen3-VL-2B does 0.60 lines/s and
-  PaddleOCR-VL-1.6 0.08, so a thirty-line page takes 50s and 356s. Even on GPU they run
-  at 10.5 and 1.4 lines/s, slower than our single model (42.0). On CPU they take 2s and
-  12s per line, so only the one-line batch was timed, once. Our VL model (0.8B) is in the
-  same position — 0.95 lines/s on CPU, 12.4 on GPU.
+  lines/s itself, and the lead as 4–8× — being faster than ko-trocr held all six times.
+- **The large VLMs need a GPU.** On CPU Qwen3-VL-2B does 0.55 lines/s and
+  PaddleOCR-VL-1.6 0.08, so a thirty-line page takes 55s and 399s. Even on GPU they run
+  at 7.3 and 1.2 lines/s, slower than our single model (42.0). On CPU they take 2s and
+  13s per line, so only the one-line batch was timed, once. Our VL model (660M) is in the
+  same position — 1.15 lines/s on CPU, 10.8 on GPU.
 - **Batch size is measured, not guessed.** Each model reads at its own cheapest batch. A
   batch that does not fit this card is not timed at all — ko-trocr's 32-line batch is one,
   and the tool's own reason reads: "앞 묶음 4642MB(가중치 848MB)에서 활성값을 두 배 하면 8437MB 로 카드 8151MB 를 넘는다". **A number that was not
@@ -295,12 +295,12 @@ spelled out in the header of `tools/vs.py`, and every number below comes from th
 | Line cutting | Our cutter was lent to every rival (they all receive one line image) | rivals |
 | Length cap | ko-trocr ships `max_length: 16` (character tokenizer). Like the two VLMs it was given 64 tokens. Every line where Qwen3-VL hit the cap was a runaway repeat (`11 11 11 …`); no long answer was cut short (re-reading the 670 font lines on 2026-10-07, all 24 that hit the cap were like that) | ko-trocr |
 | Prompt | Qwen3-VL has no fixed OCR prompt; three were tried and the one it reads best with was used | Qwen3-VL |
-| Precision | The three VLMs (ours included) run in their released precision (bfloat16), the rest in float32. ko-trocr's float16 speed was also timed | — |
+| Precision | The three VLMs (ours included) run in their released precision (bfloat16), the rest in float32 (our 41M is stored as float16 but loads as float32). ko-trocr's float16 speed was also timed | — |
 | VLM on CPU | Seconds to tens of seconds per line, so only the one-line batch was timed, once. An 8-line batch might be faster | ko-hand-ocr |
-| All 480 fonts | PaddleOCR-VL takes about a second per line, so it was not run on all 480 (blank) | — |
+| All 481 fonts | PaddleOCR-VL takes about a second per line, so it was not run on all 481 (blank) | — |
 | Design intent | The three line recognisers target mainly printed and scene text, the VLMs whole documents, ko-trocr AI Hub's handwriting and administrative documents. **Only this model targets a single handwritten line** | ko-hand-ocr |
 | Number of models | Our ensemble is three models (one 36M + two 41M, 118M). For a size-matched view read the "single model" row | ko-hand-ocr |
-| Training fonts | 450 of the 480 fonts are ones **we have seen**. That is why the herds are reported apart | ko-hand-ocr |
+| Training fonts | 451 of the 481 fonts are ones **we have seen**. That is why the herds are reported apart | ko-hand-ocr |
 | Renderer | We trained on synthetic images from **the same renderer** as the font sheets (`synth.render`, different fonts). The look of the font sheets is familiar to us — which is why the photos are the cleanest comparison | ko-hand-ocr |
 
 **None of this says the rivals are bad models.** Models built for printed documents,
@@ -309,11 +309,14 @@ better. The other direction — whole printed documents, tables, scene text — 
 measured, and if it were, this model would probably lose.
 
 Measured on: NVIDIA GeForce RTX 5060 Laptop GPU · AMD Ryzen 7 260 · torch 2.14.0+cu130 ·
-2026-10-09 07:25 — all ten models re-run in one go after the test sheets were fixed on
-2026-10-08 (the base Qwen3.5-0.8B, compared only on the VL card, is left out of this table).
-The photo results match the previous run (2026-10-07) to the character — nothing about the
-photos changed. Speed rides on the machine's state, so **compare only figures taken at the
-same moment**.
+2026-10-13 14:59 — the releases slimmed on 2026-10-12 (the 41M float16 weights from Hugging Face and the
+vocabulary-cut VL, 853M -> 660M) re-run in one go with all ten models (the base Qwen3.5-0.8B, compared only on
+the VL card, is left out of this table). Against the previous run (2026-10-09), the photo, six-font and
+twenty-four-font numbers are unchanged for our single model, the VL model and five rivals; PaddleOCR-VL
+wobbled a little on the fonts (six fonts 63.71 -> 63.57%), and two font lines changed for the ensemble because
+of float16 (see "Install"). "All fonts" is 481 now — one training font was added in between. A run taken
+the same morning came out 30–45% slower for every model (the machine's state), so it was re-run. Speed
+rides on the machine's state, so **compare only figures taken at the same moment**.
 
 ## Install
 
@@ -321,9 +324,20 @@ same moment**.
 pip install ko-hand-ocr
 ```
 
-Weights ship separately — they are too large for the repository, so they are attached
-to [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.1).
-**The same files are on [Hugging Face](https://huggingface.co/localdeel/ko-hand-ocr)** — the server and the MCP tool below fetch them from there.
+Weights ship separately — they are too large for the repository, so they live on
+[Hugging Face](https://huggingface.co/localdeel/ko-hand-ocr) and on
+[Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.1). Both hold **the same weights**; Hugging Face
+stores them as float16, so the download is half the size (2026-10-12: single model 156 -> 78MB, ensemble 450 -> 225MB).
+They load as float32, as the config says. On 743 lines of test fonts, held-out fonts and photo line crops the single
+model gave **the same answers and trust values**; the ensemble changed two of the 640 font lines in the comparison
+above — a wrong date became a different wrong date (`2025.12.06` read as `2027…` instead of `…12.26`), and a
+correct `성명: 하만서` lost its colon. So the six-font jamo score stays at 97.08% and lines read exactly right go
+76.7 -> 76.6%. Photos and the twenty-four fonts score the same. The server and the MCP tool below fetch from Hugging Face.
+
+```bash
+hf download localdeel/ko-hand-ocr --exclude "ensemble/*" --exclude "assets/*" --local-dir ko-hand-ocr-single   # single model, 78MB
+hf download localdeel/ko-hand-ocr --include "ensemble/*" --local-dir ko-hand-ocr-ens   # ensemble, 225MB -> ko-hand-ocr-ens/ensemble
+```
 
 > Weights are versioned separately from the package. The current weights are on the
 > **v0.4.1** release (the package on PyPI is 0.5.0 — 0.5.0 adds the server and the MCP
@@ -331,6 +345,9 @@ to [Releases](https://github.com/jysvai/ko-hand-ocr/releases/tag/v0.4.1).
 > previous single model (v83) is on v0.4.0, and **the 6-layer v62 on
 > v0.3.0** is faster (about 40% when measured the same day) and has a higher photo
 > floor (worst photo 90.3%); the 4-layer weights on v0.2.0 are faster still.
+
+The zips on GitHub Releases are the float32 originals (the weights inside have the same sha256 as the files at
+the Hugging Face tag `v0.4.1`).
 
 | Download | Size | What it is |
 |---|---|---|
@@ -400,7 +417,7 @@ ollama run hf.co/localdeel/ko-hand-ocr-vl-GGUF:Q8_0      # Ollama
 lms get https://huggingface.co/localdeel/ko-hand-ocr-vl-GGUF@q8_0   # LM Studio
 ```
 
-It is twenty times larger (1.6 GB) and seven times slower on CPU. For reading many pre-cut
+It is sixteen times larger (1.3 GB) and six times slower on CPU. For reading many pre-cut
 lines quickly, this 41M model is the better fit.
 
 **This 41M model cannot be loaded into them as is.** All three are engines for LLMs that continue text:
@@ -416,8 +433,8 @@ pip install "ko-hand-ocr[mcp]"      # drop [mcp] if you only need the server
 ### Server — the OpenAI and Ollama APIs
 
 ```bash
-ko-hand-ocr-serve                   # fetches the single model (156MB) from Hugging Face, serves 127.0.0.1:8765
-ko-hand-ocr-serve --ensemble        # the ensemble (450MB)
+ko-hand-ocr-serve                   # fetches the single model (78MB) from Hugging Face, serves 127.0.0.1:8765
+ko-hand-ocr-serve --ensemble        # the ensemble (225MB)
 ```
 
 | Caller | How |
@@ -456,7 +473,7 @@ virtual environment). Then ask a chat model that can call tools to "read C:\scan
 a table": it calls `read_handwriting` for the text and does the tidying itself. **This model
 recognises the characters; the chat model organises them.** An image pasted into the chat window
 goes to the chat model, not the tool, so pass a file path. The first call downloads the model
-(156MB, 20–30 s here); after that a photo takes about a second.
+(78MB); after that a photo takes about a second.
 
 **What was checked and what was not.** The `ollama` CLI 0.34 (`list`, `show`, `run`), the official
 `openai` client (whole and streamed replies) and an MCP SDK 2.3 client were all run against it. A full

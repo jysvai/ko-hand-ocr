@@ -210,6 +210,31 @@ WARP_CELL = 0.30             # 매듭 간격(글자 높이 대비). 자모 하�
 WARP_AMP = (0.030, 0.080)    # 매듭이 움직이는 폭의 표준편차(글자 높이 대비).
                              # 0.08 에서도 사람 눈엔 다 읽히고, 0.03 은 거의 안 보인다
 
+# 손버릇(`render` 의 `hand`, 2026-10-10). 기본은 끔이고 학습 자료에만 켠다.
+#
+# 왜. 같은 단일 모델로 학습 글꼴 450벌과 처음 보는 글꼴 30벌을 같은 자로 재니 처음 보는 쪽이
+# 오히려 높았다(평균 97.2 대 98.0, 24줄씩). 글꼴을 외운 것이 아니다. 벌어진 자리는 **글꼴과 사람
+# 손 사이**다 — 글꼴 98% 인데 사진은 94%, 글자 틀림(CER)은 3% 대 13% 다. 글꼴은 같은 글자를 늘
+# 똑같이 그리고 사람은 쓸 때마다 크기·비율·자모 자리가 조금씩 다르다. `warp` 는 매끄러운 그물로
+# 획을 휘어서 이웃한 자모가 같이 움직인다. 여기서는 **떨어진 획 덩이(대개 자모 하나)를 따로**
+# 옮기고, 글자마다 크기와 비율을 따로 흔든다.
+HAND_SCALE = 0.07            # 글자마다 크기(로그 표준편차). 2.5 배에서 자른다
+HAND_ASPECT = 0.06           # 글자마다 가로세로 비(로그 표준편차)
+HAND_PART = 0.030            # 떨어진 덩이를 옮기는 폭(글자 크기 대비 표준편차). 2 배에서 자른다.
+                             # 0.06 을 넘기면 ㅗ/ㅜ 의 짧은 획이 몸통에서 떨어져 보인다
+HAND_GRID = 24               # 덩이를 가르는 거친 격자(긴 변 칸 수). 좁은 틈은 한 덩이로 친다
+
+# 획 지키기(`render` 의 `guard`, 2026-10-10). 굵기 맞추기(`_weight`)가 깎다가 **획을 통째로
+# 지우는** 글꼴이 있었다. 글꼴의 원래 굵기(`mine`)를 실제보다 굵게 잰 글꼴이다 — 신과장은 깎은 뒤
+# 잉크가 2% 만 남아 점만 찍혀 있었고(사람도 못 읽는다), 귀여운글꼴·상해찬미체는 가로획이 다 지워져
+# 세로 막대만 남았다. 학습 글꼴 450벌 가운데 19벌이 줄의 가운데값으로 잉크의 15% 넘게를 획째 잃고,
+# 59벌은 30% 넘게 잃는 줄이 있다(그림을 깎기 전후로 견줘 쟀다). 그런 줄에 정답을 붙여 먹이면
+# **안 보이는 글자를 지어내라**고 가르친다. 게다가 '못 읽는 글꼴 몰기'(`hard`)가 바로 이 글꼴들로
+# 학습을 몰아주고 있었다. 시험 6벌은 하이멜로디(가운데 7%)만 조금 걸린다.
+#
+# 기본은 끔이다 — 켜면 시험지가 바뀐다. 학습(`data.Lines`, `vl_data`)이 켠다.
+GUARD_LOSS = 0.04            # 획째 사라지는 잉크가 이 몫을 넘으면 덜 깎는다
+
 # 뭉갤 토막에 쓸 글자. 한글이 대부분이고 숫자·영문도 섞는다 — 사람은
 # 아무거나 잘못 쓰고 지운다. 글꼴이 다 그릴 수 있는 것만 골라 둔다.
 _STRIKE_POOL = ("가나다라마바사아자차카타파하고노도로모보소오조구누두루무부수우주"
@@ -779,8 +804,65 @@ def _loosen(drawn: Image.Image, rng: random.Random) -> Image.Image:
     return out
 
 
+def _parts(canvas: Image.Image, size: int, rng: random.Random) -> Image.Image:
+    """떨어진 획 덩이를 저마다 조금씩 옮긴다(`HAND_PART`). 판 크기는 그대로다.
+
+    덩이는 거친 격자(`HAND_GRID`)에서 8방향으로 이어진 칸끼리 묶는다. scipy 없이 칸 수백 개만
+    훑으면 된다. 틈이 격자 한 칸보다 좁으면 한 덩이로 쳐서 안 가른다 — 덜 가르는 쪽이 안전하다.
+    """
+    ink = np.asarray(canvas)
+    height, width = ink.shape
+    step = max(2, math.ceil(max(height, width) / HAND_GRID))
+    rows, cols = math.ceil(height / step), math.ceil(width / step)
+    padded = np.zeros((rows * step, cols * step), dtype=ink.dtype)
+    padded[:height, :width] = ink
+    full = padded.reshape(rows, step, cols, step).max(axis=(1, 3)) > 64
+    label = np.zeros((rows, cols), dtype=np.int32)
+    count = 0
+    for r0 in range(rows):
+        for c0 in range(cols):
+            if not full[r0, c0] or label[r0, c0]:
+                continue
+            count += 1
+            label[r0, c0] = count
+            stack = [(r0, c0)]
+            while stack:
+                r, c = stack.pop()
+                for dr in (-1, 0, 1):
+                    for dc in (-1, 0, 1):
+                        rr, cc = r + dr, c + dc
+                        if 0 <= rr < rows and 0 <= cc < cols and full[rr, cc] and not label[rr, cc]:
+                            label[rr, cc] = count
+                            stack.append((rr, cc))
+    if count < 2:
+        return canvas
+    where = np.kron(label, np.ones((step, step), dtype=np.int32))[:height, :width]
+    out = np.where(where == 0, ink, 0).astype(np.uint8)       # 덩이에 안 든 옅은 테두리는 그대로
+    cap = 2 * HAND_PART * size
+    for part in range(1, count + 1):
+        dx = int(round(max(-cap, min(cap, rng.gauss(0, HAND_PART * size)))))
+        dy = int(round(max(-cap, min(cap, rng.gauss(0, HAND_PART * size)))))
+        piece = np.where(where == part, ink, 0)
+        moved = np.zeros_like(piece)
+        ys, yd = (slice(0, height - dy), slice(dy, height)) if dy >= 0 else (slice(-dy, height), slice(0, height + dy))
+        xs, xd = (slice(0, width - dx), slice(dx, width)) if dx >= 0 else (slice(-dx, width), slice(0, width + dx))
+        moved[yd, xd] = piece[ys, xs]
+        np.maximum(out, moved, out=out)
+    return Image.fromarray(out)
+
+
+def _quirk(canvas: Image.Image, size: int, rng: random.Random) -> Image.Image:
+    """손버릇 한 글자 몫: 덩이 옮기기 + 글자마다 크기·비율. 가운데를 축으로 바꾼다."""
+    canvas = _parts(canvas, size, rng)
+    scale = math.exp(max(-2.5, min(2.5, rng.gauss(0, 1))) * HAND_SCALE)
+    aspect = math.exp(max(-2.5, min(2.5, rng.gauss(0, 1))) * HAND_ASPECT)
+    wide = max(4, round(canvas.width * scale * aspect))
+    tall = max(4, round(canvas.height * scale / aspect))
+    return canvas.resize((wide, tall), Image.Resampling.BILINEAR)
+
+
 def _glyph(char: str, font: ImageFont.FreeTypeFont, rng: random.Random,
-           loose: bool = False):
+           loose: bool = False, quirk: bool = False):
     """글자 한 자를 제 크기에 맞게 그린다. 밝기값이 곧 잉크가 묻은 정도다."""
     if char in HANDMARKS and rng.random() < HANDMARK_SHARE:
         return _handmark(char, font, rng)
@@ -796,14 +878,20 @@ def _glyph(char: str, font: ImageFont.FreeTypeFont, rng: random.Random,
         canvas = canvas.rotate(tilt, resample=Image.Resampling.BILINEAR, expand=True)
     if loose and rng.random() < LOOSE_SHARE:
         canvas = _loosen(canvas, rng)
+    if quirk:
+        canvas = _quirk(canvas, int(font.size), rng)
     return canvas
 
 
-def _compose(text: str, font: ImageFont.FreeTypeFont, rng: random.Random):
+def _compose(text: str, font: ImageFont.FreeTypeFont, rng: random.Random,
+             hand: bool = False):
     """글자들을 밑선과 자간을 흔들어 가며 이어 붙인다.
 
     판과 함께 **글자마다 가로 자리**(왼끝, 오른끝)를 돌려준다. 지운 자국을
     그리려면 어느 칸을 뭉갤지 알아야 하는데, 붙여 그린 뒤에는 다시 못 찾는다.
+
+    `hand` 면 글자마다 손버릇(`_quirk`)을 넣는다. 학습 자료에만 쓰고, 안 주면 난수를 예전과
+    똑같이 뽑는다.
     """
     size = int(font.size)
     # 이 줄이 어떤 손으로 쓰였는지 **먼저** 정한다. 자간을 크게 벌려 쓰는 손은
@@ -815,7 +903,7 @@ def _compose(text: str, font: ImageFont.FreeTypeFont, rng: random.Random):
         if char == " ":
             glyphs.append(None)
             continue
-        drawn = _glyph(char, font, rng, loose=loose)
+        drawn = _glyph(char, font, rng, loose=loose, quirk=hand)
         glyphs.append(None if drawn is None else (drawn, font.getbbox(char)))
 
     tight = max(size // 8, 2)
@@ -1094,9 +1182,35 @@ def _stretch(ink: Image.Image, factor: float) -> Image.Image:
     return ink.resize((wide, ink.height), Image.Resampling.BICUBIC)
 
 
+def _kept(ink: Image.Image, step: int) -> tuple[int, Image.Image | None]:
+    """획째 사라지는 잉크가 `GUARD_LOSS` 를 안 넘는 가장 큰 깎기 횟수와 그때 깎은 판.
+
+    깎은 판을 깎은 만큼보다 한 번 더 불려서 원래 잉크를 덮나 본다. 굵은 획은 얇아져도
+    도로 덮이고, **통째로 사라진 획**만 안 덮인다. 대개 첫 횟수에서 통과하므로 값은
+    불리기 몇 번이다.
+    """
+    solid = np.asarray(ink) > 128
+    total = int(solid.sum())
+    if not total:
+        return step, None
+    while step > 0:
+        cut = ink
+        for _ in range(step):
+            cut = cut.filter(ImageFilter.MinFilter(3))
+        grown = cut
+        for _ in range(step + 1):
+            grown = grown.filter(ImageFilter.MaxFilter(3))
+        if 1.0 - (solid & (np.asarray(grown) > 60)).sum() / total <= GUARD_LOSS:
+            return step, cut
+        step -= 1
+    return 0, None
+
+
 def _weight(ink: Image.Image, size: int, mine: float, widen: float,
-            rng: random.Random, thin: bool = False) -> Image.Image:
+            rng: random.Random, thin: bool = False, guard: bool = False) -> Image.Image:
     """획 굵기를 줄마다 다르게 한다.
+
+    `guard` 면 획이 통째로 사라지기 전에 멈춘다(`_kept`). 난수는 더 안 뽑는다.
 
     사람은 얇게도 굵게도 쓴다. 그런데 예전에는 3x3 창을 45% 확률로만 걸어서,
     큰 글꼴에서는 그 한 픽셀이 티도 안 나 굵기가 사실상 한 값이었다.
@@ -1161,8 +1275,16 @@ def _weight(ink: Image.Image, size: int, mine: float, widen: float,
     # 3x3 을 n 번 거는 것은 (2n+1)x(2n+1) 을 한 번 거는 것과 결과가 같고,
     # 값이 큰 창은 픽셀마다 창 넓이만큼 훑어서 훨씬 비싸다(실측 17 -> 32ms).
     shrink = want < now
-    for _ in range(step):
-        ink = ink.filter(ImageFilter.MinFilter(3) if shrink else ImageFilter.MaxFilter(3))
+    cut = None
+    if shrink and guard:
+        step, cut = _kept(ink, step)
+        if step < 1:
+            return ink
+    if cut is not None:
+        ink = cut
+    else:
+        for _ in range(step):
+            ink = ink.filter(ImageFilter.MinFilter(3) if shrink else ImageFilter.MaxFilter(3))
     if not shrink:
         return ink
     # 깎으면 획의 진한 속까지 같이 깎여서 잉크가 흐려진다. 실제 가는 펜은
@@ -1207,8 +1329,14 @@ def _bleed(sheet: Image.Image, ink: Image.Image, rng: random.Random) -> Image.Im
 
 def render(text: str, fonts: Fonts, rng: random.Random,
            strike: float | None = None, warp: float | None = None,
-           tangle: float = 0.0):
+           tangle: float = 0.0, hand: float = 0.0, guard: bool = False):
     """글월 한 줄 -> 흑백 이미지. 못 그리면 None.
+
+    `hand` 는 손버릇(`_quirk`: 글자마다 크기·비율, 떨어진 획 덩이 옮기기)을 넣을 줄 비율이다
+    (2026-10-10). 학습만 바꾸고, 0 이면 난수를 안 뽑는다(검사가 있다).
+
+    `guard` 면 굵기 맞추기가 획을 통째로 지우기 전에 멈춘다(`GUARD_LOSS`). 난수는 그대로다.
+    학습은 켜고 시험지는 끈다 — 켜면 몇 벌(하이멜로디 등)의 시험 그림이 바뀐다.
 
     `strike` 는 지운 자국을 넣을 비율이다. 안 주면 `STRIKE`. **학습만 바꾼다** —
     시험지(`tools/holdout.py`)는 이 값을 안 넘기므로, 학습 쪽 비율을 올려도
@@ -1227,6 +1355,7 @@ def render(text: str, fonts: Fonts, rng: random.Random,
     # **글월을 같이 넘긴다.** 안 넘기면 그 글자가 없는 글꼴이 걸려 두부를 그린다.
     font, mine = fonts.pick(rng, text)
     size = int(font.size)
+    quirky = bool(hand) and rng.random() < hand
     # 이름표에 없는 토막을 더 그려 넣고 그 자리만 뭉갠다. 돌려주는 이미지에는
     # 지운 자국이 있지만 **이름표는 `text` 그대로**다. 그래야 '뭉갠 덩이는
     # 글자가 아니다' 를 배운다. `render` 를 부르는 쪽은 아무것도 안 바꿔도 된다.
@@ -1275,7 +1404,7 @@ def render(text: str, fonts: Fonts, rng: random.Random,
         else:
             drawn_text = text[:at] + junk + " " + text[at:]
             cross = (at, at + len(junk))
-    made = _compose(drawn_text, font, rng)
+    made = _compose(drawn_text, font, rng, hand=quirky)
     if made is None:
         return None
     ink, spans, wide = made
@@ -1330,7 +1459,7 @@ def render(text: str, fonts: Fonts, rng: random.Random,
     want = want * (1 + 2 * up) - 2 * side
     natural = (box[2] - box[0]) / max(box[3] - box[1], 1)
     widen = min(max(want / natural, WIDEN[0]), WIDEN[1])
-    ink = _weight(_stretch(ink, widen), size, mine, widen, rng, thin=wide)
+    ink = _weight(_stretch(ink, widen), size, mine, widen, rng, thin=wide, guard=guard)
     ink = _wobble(_shear(ink, rng), rng)
     share = WARP if warp is None else warp
     if share and rng.random() < share:

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 973" width="820" height="973" role="img" aria-label="Jamo similarity on three test sets. 실제 손글씨 사진 11장: ko-hand-ocr 앙상블 96.5 percent, ko-hand-ocr 단일 모델 94.2 percent, ko-hand-ocr-vl 93.4 percent, ddobokki/ko-trocr 78.5 percent, PaddleOCR PP-OCRv5 71.8 percent, Qwen3-VL-2B 69.9 percent, PaddleOCR-VL-1.6 61.7 percent, EasyOCR 66.9 percent, Tesseract 5 13.2 percent. 안 배운 글씨체 6벌: ko-hand-ocr 앙상블 97.1 percent, ko-hand-ocr 단일 모델 96.8 percent, ko-hand-ocr-vl 97.0 percent, ddobokki/ko-trocr 78.2 percent, PaddleOCR PP-OCRv5 72.7 percent, Qwen3-VL-2B 66.6 percent, PaddleOCR-VL-1.6 63.7 percent, EasyOCR 56.6 percent, Tesseract 5 17.7 percent. 두루 읽나 — 24벌: ko-hand-ocr 앙상블 97.7 percent, ko-hand-ocr 단일 모델 97.3 percent, ko-hand-ocr-vl 97.4 percent, ddobokki/ko-trocr 80.4 percent, PaddleOCR PP-OCRv5 75.3 percent, Qwen3-VL-2B 68.0 percent, PaddleOCR-VL-1.6 66.5 percent, EasyOCR 64.6 percent, Tesseract 5 19.7 percent.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 973" width="820" height="973" role="img" aria-label="Jamo similarity on three test sets. 실제 손글씨 사진 11장: ko-hand-ocr 앙상블 96.5 percent, ko-hand-ocr 단일 모델 94.2 percent, ko-hand-ocr-vl 93.4 percent, ddobokki/ko-trocr 78.5 percent, PaddleOCR PP-OCRv5 71.8 percent, Qwen3-VL-2B 69.9 percent, PaddleOCR-VL-1.6 61.7 percent, EasyOCR 66.9 percent, Tesseract 5 13.2 percent. 안 배운 글씨체 6벌: ko-hand-ocr 앙상블 97.1 percent, ko-hand-ocr 단일 모델 96.8 percent, ko-hand-ocr-vl 97.0 percent, ddobokki/ko-trocr 78.2 percent, PaddleOCR PP-OCRv5 72.7 percent, Qwen3-VL-2B 66.6 percent, PaddleOCR-VL-1.6 63.6 percent, EasyOCR 56.6 percent, Tesseract 5 17.7 percent. 두루 읽나 — 24벌: ko-hand-ocr 앙상블 97.7 percent, ko-hand-ocr 단일 모델 97.3 percent, ko-hand-ocr-vl 97.4 percent, ddobokki/ko-trocr 80.4 percent, PaddleOCR PP-OCRv5 75.3 percent, Qwen3-VL-2B 68.0 percent, PaddleOCR-VL-1.6 66.5 percent, EasyOCR 64.6 percent, Tesseract 5 19.7 percent.">
 <style>
   .surface{fill:#fcfcfb}
   .ink{fill:#0b0b0b}
@@ -46,7 +46,7 @@
 <text class="ink2" x="216" y="136.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
 <path class="s0" d="M228,123.0 H697.6 Q701.1,123.0 701.1,126.5 V134.5 Q701.1,138.0 697.6,138.0 H228 Z"/>
 <text class="ink2" x="707.1" y="136.5" font-size="12.5">94.2%</text>
-<text class="ink2" x="216" y="159.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (853M)</text>
+<text class="ink2" x="216" y="159.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (660M)</text>
 <path class="s3" d="M228,146.0 H693.5 Q697.0,146.0 697.0,149.5 V157.5 Q697.0,161.0 693.5,161.0 H228 Z"/>
 <text class="ink2" x="703.0" y="159.5" font-size="12.5">93.4%</text>
 <text class="ink2" x="216" y="182.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
@@ -79,12 +79,12 @@
 <line class="grid" x1="730.0" y1="357.0" x2="730.0" y2="568.0"/>
 <text class="ink3" x="730.0" y="582.0" font-size="12" text-anchor="middle">100%</text>
 <text class="ink2" x="216" y="374.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 앙상블 (118M)</text>
-<path class="s1" d="M228,361.0 H711.9 Q715.4,361.0 715.4,364.5 V372.5 Q715.4,376.0 711.9,376.0 H228 Z"/>
-<text class="ink2" x="721.4" y="374.5" font-size="12.5">97.1%</text>
+<path class="s1" d="M228,361.0 H711.8 Q715.3,361.0 715.3,364.5 V372.5 Q715.3,376.0 711.8,376.0 H228 Z"/>
+<text class="ink2" x="721.3" y="374.5" font-size="12.5">97.1%</text>
 <text class="ink2" x="216" y="397.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
 <path class="s0" d="M228,384.0 H710.4 Q713.9,384.0 713.9,387.5 V395.5 Q713.9,399.0 710.4,399.0 H228 Z"/>
 <text class="ink2" x="719.9" y="397.5" font-size="12.5">96.8%</text>
-<text class="ink2" x="216" y="420.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (853M)</text>
+<text class="ink2" x="216" y="420.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (660M)</text>
 <path class="s3" d="M228,407.0 H711.5 Q715.0,407.0 715.0,410.5 V418.5 Q715.0,422.0 711.5,422.0 H228 Z"/>
 <text class="ink2" x="721.0" y="420.5" font-size="12.5">97.0%</text>
 <text class="ink2" x="216" y="443.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
@@ -97,8 +97,8 @@
 <path class="s2" d="M228,476.0 H558.6 Q562.1,476.0 562.1,479.5 V487.5 Q562.1,491.0 558.6,491.0 H228 Z"/>
 <text class="ink2" x="568.1" y="489.5" font-size="12.5">66.6%</text>
 <text class="ink2" x="216" y="512.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
-<path class="s2" d="M228,499.0 H544.3 Q547.8,499.0 547.8,502.5 V510.5 Q547.8,514.0 544.3,514.0 H228 Z"/>
-<text class="ink2" x="553.8" y="512.5" font-size="12.5">63.7%</text>
+<path class="s2" d="M228,499.0 H543.6 Q547.1,499.0 547.1,502.5 V510.5 Q547.1,514.0 543.6,514.0 H228 Z"/>
+<text class="ink2" x="553.1" y="512.5" font-size="12.5">63.6%</text>
 <text class="ink2" x="216" y="535.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
 <path class="s2" d="M228,522.0 H508.8 Q512.3,522.0 512.3,525.5 V533.5 Q512.3,537.0 508.8,537.0 H228 Z"/>
 <text class="ink2" x="518.3" y="535.5" font-size="12.5">56.6%</text>
@@ -122,7 +122,7 @@
 <text class="ink2" x="216" y="658.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr 단일 모델 (41M)</text>
 <path class="s0" d="M228,645.0 H712.7 Q716.2,645.0 716.2,648.5 V656.5 Q716.2,660.0 712.7,660.0 H228 Z"/>
 <text class="ink2" x="722.2" y="658.5" font-size="12.5">97.3%</text>
-<text class="ink2" x="216" y="681.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (853M)</text>
+<text class="ink2" x="216" y="681.0" font-size="13.5" font-weight="600" text-anchor="end">ko-hand-ocr-vl (660M)</text>
 <path class="s3" d="M228,668.0 H713.4 Q716.9,668.0 716.9,671.5 V679.5 Q716.9,683.0 713.4,683.0 H228 Z"/>
 <text class="ink2" x="722.9" y="681.5" font-size="12.5">97.4%</text>
 <text class="ink2" x="216" y="704.0" font-size="13.5" font-weight="400" text-anchor="end">ddobokki/ko-trocr (214M)</text>
@@ -135,8 +135,8 @@
 <path class="s2" d="M228,737.0 H565.7 Q569.2,737.0 569.2,740.5 V748.5 Q569.2,752.0 565.7,752.0 H228 Z"/>
 <text class="ink2" x="575.2" y="750.5" font-size="12.5">68.0%</text>
 <text class="ink2" x="216" y="773.0" font-size="13.5" font-weight="400" text-anchor="end">PaddleOCR-VL-1.6 (906M)</text>
-<path class="s2" d="M228,760.0 H558.1 Q561.6,760.0 561.6,763.5 V771.5 Q561.6,775.0 558.1,775.0 H228 Z"/>
-<text class="ink2" x="567.6" y="773.5" font-size="12.5">66.5%</text>
+<path class="s2" d="M228,760.0 H558.6 Q562.1,760.0 562.1,763.5 V771.5 Q562.1,775.0 558.6,775.0 H228 Z"/>
+<text class="ink2" x="568.1" y="773.5" font-size="12.5">66.5%</text>
 <text class="ink2" x="216" y="796.0" font-size="13.5" font-weight="400" text-anchor="end">EasyOCR (4.0M)</text>
 <path class="s2" d="M228,783.0 H548.7 Q552.2,783.0 552.2,786.5 V794.5 Q552.2,798.0 548.7,798.0 H228 Z"/>
 <text class="ink2" x="558.2" y="796.5" font-size="12.5">64.6%</text>
@@ -146,5 +146,5 @@
 <text class="ink3" x="20" y="905" font-size="12.5">사진은 우리 줄 자르기로 자른 같은 칸을 모두에게 넣었다. 글씨체 시험지는 합성 날것을 넣었다(저마다 제 전처리).</text>
 <text class="ink3" x="20" y="923" font-size="12.5">시험 글꼴 여섯·스물네 벌은 우리 학습에서 뺀 것이다. 상대가 무엇을 보고 배웠는지는 모르므로 상대에게 불리하지 않다.</text>
 <text class="ink3" x="20" y="941" font-size="12.5">상대는 모두 모델 카드의 사용법 그대로 돌렸다. 큰 VLM 은 욕심 뽑기(같은 그림이면 같은 답)로 읽혔다.</text>
-<text class="ink3" x="20" y="959" font-size="12.5">잰 날 2026-10-09 07:25 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
+<text class="ink3" x="20" y="959" font-size="12.5">잰 날 2026-10-13 14:59 · NVIDIA GeForce RTX 5060 Laptop GPU · tools/vs.py</text>
 </svg>

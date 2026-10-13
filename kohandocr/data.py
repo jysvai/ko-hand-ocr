@@ -23,7 +23,7 @@ from pathlib import Path
 import torch
 from torch.utils.data import IterableDataset, get_worker_info
 
-from . import corpus, synth
+from . import corpus, synth, vary as varies
 from .cell import CELL
 from .reader import MEAN, STD    # 판독 쪽과 **같은 눈금**을 쓴다. 갈라지면 조용히 틀린다.
 
@@ -35,7 +35,8 @@ class Lines(IterableDataset):
                  letters: int = 64, seed: int = 0, length: int = 100_000,
                  strike: float | None = None, warp: float | None = None,
                  digits: float = 0.0, free: float = 0.0, hard: float = 0.0,
-                 hard_from: str = "", tangle: float = 0.0) -> None:
+                 hard_from: str = "", tangle: float = 0.0, hand: float = 0.0,
+                 guard: bool = False, vary: dict | None = None) -> None:
         self.fonts_dir = fonts_dir
         self.vocab = vocab
         self.cell = cell
@@ -59,6 +60,13 @@ class Lines(IterableDataset):
         self.hard_from = hard_from
         # 지운 자국 가운데 제멋대로 엉킨 고리(`synth._tangle`)로 그릴 몫. 0 이면 끔.
         self.tangle = tangle
+        # 손버릇(`synth._quirk`)을 넣을 줄 비율과 획 지키기(`synth.GUARD_LOSS`). 2026-10-10.
+        # 손버릇은 0 이면 난수도 안 뽑는다. 획 지키기는 난수를 안 바꾸고 그림만 바꾼다.
+        self.hand = hand
+        self.guard = guard
+        # 합성에 없던 변이(`vary.KINDS`)와 그 비율. `tools/probe.py` 로 지금 모델이 못 읽는다고
+        # 나온 것만 켠다(2026-10-11). 비어 있으면 난수를 안 뽑아 그림이 예전과 같다.
+        self.vary = {k: v for k, v in (vary or {}).items() if v}
         self._fonts: synth.Fonts | None = None
 
     def __len__(self) -> int:
@@ -112,10 +120,12 @@ class Lines(IterableDataset):
                 misses += 1
                 continue
             page = synth.render(text, fonts, rng, strike=self.strike, warp=self.warp,
-                                tangle=self.tangle)
+                                tangle=self.tangle, hand=self.hand, guard=self.guard)
             if page is None:
                 misses += 1
                 continue
+            if self.vary:
+                page = varies.maybe(page, self.vary, rng)
             yield {"gray": to_gray(synth.fit(page, *self.cell)),
                    "labels": torch.tensor(ids, dtype=torch.long),
                    "text": text}

@@ -62,7 +62,7 @@
 <rect class="s2" x="500" y="150" width="125.5" height="14" rx="3"/>
 <text class="pass" x="638" y="162" font-size="13" font-weight="700">96.5%</text>
 <text class="ink" x="735" y="162" font-size="13.5" font-weight="700" text-anchor="middle">6.8%</text>
-<text class="ink" x="844" y="162" font-size="13.5" font-weight="700" text-anchor="end">1.0</text>
+<text class="ink" x="844" y="162" font-size="13.5" font-weight="700" text-anchor="end">1.1</text>
 <rect class="mine" x="28" y="173" width="824" height="26" rx="6"/>
 <text class="ink" x="40" y="192" font-size="14" font-weight="700">ko-hand-ocr 단일 모델<tspan class="ink2" font-size="12" font-weight="400"> 41M</tspan></text>
 <rect class="s1" x="290" y="180" width="125.8" height="14" rx="3"/>
@@ -70,42 +70,42 @@
 <rect class="s1" x="500" y="180" width="122.5" height="14" rx="3"/>
 <text class="warn" x="638" y="192" font-size="13" font-weight="700">94.2%</text>
 <text class="ink" x="735" y="192" font-size="13.5" font-weight="700" text-anchor="middle">7.5%</text>
-<text class="ink" x="844" y="192" font-size="13.5" font-weight="700" text-anchor="end">6.8</text>
+<text class="ink" x="844" y="192" font-size="13.5" font-weight="700" text-anchor="end">7.3</text>
 <rect class="mine" x="28" y="203" width="824" height="26" rx="6"/>
-<text class="ink" x="40" y="222" font-size="14" font-weight="700">ko-hand-ocr-vl (사진 통째)<tspan class="ink2" font-size="12" font-weight="400"> 853M</tspan></text>
+<text class="ink" x="40" y="222" font-size="14" font-weight="700">ko-hand-ocr-vl (사진 통째)<tspan class="ink2" font-size="12" font-weight="400"> 660M</tspan></text>
 <rect class="s4" x="290" y="210" width="126.1" height="14" rx="3"/>
 <text class="pass" x="428" y="222" font-size="13" font-weight="700">97.0%</text>
 <rect class="s4" x="500" y="210" width="121.4" height="14" rx="3"/>
 <text class="warn" x="638" y="222" font-size="13" font-weight="700">93.4%</text>
 <text class="ink" x="735" y="222" font-size="13.5" font-weight="700" text-anchor="middle">6.3%</text>
-<text class="ink" x="844" y="222" font-size="13.5" font-weight="700" text-anchor="end">0.95</text>
+<text class="ink" x="844" y="222" font-size="13.5" font-weight="700" text-anchor="end">1.1</text>
 <text class="ink" x="40" y="252" font-size="14" font-weight="500">ko-trocr<tspan class="ink2" font-size="12" font-weight="400"> 214M</tspan></text>
 <rect class="s3" x="290" y="240" width="101.7" height="14" rx="3"/>
 <text class="ink2" x="428" y="252" font-size="13" font-weight="700">78.2%</text>
 <rect class="s3" x="500" y="240" width="102.0" height="14" rx="3"/>
 <text class="ink2" x="638" y="252" font-size="13" font-weight="700">78.5%</text>
 <text class="ink" x="735" y="252" font-size="13.5" font-weight="500" text-anchor="middle">42.2%</text>
-<text class="ink" x="844" y="252" font-size="13.5" font-weight="500" text-anchor="end">0.92</text>
+<text class="ink" x="844" y="252" font-size="13.5" font-weight="500" text-anchor="end">0.93</text>
 <text class="ink" x="40" y="282" font-size="14" font-weight="500">PaddleOCR PP-OCRv5<tspan class="ink2" font-size="12" font-weight="400"> 3.3M</tspan></text>
 <rect class="s3" x="290" y="270" width="94.5" height="14" rx="3"/>
 <text class="ink2" x="428" y="282" font-size="13" font-weight="700">72.7%</text>
 <rect class="s3" x="500" y="270" width="93.3" height="14" rx="3"/>
 <text class="ink2" x="638" y="282" font-size="13" font-weight="700">71.8%</text>
 <text class="ink" x="735" y="282" font-size="13.5" font-weight="500" text-anchor="middle">40.5%</text>
-<text class="ink" x="844" y="282" font-size="13.5" font-weight="500" text-anchor="end">64.0</text>
+<text class="ink" x="844" y="282" font-size="13.5" font-weight="500" text-anchor="end">61.1</text>
 <text class="ink" x="40" y="312" font-size="14" font-weight="500">Qwen3-VL-2B<tspan class="ink2" font-size="12" font-weight="400"> 2.1B</tspan></text>
 <rect class="s3" x="290" y="300" width="86.5" height="14" rx="3"/>
 <text class="ink2" x="428" y="312" font-size="13" font-weight="700">66.6%</text>
 <rect class="s3" x="500" y="300" width="90.8" height="14" rx="3"/>
 <text class="ink2" x="638" y="312" font-size="13" font-weight="700">69.9%</text>
 <text class="ink" x="735" y="312" font-size="13.5" font-weight="500" text-anchor="middle">77.2%</text>
-<text class="ink" x="844" y="312" font-size="13.5" font-weight="500" text-anchor="end">0.60</text>
+<text class="ink" x="844" y="312" font-size="13.5" font-weight="500" text-anchor="end">0.55</text>
 <text class="ink" x="40" y="342" font-size="14" font-weight="500">PaddleOCR-VL-1.6<tspan class="ink2" font-size="12" font-weight="400"> 906M</tspan></text>
-<rect class="s3" x="290" y="330" width="82.8" height="14" rx="3"/>
-<text class="ink2" x="428" y="342" font-size="13" font-weight="700">63.7%</text>
+<rect class="s3" x="290" y="330" width="82.6" height="14" rx="3"/>
+<text class="ink2" x="428" y="342" font-size="13" font-weight="700">63.6%</text>
 <rect class="s3" x="500" y="330" width="80.2" height="14" rx="3"/>
 <text class="ink2" x="638" y="342" font-size="13" font-weight="700">61.7%</text>
-<text class="ink" x="735" y="342" font-size="13.5" font-weight="500" text-anchor="middle">60.4%</text>
+<text class="ink" x="735" y="342" font-size="13.5" font-weight="500" text-anchor="middle">62.0%</text>
 <text class="ink" x="844" y="342" font-size="13.5" font-weight="500" text-anchor="end">0.08</text>
 <text class="ink" x="40" y="372" font-size="14" font-weight="500">EasyOCR<tspan class="ink2" font-size="12" font-weight="400"> 4.0M</tspan></text>
 <rect class="s3" x="290" y="360" width="73.6" height="14" rx="3"/>
@@ -113,15 +113,15 @@
 <rect class="s3" x="500" y="360" width="86.9" height="14" rx="3"/>
 <text class="ink2" x="638" y="372" font-size="13" font-weight="700">66.9%</text>
 <text class="ink" x="735" y="372" font-size="13.5" font-weight="500" text-anchor="middle">63.9%</text>
-<text class="ink" x="844" y="372" font-size="13.5" font-weight="500" text-anchor="end">42.5</text>
+<text class="ink" x="844" y="372" font-size="13.5" font-weight="500" text-anchor="end">43.4</text>
 <text class="ink" x="40" y="402" font-size="14" font-weight="500">Tesseract 5<tspan class="ink2" font-size="12" font-weight="400"> 6MB</tspan></text>
 <rect class="s3" x="290" y="390" width="23.1" height="14" rx="3"/>
 <text class="ink2" x="428" y="402" font-size="13" font-weight="700">17.7%</text>
 <rect class="s3" x="500" y="390" width="17.2" height="14" rx="3"/>
 <text class="ink2" x="638" y="402" font-size="13" font-weight="700">13.2%</text>
 <text class="ink" x="735" y="402" font-size="13.5" font-weight="500" text-anchor="middle">97.4%</text>
-<text class="ink" x="844" y="402" font-size="13.5" font-weight="500" text-anchor="end">35.8</text>
-<text class="ink2" x="28" y="428" font-size="12">tools/vs.py, 2026-10-09 07:25. 상대는 모델 카드의 사용법 그대로 돌렸다(줄은 우리 자르기로 잘라 같은 칸을 준다).</text>
+<text class="ink" x="844" y="402" font-size="13.5" font-weight="500" text-anchor="end">36.2</text>
+<text class="ink2" x="28" y="428" font-size="12">tools/vs.py, 2026-10-13 14:59. 상대는 모델 카드의 사용법 그대로 돌렸다(줄은 우리 자르기로 잘라 같은 칸을 준다).</text>
 <text class="ink2" x="28" y="445" font-size="12">이 표는 벌당 120줄이라 아래 성적판과 끝자리가 다를 수 있다.</text>
 <line class="grid" x1="28" y1="476.0" x2="852" y2="476.0"/>
 <text class="ink" x="28" y="504.0" font-size="18" font-weight="700">우리 모델 자세히 — 17개 항목</text>
